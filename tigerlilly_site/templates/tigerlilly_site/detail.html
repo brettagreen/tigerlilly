@@ -1,0 +1,9 @@
+<h1>{{ post.title }}</h1>
+<h2>{{ post.datetime.date }}</h2>
+<h2>{{ post.author }}</h2>
+<pre><p>{{ post.article_text|safe}}</p></pre>
+<ul>
+{% for tag in post.get_tags %}
+<li>{{ tag.tag }}</li>
+{% endfor %}
+</ul>
