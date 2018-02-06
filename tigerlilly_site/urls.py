@@ -1,13 +1,10 @@
 '''
 Created on Jan 6, 2018
-
 @author: Brett
 '''
 from django.urls import path
-
 from . import views
 
-app_name = 'tigerlilly_site'
 #urlpatterns = [
     # ex: /polls/
 #    path('', views.index, name='index'),
@@ -19,7 +16,9 @@ app_name = 'tigerlilly_site'
 #    path('<int:question_id>/vote/', views.vote, name='vote'),
 #]
 
+app_name = 'tigerlilly_site'
+
 urlpatterns = [
     path('', views.home, name='home'),
-    path('<int:post_id>/', views.detail, name='detail')
+    path('article/<int:pk>/<slug:slugged_title>/', views.detail, name='detail')
 ]

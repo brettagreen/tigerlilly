@@ -1,0 +1,30 @@
+body {
+	font: normal normal 15px 'Courier New', Courier, FreeMono, monospace;
+	color: #222222;
+	background: #f0e68c none no-repeat scroll center center;
+	padding: 0 20px 40px 20px;
+}
+
+#header-image {
+	height:50vh;
+	width:75vw;
+}
+
+a:link {
+	text-decoration:none;
+	color: #000000;
+}
+
+a:visited {
+	text-decoration:none;
+	color: #000000;
+}
+
+a:hover {
+	text-decoration:underline;
+	color: #000000;
+}
+
+.article {
+	white-space:pre-wrap;	
+}

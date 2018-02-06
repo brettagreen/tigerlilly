@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.text import slugify
 
 class Tag(models.Model):
     tag = models.CharField(max_length=50, unique=True)
@@ -34,6 +35,12 @@ class Post(models.Model):
         Tag,
         through='TagsWithPosts',
         through_fields=('post', 'tag'))
+    
+    def slugged(self):
+        if "|" in self.title:
+            return slugify(self.title[:self.title.find("|")])
+        else:
+            return slugify(self.title)
     
     def get_tags(self):
         return self.tags.all()

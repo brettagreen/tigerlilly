@@ -1,0 +1,7 @@
+.container > .row {
+	width:85%;
+}
+
+.container {
+	max-height:vh250;
+}

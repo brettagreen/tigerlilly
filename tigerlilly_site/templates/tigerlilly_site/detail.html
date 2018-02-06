@@ -1,9 +1,15 @@
-<h1>{{ post.title }}</h1>
-<h2>{{ post.datetime.date }}</h2>
-<h2>{{ post.author }}</h2>
-<pre><p>{{ post.article_text|safe}}</p></pre>
-<ul>
-{% for tag in post.get_tags %}
-<li>{{ tag.tag }}</li>
-{% endfor %}
-</ul>
+{% extends "base.html" %}
+{% load staticfiles %}
+
+{% block extraCSS %}
+<link rel="stylesheet" type="text/css" href="{% static 'tigerlilly_site/style/detail.css' %}" />
+{% endblock %}
+
+{% block body %}
+<div class="detail-view">
+	<h1>{{ post.title }}</h1>
+	<h2>{{ post.datetime.date }}</h2>
+	<h2>{{ post.author }}</h2>
+	<pre class="article"><p>{{ post.article_text|safe}}</p></pre>
+</div>	
+{% endblock %}
