@@ -76,16 +76,16 @@ WSGI_APPLICATION = 'tigerlilly.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'bagreen1$tigerlilly-mysql',
-        'USER': 'bagreen1',
-        'PASSWORD': '!s!8xns$E2FY',
-        'HOST': 'bagreen1.mysql.pythonanywhere-services.com'
-    },
-    'local': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }    
+    }
+    #'mysql': {
+    #    'ENGINE': 'django.db.backends.mysql',
+    #    'NAME': 'bagreen1$tigerlilly-mysql',
+    #    'USER': 'bagreen1',
+    #    'PASSWORD': '!s!8xns$E2FY',
+    #    'HOST': 'bagreen1.mysql.pythonanywhere-services.com'
+    #}  
 }
 
 
