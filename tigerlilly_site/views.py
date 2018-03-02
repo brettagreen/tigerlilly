@@ -3,7 +3,14 @@ from django.shortcuts import render, get_object_or_404
 from .models import Post
 
 def home(request):
-    return render(request, 'tigerlilly_site/home.html', {"posts": Post.objects.all()[:10]})
+    page = None
+    if request.user_agent.is_mobile:
+        page = 'tigerlilly_site/MOBILE_home.html'
+    elif request.user_agent.is_tablet:
+        page = 'tigerlilly_site/TABLET_home.html'
+    else:
+        page = 'tigerlilly_site/PC_home.html'
+    return render(request, page, {"posts": Post.objects.all()[:12]})
 
 def detail(request, pk, slugged_title):
     post = get_object_or_404(Post, pk=pk)
