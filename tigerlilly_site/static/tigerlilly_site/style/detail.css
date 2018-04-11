@@ -1,10 +1,8 @@
 /*.detail-view settings are meant to mirror bootstrap's .container class css */
 .detail-view {
-	width: 85%;
-    padding-right: 15px;
-    padding-left: 15px;
-    margin-right: auto;
-    margin-left: auto;
+	width:85%;
+    margin-right:auto;
+    margin-left:auto;
 }
 
 ul {
@@ -14,10 +12,10 @@ ul {
 	margin-left:inherit;
 }
 
-.detail-view > .article {
-	width:75%;
+.title {
+	font-size:18px;
 }
 
-.article > p {
-	font-size:18px;
+.article {
+	font-size:16px;
 }

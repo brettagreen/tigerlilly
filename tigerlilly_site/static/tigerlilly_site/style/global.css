@@ -2,12 +2,22 @@ body {
 	font: normal normal 15px 'Courier New', Courier, FreeMono, monospace;
 	color: #222222;
 	background: #f0e68c none no-repeat scroll center center;
-	padding: 0 20px 40px 20px;
+	padding: 0 1px 40px 1px;
+	width:100%;
+	overflow-x:hidden;
 }
 
-#header-image {
-	height:50vh;
-	width:75vw;
+#title {
+	border:20px 0px 20px 0px;
+	border-style:solid none solid none;
+	padding:5px;
+	font-size:20px;
+	font-style: italic;
+}
+
+.oi-chevron-bottom {
+	height:10px;
+	width:10px;
 }
 
 a:link {

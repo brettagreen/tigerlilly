@@ -6,10 +6,8 @@
 {% endblock %}
 
 {% block body %}
-<div class="detail-view">
-	<h1>{{ post.title }}</h1>
-	<h2>{{ post.datetime.date }}</h2>
-	<h2>{{ post.author }}</h2>
-	<pre class="article"><p>{{ post.article_text|safe}}</p></pre>
+<div class="detail-view float-left">
+	<p class="font-weight-bold title">{{ post.title }}</p>
+	<pre><p class="article">{{ post.article_text|safe}}</p></pre>
 </div>	
 {% endblock %}

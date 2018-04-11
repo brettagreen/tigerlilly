@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 #from django.http import HttpResponse
-from .models import Post
+from .models import Issue, Post
 
 def home(request):
     page = None
@@ -10,7 +10,16 @@ def home(request):
         page = 'tigerlilly_site/TABLET_home.html'
     else:
         page = 'tigerlilly_site/PC_home.html'
-    return render(request, page, {"posts": Post.objects.all()[:12]})
+    issue_pk = Issue.objects.filter(current_issue=True)
+    issue_pk = issue_pk[0]
+            
+    associated_posts = Post.objects.filter(issue=issue_pk).order_by('issue_position')
+    for post in associated_posts:
+        if post.article_text.count(' ') > 150:
+            post.article_text = post.truncate_article_text()
+            
+    return render(request, page, {"issue": issue_pk, "posts": associated_posts})
+
 
 def detail(request, pk, slugged_title):
     post = get_object_or_404(Post, pk=pk)

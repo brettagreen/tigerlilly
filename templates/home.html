@@ -2,17 +2,63 @@
 {% load staticfiles %}
 {% load user_agents %}
 
-{% block extraCSS %}
-<link rel="stylesheet" type="text/css" href="{% static 'tigerlilly_site/style/home.css' %}" />
-{% endblock %}
-
 {% block body %}
-<div class="container border-left border-dark">	
+
+<!-- this first segment is shared regardless of medium -->
+<div class="text-center mx-auto" style="width:66%;">
+	<!-- if mobile, img-fluid, else size per vh/vw 
+	<a href="{%url 'tigerlilly_site:home' %}"></a>-->
+	<img class="image-fluid" style="max-width:100%; height:auto" src="{% static '/tigerlilly_site/images/masthead.jpg' %}" alt="The Tigerlilly Online logo"><br />
+
+{% if request|is_pc %}
+	<h3>"TIGRIS LILLIVM IMMORTALES VSQVE IN SEMPITERNVM"</h3>
+	<span class="font-weight-bold"> Editors-in-Chief<br />
+	Jonathan Brinckmann | Alan Marples</span>
+</div>
+<br />
+<div id="title" class="row font-weight-bold">
+	<div class="col-4 text-left">
+		Vol {{issue.vol}} Issue {{issue.iss}}
+	</div>
+	<div class="col-4 text-center">
+		{{issue.issue_title}}
+	</div>
+	<div class="col-4">
+	</div>
+</div>
+{% elif request|is_tablet %}
+	<span class="font-weight-bold">"TIGRIS LILLIVM IMMORTALES VSQVE IN SEMPITERNVM"</span><br /><br />
+	<span class="font-weight-bold"> Editors-in-Chief<br />
+	Jonathan Brinckmann | Alan Marples</span>
+</div>
+<br />
+<div id="title" class="row font-weight-bold">
+	<div class="col-12">
+		<div class="text-left" style="display:inline-block">
+			Vol {{issue.vol}} Issue {{issue.iss}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</div>
+		<div class="text-center" style="display:inline-block">
+			{{issue.issue_title}}
+		</div>
+	</div>
+</div>
+{% else %}
+	<span class="font-weight-bold">"TIGRIS LILLIVM IMMORTALES VSQVE IN SEMPITERNVM"</span><br /><br />
+	<span class="font-weight-bold"> Editors-in-Chief<br />
+	Jonathan Brinckmann | Alan Marples</span>
+</div>
+<br />
+<div id="title" class="row font-weight-bold">
+	<div class="col-12 text-center">
+		{{issue.issue_title}}
+	</div>
+</div>
+{% endif %}
+<br /> 
+<div class="container border-left border-right border-dark">	
 	<div class="row">
-	{% for post in posts %}
 		{% block article %}
 		{% endblock %}
-	{% endfor %}
 	</div>
 </div> 
 {% endblock %}
