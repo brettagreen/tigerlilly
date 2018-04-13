@@ -1,28 +1,45 @@
 {% extends "home.html" %}
+{% load staticfiles %}
+
+{% block extraCSS %}
+<link rel="stylesheet" type="text/css" href="{% static 'tigerlilly_site/style/PC_home.css' %}" />
+{% endblock %}
+
 {% block article %}
-	{% if forloop.counter0|divisibleby:2 or forloop.first %}
-	    <div class="col float-left mr-1 pr-1 pl-1 border-right border-dark">
-		   <div class="pl-1 pr-1 mr-1 float-left">
-		    	<a href="{%url 'tigerlilly_site:detail' post.pk post.slugged %}"><p class="mb-1 font-weight-bold">{{post.title}}</p></a>
-		    	<p class="mb-1 font-weight-italic">{{post.author}}</p>
-		    	<p class="mb-3">{{post.datetime.date}}</p>
-		    	{% if post.article_text|wordcount > 200 %}
-		    		<pre class="article"><p>{{ post.article_text|truncatewords:200|safe }}</p></pre>
-		    	{% else %}
-		        	<pre class="article"><p>{{ post.article_text|safe }}</p></pre>
-		        {% endif %}			    				        
-		    </div>
-	{% else %}
-	       <div class="pl-1 pr-1 mr-1 float-left">
-		    	<a href="{%url 'tigerlilly_site:detail' post.pk post.slugged %}"><p class="mb-1 font-weight-bold">{{post.title}}</p></a>
-		    	<p class="mb-1 font-weight-italic">{{post.author}}</p>
-		    	<p class="mb-3">{{post.datetime.date}}</p>
-		        {% if post.article_text|wordcount > 200 %}
-		    		<pre class="article"><p>{{ post.article_text|truncatewords:200|safe }}</p></pre>
-		    	{% else %}
-		        	<pre class="article"><p>{{ post.article_text|safe }}</p></pre>
-		        {% endif %}		
-		    </div>
-		</div>    
-	{% endif %}
+	{% for post in posts %}
+		{% if forloop.counter0 == posts.count|add:"-2" %}
+			<div class="col float-left mr-1 pr-1 pl-1">
+			   <div class="pl-1 pr-1 mr-1 float-left">
+			    	<!--<a href="{%url 'tigerlilly_site:detail' post.pk post.slugged %}">-->
+			    	<p class="mb-1 font-weight-bold">{{post.title}}</p>
+			    	{% if post.alias is not None %}
+			    		<p class="mb-1 font-italic small">By {{post.alias}}</p>
+			    	{% endif %}
+			    	<br />
+			        <pre class="article"><p>{{ post.article_text|safe }}</p></pre>		    				        
+			    </div>
+		{% elif forloop.counter0|divisibleby:2 or forloop.first %}
+		    <div class="col float-left mr-1 pr-1 pl-1 border-right border-dark">
+			   <div class="pl-1 pr-1 mr-1 float-left">
+			    	<!--<a href="{%url 'tigerlilly_site:detail' post.pk post.slugged %}">-->
+			    	<p class="mb-1 font-weight-bold">{{post.title}}</p>
+			    	{% if post.alias is not None %}
+			    		<p class="mb-1 font-italic small">By {{post.alias}}</p>
+			    	{% endif %}
+			    	<br />
+			        <pre class="article"><p>{{ post.article_text|safe }}</p></pre>	    				        
+			    </div>
+		{% else %}
+		       <div class="pl-1 pr-1 mr-1 float-left">
+		       		<!--<a href="{%url 'tigerlilly_site:detail' post.pk post.slugged %}">-->
+			    	<p class="mb-1 font-weight-bold">{{post.title}}</p>
+			    	{% if post.alias is not None %}
+			    		<p class="mb-1 font-italic small">By {{post.alias}}</p>
+			    	{% endif %}
+			    	<br />
+			        <pre class="article"><p>{{ post.article_text|safe }}</p></pre>
+			    </div>
+			</div>    
+		{% endif %}
+	{% endfor %}
 {% endblock %}

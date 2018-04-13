@@ -1,0 +1,14 @@
+.container {
+	width:85%;
+	float:left;
+	margin-left:7px;
+}
+
+.col {
+	max-width:20%;
+}
+
+.article > p {
+    max-width:inherit;
+    word-break:break-word;
+}

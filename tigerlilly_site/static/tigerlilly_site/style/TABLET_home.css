@@ -1,0 +1,18 @@
+.container {
+	width:100%;
+	padding:0px;
+	float:center;
+}
+
+.col {
+	max-width:24.9%;
+}
+
+.row {
+	margin:0px;
+}
+
+.article > p {
+    max-width:inherit;
+    word-break:break-word;
+}
