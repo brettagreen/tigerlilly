@@ -15,7 +15,7 @@ class PostsInline(admin.TabularInline):
 class PostAdmin(admin.ModelAdmin):
     fields = ['title', 'alias', 'author', 'issue', 'issue_position', 'article_text']
     inlines = [TagsWithPostsInline]
-    list_display = ('title', 'alias', 'issue')
+    list_display = ('title', 'alias', 'issue', 'issue_position')
     search_fields = ['article_text', 'title']
     list_filter = ['issue', 'author', 'alias']
 
