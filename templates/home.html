@@ -6,7 +6,7 @@
 
 <!-- this first segment is shared regardless of medium -->
 <div class="text-center mx-auto" style="width:66%;">
-	<!-- if mobile, img-fluid, else size per vh/vw 
+	<!-- if mobile, img-fluid, else size per vh/vw
 	<a href="{%url 'tigerlilly_site:home' %}"></a>-->
 	<img class="image-fluid" style="max-width:100%; height:auto" src="{% static '/tigerlilly_site/images/masthead.jpg' %}" alt="The Tigerlilly Online logo"><br />
 
@@ -18,7 +18,7 @@
 <br />
 <div id="title" class="row font-weight-bold">
 	<div class="col-4 text-left">
-		Vol {{issue.vol}} Issue {{issue.iss}}
+		Vol I Issue {{issue.iss}}
 	</div>
 	<div class="col-4 text-center">
 		{{issue.issue_title}}
@@ -35,7 +35,7 @@
 <div id="title" class="row font-weight-bold">
 	<div class="col-12">
 		<div class="text-left" style="display:inline-block">
-			Vol {{issue.vol}} Issue {{issue.iss}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			Vol I Issue {{issue.iss}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 		</div>
 		<div class="text-center" style="display:inline-block">
 			{{issue.issue_title}}
@@ -54,11 +54,11 @@
 	</div>
 </div>
 {% endif %}
-<br /> 
-<div class="container border-left border-right border-dark">	
+<br />
+<div class="container border-left border-right border-dark">
 	<div class="row">
 		{% block article %}
 		{% endblock %}
 	</div>
-</div> 
+</div>
 {% endblock %}
