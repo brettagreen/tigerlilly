@@ -15,6 +15,7 @@
 			    	{% if post.alias is not None %}
 			    		<p class="mb-1 font-italic small">By {{post.alias}}</p>
 			    	{% endif %}
+			    	<br />
 			        <pre class="article"><p>{{ post.article_text|safe }}</p></pre>	    				        
 			    </div>
 		{% elif forloop.counter0|divisibleby:9 %}
@@ -26,11 +27,8 @@
 			    	{% if post.alias is not None %}
 			    		<p class="mb-1 font-italic small">By {{post.alias}}</p>
 			    	{% endif %}
-			        {% if post.article_text|wordcount > 150 %}
-			    		<pre class="article"><p>{{ post.article_text|truncatewords:150|safe }}</p></pre>
-			    	{% else %}
-			        	<pre class="article"><p>{{ post.article_text|safe }}</p></pre>
-			        {% endif %}		
+					<br />
+			        <pre class="article"><p>{{ post.article_text|safe }}</p></pre>
 			    </div>   	    
 		{% elif forloop.counter0|divisibleby:3 %}
 			</div>
@@ -41,6 +39,7 @@
 			    	{% if post.alias is not None %}
 			    		<p class="mb-1 font-italic small">By {{post.alias}}</p>
 			    	{% endif %}
+			    	<br />
 			        <pre class="article"><p>{{ post.article_text|safe }}</p></pre>
 			    </div>   
 		{% else %} 
@@ -50,6 +49,7 @@
 		    	{% if post.alias is not None %}
 		    		<p class="mb-1 font-italic small">By {{post.alias}}</p>
 		    	{% endif %}
+		    	<br />
 		        <pre class="article"><p>{{ post.article_text|safe }}</p></pre>
 		    </div>	
 		{% endif %}
