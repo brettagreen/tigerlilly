@@ -6,7 +6,7 @@
 
 .col {
 	max-width:20%;
-	overflow:hidden;
+	overflow-x:hidden;
 }
 
 .article > p {
