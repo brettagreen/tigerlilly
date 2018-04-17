@@ -6,7 +6,6 @@
 
 .col {
 	max-width:24.9%;
-	overflow-x:hidden;
 }
 
 .row {
@@ -16,4 +15,5 @@
 .article > p {
     max-width:inherit;
     word-break:break-word;
+    overflow:hidden;
 }

@@ -21,6 +21,7 @@
 });
  */
 $(function() {
+		
 	$('.chevron').click(function() {
 		  $(this).toggleClass('oi-chevron-bottom');
 		  $(this).toggleClass('oi-chevron-top');
@@ -39,5 +40,9 @@ $(function() {
 			  ellipsisSpan.css('display', 'inline');
 		  }
 	});
+	
+	$('.chevron').hover(function() {
+        $(this).css('cursor','pointer');
+    });
 });
 
