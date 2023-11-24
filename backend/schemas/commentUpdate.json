@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "properties": {
+      "userId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "text": {
+        "type": "string",
+        "minLength": 1
+      },
+      "articleId": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 10000
+      },
+      "postDate": {
+        "type": "string"
+      }
+
+    },
+    "additionalProperties": false,
+    "required": [
+      "text"    
+    ]
+  }
+  
