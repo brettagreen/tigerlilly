@@ -23,8 +23,15 @@
         "maxLength": 300
       },
       "icon": {
-        "type": "string",
-        "maxLength": 100
+        "anyOf": [
+          {
+            "type": "string",
+            "maxLength": 100
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
     },
     "additionalProperties": false,

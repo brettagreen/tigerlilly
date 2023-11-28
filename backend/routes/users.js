@@ -120,7 +120,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
 
 /** GET /username/[username] => { users }
  *
- * Returns {id, username, userFirst, userLast, email, isAdmin, icon }
+ * Returns { id, username, userFirst, userLast, email, isAdmin, icon }
  *
  * any logged in user
  **/
@@ -128,6 +128,23 @@ router.get("/", ensureAdmin, async function (req, res, next) {
 router.get("/username/:username", ensureLoggedIn, async function (req, res, next) {
     try {
         const users = await User.get(req.params.username);
+        return res.json({ users });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+/**
+ * returns all users that have made one or more comments
+ * 
+ * returns [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
+ * 
+ * admin only
+ */
+
+router.get('/comments', ensureAdmin, async function (req, res, next) {
+    try {
+        const users = await User.hasComments();
         return res.json({ users });
     } catch (err) {
         return next(err);
@@ -146,17 +163,18 @@ router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function
 });
 
 
-/** PATCH /[username] { user } => { users }
+/** PATCH /[id] { user } => { users }
  *
  * Data can include:
- *   { userFirst, userLast, email, password, icon }
+ *   { userFirst, userLast, email, icon } for actual user
+ *   { userFirst, userLast, email, username, isAdmin, icon } for admin
  *
- * Returns { username, userFirst, userLast, email, isAdmin, icon }
+ * Returns { userFirst, userLast, email, username, isAdmin, icon }
  *
  * admin or same-user-as-:username
  **/
 
-router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const validator = jsonschema.validate(req.body, userUpdateSchema);
         if (!validator.valid) {
@@ -164,7 +182,7 @@ router.patch("/:username", ensureCorrectUserOrAdmin, async function (req, res, n
             throw new BadRequestError(errs);
         }
 
-        const users = await User.update(req.params.username, req.body);
+        const users = await User.update(req.params.id, req.body);
         return res.json({ users });
     } catch (err) {
         return next(err);

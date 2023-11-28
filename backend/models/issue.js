@@ -36,9 +36,10 @@ class Issue {
     static async getAll() {
         const result = await db.query(
             `SELECT id,
-                    issue_title AS "issueTitle",
-                    pub_date AS "pubDate"
-            FROM issues`);
+                issue_title AS "issueTitle",
+                pub_date AS "pubDate"
+            FROM issues
+            ORDER BY LOWER(issue_title)`);
 
         return result.rows;
     }
@@ -105,7 +106,8 @@ class Issue {
                     au.author_handle AS "authorHandle"
             FROM issues i
             LEFT JOIN articles a ON i.id = a.issue_id
-            LEFT JOIN authors au ON a.author_id = au.id`
+            LEFT JOIN authors au ON a.author_id = au.id
+            WHERE i.id = (SELECT id from issues ORDER BY id asc LIMIT 1)`
         );
         
         return result.rows;
@@ -117,7 +119,7 @@ class Issue {
      * 
      * Returns { issueTitle, pubDate }
      * 
-     * **/
+     **/
 
     static async update(id, body) {
 
@@ -155,7 +157,7 @@ class Issue {
             `DELETE
             FROM issues
             WHERE id = $1
-            RETURNING issue_title AS "issueTitle", post_date AS "postDate"`, [Number(id)]
+            RETURNING issue_title AS "issueTitle", pub_date AS "pubDate"`, [Number(id)]
         );
 
         if (!result.rows[0]) throw new NotFoundError(`No issue found by id: ${id}`);

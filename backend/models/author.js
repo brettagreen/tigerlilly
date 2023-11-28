@@ -62,7 +62,7 @@ class Author {
 						author_bio AS "authorBio",
 						icon
 				FROM authors
-				ORDER BY author_last`
+				ORDER BY LOWER(author_last)`
 		);
 
 		return result.rows;
@@ -156,7 +156,7 @@ class Author {
 			[Number(id)]
 		);
 
-		if (result.rows[0]) throw new NotFoundError(`No author found by that id: ${id}`);
+		if (!result.rows[0]) throw new NotFoundError(`No author found by that id: ${id}`);
 
 		return result.rows[0];
 	}

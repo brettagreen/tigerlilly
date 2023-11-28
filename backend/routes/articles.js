@@ -52,6 +52,23 @@ router.get("/", ensureAdmin, async function (req, res, next) {
     }
 });
 
+/**
+ * returns all articles that have one or more comments
+ * 
+ * returns [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
+ * 
+ * admin only
+ */
+
+router.get('/comments', ensureAdmin, async function (req, res, next) {
+    try {
+        const articles = await Article.hasComments();
+        return res.json({ articles });
+    } catch (err) {
+        return next(err);
+    }
+});
+
 /** GET /[id] => { article }
  *
  * Returns { articleTitle, authorFirst, authorLast, text, issueTitle }

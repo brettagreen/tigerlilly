@@ -16,4 +16,4 @@ CREATE DATABASE tigerlilly_test;
 \connect tigerlilly_test
 
 \i tigerlilly-schema.sql
---\i tigerlilly-seed.sql
+\i tigerlilly-seed.sql

@@ -20,6 +20,7 @@ const router = express.Router();
  **/
 
 router.post("/", ensureAdmin, async function (req, res, next) {
+
     try {
         const validator = jsonschema.validate(req.body, newIssueSchema);
 
@@ -28,8 +29,8 @@ router.post("/", ensureAdmin, async function (req, res, next) {
             throw new BadRequestError(errs);
         }
 
-        const issue = await Issue.create(req.body.issueTitle);
-        return res.status(201).json({ issue });
+        const issues = await Issue.create(req.body.issueTitle);
+        return res.status(201).json({ issues });
 
     } catch (err) {
         return next(err);
@@ -130,7 +131,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
             throw new BadRequestError(errs);
         }
 
-        const issues = await Issue.udpate(req.params.id, req.body);
+        const issues = await Issue.update(req.params.id, req.body);
         return res.status(201).json({ issues });
 
     } catch (err) {

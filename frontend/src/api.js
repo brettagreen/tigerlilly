@@ -93,6 +93,10 @@ class TigerlillyApi {
         return await this.request(`comments/${type}/${articleId}`);
     }
 
+    static async getObjectsWithComments(type) {
+        return await this.request(`${type}/comments`);
+    }
+
     //ARTICLE_KEYWORDS
     static async setKeywords(form) {
         return await this.request('articles/keywords', form, 'post');

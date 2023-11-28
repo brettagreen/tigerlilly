@@ -23,8 +23,11 @@ class Article {
                     issue_id)
                     VALUES ($1, $2, $3, $4)
                     RETURNING id, article_title AS "articleTitle", 
-                    (SELECT author_first AS "authorFirst", author_last AS "authorLast", author_handle AS "authorHandle" FROM authors WHERE id = $2), 
-                    author_id AS "authorId", text, (SELECT issue_title AS "issueTitle" FROM issues WHERE id = $4), issue_id AS "issueId"`,
+                    (SELECT author_first AS "authorFirst" FROM authors WHERE id = $2), 
+                    (SELECT author_last AS "authorLast" FROM authors WHERE id = $2),
+                    (SELECT author_handle AS "authorHandle" FROM authors WHERE id = $2),
+                    author_id AS "authorId", text, (SELECT issue_title AS "issueTitle" FROM issues WHERE id = $4),
+                    issue_id AS "issueId"`,
 			[articleTitle, authorId, text, issueId]
 		);
         
@@ -50,7 +53,8 @@ class Article {
                     i.id AS "issueId"
             FROM articles a
             LEFT JOIN authors w ON a.author_id = w.id
-            LEFT JOIN issues i ON a.issue_id = i.id`);
+            LEFT JOIN issues i ON a.issue_id = i.id
+            ORDER BY LOWER(a.article_title)`);
 
         return result.rows;
     
@@ -153,6 +157,31 @@ class Article {
         return result.rows;
     }
 
+    /**
+     * return all articles that have one or more comments
+     * 
+     * returns [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
+     */
+
+    static async hasComments() {
+        const result = await db.query(
+            `SELECT a.id,
+                    a.article_title AS "articleTitle",
+                    w.author_first AS "authorFirst",
+                    w.author_last AS "authorLast",
+                    w.id AS "authorId",
+                    a.text,
+                    i.issue_title AS "issueTitle",
+                    i.id AS "issueId"
+            FROM articles a
+            LEFT JOIN authors w ON a.author_id = w.id
+            LEFT JOIN issues i ON a.issue_id = i.id
+            WHERE a.id IN (SELECT DISTINCT(article_id) FROM comments)`
+        );
+
+        return result.rows;
+    }  
+
     /** updates an article 
      * 
      * all article fields can be modified.
@@ -165,21 +194,21 @@ class Article {
         const r = await db.query(
             `SELECT * FROM articles WHERE id=$1`, [id]
         );
-        
+
 		if (!r.rows[0]) throw new NotFoundError(`No article found by that id: ${id}`);
 
 		const result = await db.query(
             `UPDATE articles a
-            SET a.article_title = $1,
-            a.author_id = $2,
-            a.text = $3,
-            a.issue_id = $4
+            SET article_title = $1,
+            author_id = $2,
+            text = $3,
+            issue_id = $4
             WHERE a.id = $5
             RETURNING a.article_title AS "articleTitle",
-                    (SELECT CONCAT(author_first,' ', author_last) AS "author", author_handle AS "authorHandle"
-                    FROM authors WHERE id = a.author_id),
+                    (SELECT CONCAT(author_first,' ', author_last) AS "author" FROM authors WHERE id = a.author_id),
+                    (SELECT author_handle AS "authorHandle" FROM authors WHERE id = a.author_id),
                     a.text,
-                    (SELECT issue_title AS "issueTitle" FROM issues WHERE id = a.issue_id)`
+                    (SELECT issue_title AS "issueTitle" FROM issues WHERE id = a.issue_id)`,
             [
                 body.articleTitle || r.article_title,
                 body.authorId || r.author_id,
@@ -202,15 +231,16 @@ class Article {
 
         const result = await db.query(
                 `DELETE
-                FROM articles a
-                WHERE a.id = $1
-                RETURNING a.article_title AS "articleTitle", (SELECT CONCAT(author_first,' ', author_last) AS "author",
-                          author_handle AS "authorHandle" FROM authors WHERE id = a.id),
-                          a.text, (SELECT issue_title AS "issueTitle" FROM issues WHERE id = a.issue_id)`, 
+                FROM articles
+                WHERE id = $1
+                RETURNING article_title AS "articleTitle", 
+                          (SELECT CONCAT(a.author_first,' ', a.author_last) AS "author" FROM authors a WHERE a.id = author_id),
+                          (SELECT a.author_handle AS "authorHandle" FROM authors a WHERE a.id = author_id),
+                          text, (SELECT i.issue_title AS "issueTitle" FROM issues i WHERE i.id = issue_id)`, 
                 [Number(id)]
         );
 
-        if (result.rows[0]) throw new NotFoundError(`No article found by id: ${id}`);
+        if (!result.rows[0]) throw new NotFoundError(`No article found by id: ${id}`);
 
         return result.rows[0];
     }

@@ -40,7 +40,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * Return all comments associated with :userId
  *
  * Return value:
- *  {[{ id, text, postDate, userFirst, userLast, username, icon }, ...]}
+ *  {[{ id, userId, text, articleTitle, postDate, userFirst, userLast, username, icon }, ...]}
  *
  * all users
  **/
@@ -59,7 +59,7 @@ router.get("/users/:userId", async function (req, res, next) {
  * Return all comments associated with :articleId
  *
  * Return value:
- *  {[{ id, text, postDate, userFirst, userLast, username, icon }, ...]}
+ *  {[{ id, userId, text, articleTitle, postDate, userFirst, userLast, username, icon }, ...]}
  *
  * all users
  **/

@@ -107,7 +107,7 @@ class User {
 						is_admin AS "isAdmin",
 						icon
 				FROM users
-				ORDER BY username`
+				ORDER BY LOWER(username)`
 		);
 
 		return result.rows;
@@ -139,48 +139,74 @@ class User {
 		return user;
 	}
 
+    /**
+     * return all users that have made one or more comments
+     * 
+     * returns Returns [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
+     */
+
+    static async hasComments() {
+        const result = await db.query(
+			`SELECT id,
+				username,
+				user_first AS "userFirst",
+				user_last AS "userLast",
+				email,
+				is_admin AS "isAdmin",
+				icon
+			FROM users u
+			WHERE id IN (SELECT DISTINCT(user_id) FROM comments)
+			ORDER BY username`
+        );
+
+        return result.rows;
+    }
+
   /** 
    * Data can include:
-   *   { userFirst, userLast, email, password, icon }
+   *   { userFirst, userLast, email, username, icon, isAdmin }
    *
-   * Returns { username, userFirst, userLast, email, isAdmin, icon }
+   * Returns { userFirst, userLast, email, username, isAdmin, icon }
    *
    */
 
-	static async update(username, body) {
+	static async update(id, body) {
         const r = await db.query(
-            `SELECT * FROM users WHERE username=$1`, [username]
+            `SELECT * FROM users WHERE id=$1`, [id]
         );
 
-		if (!r.rows[0]) throw new NotFoundError(`No user found by that username: ${username}`);
+		if (!r.rows[0]) throw new NotFoundError(`No user found by that id: ${id}`);
 
 		const result = await db.query(
 			`UPDATE users 
 			SET user_first = $1,
 			user_last = $2,
 			email = $3,
-			password = $4,
-			icon = $5
-			WHERE username = $6
+			username = $4,
+			icon = $5,
+			is_admin = $6
+			WHERE id = $7
 			RETURNING username,
 				user_first AS "userFirst",
 				user_last AS "userLast",
 				email,
+				username,
 				is_admin AS "isAdmin",
 				icon`,
 			[
 				body.userFirst || r.user_first,
 				body.userLast || r.user_last,
 				body.email || r.email,
-				body.password || r.password,
+				body.username || r.username,
 				body.icon || r.icon,
-				username
+				String(body.isAdmin) || r.is_admin,
+				id
 			]
 		);
 
 		const user = result.rows[0];
 
-		if (!user) throw new NotFoundError(`No user found by that username: ${username}`);
+		if (!user) throw new NotFoundError(`No user found by that id: ${id}`);
 
 		return user;
 	}

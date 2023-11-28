@@ -108,7 +108,7 @@ const {
             for (let x = 0; x < (subResult.rows).length; x++) {
                 await db.query(
                     `UPDATE article_keywords ak
-                    SET ak.keyword = $1
+                    SET keyword = $1
                     WHERE ak.keyword = $2
                     AND ak.article_id = $3
                     LEFT JOIN articles a on a.id = ak.article_id
@@ -121,7 +121,7 @@ const {
         } else {
             const result = await db.query(
                     `UPDATE article_keywords ak
-                    SET ak.keyword = $1
+                    SET keyword = $1
                     WHERE ak.keyword = $2
                     AND ak.article_id = $3
                     LEFT JOIN articles a on a.id = ak.article_id

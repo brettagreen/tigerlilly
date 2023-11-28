@@ -9,20 +9,33 @@
         "maxLength": 300
       },
       "authorId": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 1000
+        "anyOf": [
+          {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+          },
+          {
+            "type": "null"
+          }
+        ]
       },
       "text": {
         "type": "string",
         "minLength": 1
       },
       "issueId": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 1000
+        "anyOf": [
+          {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000
+          },
+          {
+            "type": "null"
+          }
+        ]
       }
-
     },
     "additionalProperties": false,
     "required": [

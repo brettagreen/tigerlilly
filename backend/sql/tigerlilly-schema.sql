@@ -10,7 +10,7 @@ CREATE TABLE authors (
   author_last TEXT NOT NULL,
   author_handle TEXT NOT NULL UNIQUE,
   author_bio TEXT DEFAULT 'this author prefers to keep an air of mystery about them',
-  icon TEXT 
+  icon TEXT DEFAULT 'defaultUserIcon.jpg'
 );
 
 CREATE TABLE articles (
@@ -38,16 +38,16 @@ CREATE TABLE users (
   username VARCHAR(25) NOT NULL UNIQUE,
   password TEXT NOT NULL,
   is_admin BOOLEAN NOT NULL DEFAULT false,
-  icon TEXT 
+  icon TEXT DEFAULT 'defaultUserIcon.jpg'
 );
 
 CREATE TABLE comments (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER NOT NULL
+  user_id INTEGER
     REFERENCES users ON DELETE SET NULL,
   text TEXT NOT NULL,
   article_id INTEGER
-    REFERENCES articles ON DELETE CASCADE,    
+    REFERENCES articles ON DELETE CASCADE,
   post_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

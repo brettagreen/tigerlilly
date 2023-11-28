@@ -34,7 +34,7 @@ function Admin({ isAdmin }) {
     const editDelete = useRef();
     const entryForm = useRef();
 
-    const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle', 'id'];
+    const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle'];
 
     useEffect(() => {
         console.log('useEffect() history');
@@ -158,47 +158,68 @@ function Admin({ isAdmin }) {
     //this is probably the hackiest part of the app
     //formatting data field values per instance.
     function editDeleteForm(editValues, isFilter, type="") {
+
         console.log('edits()');
         console.log('CHECK editValues', editValues);
         let att1;
         let att2;
         let att3;
-        const maxLength = 20;
+        let att4;
+        let quotes1;
+        let quotes2;
+        const maxLength = 17;
 
         if (isFilter) {
             if (type === 'articles') {
                 att1 = 'text';
+                quotes1 = true;
                 att2 = 'articleTitle';
+                quotes2 = true;
                 type = 'articles';
             } else {
                 att1 = 'userFirst';
+                quotes1 = false;
                 att2 = 'userLast';
+                quotes2 = false;
                 att3 = [att1, att2]; 
                 type = 'users'
             }
         } else {
             if (category === 'issues') {
                 att1 = 'issueTitle';
+                quotes1 = true;
                 att2 = 'issueTitle';
+                quotes2 = false;
             } else if (category === 'articles') {
                 att1 = 'text';
+                quotes1 = true
                 att2 = 'articleTitle';
+                quotes2 = false
                 att3 = [att2, 'issueTitle']
+                att4 = 'no issue';
             } else if (category === 'authors') {
                 att1 = 'authorFirst';
+                quotes1 = false
                 att2 = 'authorLast';
+                quotes2 = false;
                 att3 = [att1, att2];
             } else if (category === 'users') {
                 att1 = 'userFirst';
+                quotes1 = false;
                 att2 = 'userLast';
+                quotes2 = false;
                 att3 = [att1, att2]; 
             } else if (category === 'comments') {
-                att1 = 'username';
-                att2 = 'postDate';
+                att1 = 'text';
+                quotes1 = true;
+                att2 = 'username';
+                quotes2 = false;
                 att3 = [att1, att2];
             } else { //category === 'keywords'
                 att1 = 'articleTitle';
+                quotes1 = false;
                 att2 = 'articleTitle';
+                quotes2 = false;
             }
         }
         
@@ -216,7 +237,7 @@ function Admin({ isAdmin }) {
                 }
             });
 
-            filteredArticles.unshift({"id": 0, "articleTitle": "All Articles"});
+            filteredArticles.unshift({"id": 0, "articleTitle": "--All Articles--"});
 
             editValues = filteredArticles;
         }
@@ -226,21 +247,51 @@ function Admin({ isAdmin }) {
             value.display1 = value[att1];
 
             if (att3) {
-                if (value[att3[0]].length > maxLength) {
-                    value.display2 = value[att3[0]].slice(0, maxLength - 3) + '... ' + value[att3[1]];
-                } else {
-                    if (type === 'users' || category === 'users') {
-                        value.display2 = value[att3[0]] + ' ' + value[att3[1]];
+                let val1;
+                let val2;
+
+                if (value[att3[1]]) {
+                    if (quotes2) {
+                        val2 = '"'+value[att3[1]]+'"';
                     } else {
-                        value.display2 = value[att3[0]] + ' ' + value[att3[1]];
+                        val2 = value[att3[1]];
+                    }
+
+                } else {
+                    val2 = att4;
+                }
+
+                if (quotes1) {
+                    if (value[att3[0]].length > maxLength) {
+                        val1 = '"'+value[att3[0]].slice(0, maxLength)+'..."';
+                    } else {
+                        val1 = '"'+value[att3[0]]+'"';
+                    }
+                } else {
+                    if (value[att3[0]].length > maxLength) {
+                        val1 = value[att3[0]].slice(0, maxLength)+'...';
+                    } else {
+                        val1 = value[att3[0]];
                     }
                 }
+
+                value.display2 = val1 + ' ' + val2;
+
             } else if (att2) {
-                if (value[att2].length > maxLength) {
-                    value.display2 = value[att2].slice(0,  maxLength - 3) + '...';
+                if (quotes2) {
+                    if (value[att2].length > maxLength) {
+                        value.display2 = '"'+value[att3[0]].slice(0, maxLength)+'..."';
+                    } else {
+                        value.display2 = '"'+value[att2]+'"';
+                    }
                 } else {
-                    value.display2 = value[att2];
+                    if (value[att2].length > maxLength) {
+                        value.display2 = value[att2].slice(0,  maxLength - 3)+'...';
+                    } else {
+                        value.display2 = value[att2];
+                    }
                 }
+
             }
 
             if (type) {
@@ -254,6 +305,8 @@ function Admin({ isAdmin }) {
 
     function handleChange(event) {
         console.log('handleChange()');
+        console.log('event val', Number(event.target.value))
+        console.log('THE FORM', form);
 
         if (!isNaN(event.target.value) && event.target.value !== '') {
             setForm({...form, [event.target.name]: Number(event.target.value)});
@@ -303,7 +356,7 @@ function Admin({ isAdmin }) {
             response = await TigerlillyApi.commit(category, form, methodDictionary[method]);
         }
 
-        console.log('successful response', response);
+        console.log(Object.keys(response[category]));
 
         if (!(category === 'users' && method === 'add')) {
             setResult([Array.from(Object.keys(response[category])), Array.from(Object.values(response[category]))]);
@@ -345,7 +398,8 @@ function Admin({ isAdmin }) {
             for (let item of issues['issues']) {
                 issueItemArray.push({"issueId": item.id, "issueTitle": item.issueTitle});
             }
-    
+            
+            console.log('issueItemArray', issueItemArray);
             setAuthorObjects(authorItemArray);
             setIssueObjects(issueItemArray);
     
@@ -400,7 +454,6 @@ function Admin({ isAdmin }) {
            initialSelectVals = await assignSelectObjects();
         }
         
-
         if (tempMethod === 'add') {
             setForm(addForm(initialSelectVals));
         } else {
@@ -419,19 +472,15 @@ function Admin({ isAdmin }) {
 
     async function fixFilter(event) {
         console.log('fixFilter()');
-        let resp;
 
-        if (event.target.value === 'articles') {
-            resp = await TigerlillyApi.get('articles');
-        } else {    
-            resp = await TigerlillyApi.get('users');
-        }
-
+        //users or articles
+        const resp = await TigerlillyApi.getObjectsWithComments(event.target.value);
+        
         editDeleteForm(resp[event.target.value], true, event.target.value);
         filterItems.current.hidden = false;
     }
 
-    async function selectFilterItem(event) {
+    async function selectFilteredComments(event) {
         console.log('selectFilterItem()');
         const [id, filterType] = (event.target.value).split(',');
 
@@ -455,8 +504,7 @@ function Admin({ isAdmin }) {
 
     function createURL(key, val) {
         const link = <Link to={`/${category}/${key}/${val}`}>{val}</Link>
-        console.log('link', link);
-        return <td>{link}</td>
+        return link
     }
 
     return (
@@ -482,7 +530,7 @@ function Admin({ isAdmin }) {
                     <option value="articles">Article</option>
                     <option value="users">User</option>
                 </select>
-                <select hidden ref={filterItems} onChange={selectFilterItem}>
+                <select hidden ref={filterItems} onChange={selectFilteredComments}>
                     <option value="">--Select object to filter by--</option>
                     {filterValues ? filterValues.map((val, idx) => {
                         return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
@@ -491,7 +539,8 @@ function Admin({ isAdmin }) {
                     }) : null}
                 </select>
                 <select hidden ref={editDelete} onChange={selectItem}>
-                    <option value="">--Select object to {method === 'delete'? 'delete': 'modify'}--</option>
+                    <option value="">--Select {category ? category==='keywords' ? 'Article to filter by' : category.substring(0,category.length-1):null} 
+                                        &nbsp;to {category? category!=='keywords' ? method === 'delete'? 'delete': 'modify':null:null}--</option>
                     {editValues ? editValues.map((val, idx) => {
                         return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
                             <option key={-idx-1} value={val.id}>{val.display2}</option>
@@ -530,6 +579,7 @@ function Admin({ isAdmin }) {
                             {field.type === 'option' && field.field === 'issueId' ?
                                 <select value={form[field.field]} name={field.field} disabled={disabled} onChange={handleChange}>
                                     {issueObjects.map((obj) => {
+                                        console.log('issueObject object', obj)
                                         return <option type="number" value={obj.issueId}>{obj.issueId} - {obj.issueTitle}</option>
                                     })}
                                 </select> :
@@ -558,7 +608,6 @@ function Admin({ isAdmin }) {
                                     })}
                                 </select> :
                             null}
-
                             <br />
                         </>)
                     })}
@@ -575,6 +624,7 @@ function Admin({ isAdmin }) {
                     <tbody>
                         <tr>
                             {result[0].map(val => {
+                                console.log('columnVal')
                                 let tds;
                                 if (val === 'keywords') {
                                     tds = [];
@@ -589,10 +639,14 @@ function Admin({ isAdmin }) {
                             }
                         </tr>
                         <tr>
-                            {result[1].map(val => {
-                                console.log('val', val);
+                            {result[1].map((val,idx) => {
                                 let tds;
+                                console.log('value', val);
+
+                                if (!val && typeof val !== 'boolean') val = 'null';
+
                                 const typeOf = typeof val;
+
                                 if (typeOf === 'object') {
                                     console.log('object val', val);
                                     tds = [];
@@ -600,14 +654,10 @@ function Admin({ isAdmin }) {
                                             tds.push(<td>{val[x]}</td>)
                                     }
                                 } else {
-                                    for (let x=0; x<val.length;x++) {
-                                        console.log('column', result[1][1][x]);
-                                        console.log('value', val[x]);
-                                        if (linkArray.includes(result[1][1][x])) {
-                                            tds.push(createURL(result[1][1][x], val[x]));
-                                        } else {
-                                            tds.push(<td>{val[x]}</td>)
-                                        }
+                                    console.log('column', result[0][idx]);
+                                    if (linkArray.includes(result[0][idx]) && 
+                                        !(method === 'delete' && idx === 0) && val!=='null') {
+                                        val = createURL(result[0][idx], val);
                                     }
                                 }
                                 return typeOf==='object'?tds:<td>{val}</td>
