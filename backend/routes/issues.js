@@ -60,7 +60,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  * Return current issue info from DB
  *
  * Return value:
- *  { issueTitle, articleTitle, text, authorFirst, authorLast, authorHandle }
+ *  { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
  *
  * any user
  **/
@@ -79,7 +79,7 @@ router.get("/currentIssue", async function (req, res, next) {
  * Return issue info from DB
  *
  * Return value:
- *  { issueTitle, articleTitle, text, authorFirst, authorLast, authorHandle }
+ *  { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
  *
  * any logged in user
  **/
@@ -98,7 +98,7 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
  * Return issue info from DB
  *
  * Return value:
- *  { issueTitle, articleTitle, text, authorFirst, authorLast, authorHandle }
+ *  { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
  *
  * any logged in user
  **/

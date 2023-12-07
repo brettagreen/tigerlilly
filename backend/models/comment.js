@@ -84,8 +84,10 @@ class Comment {
             WHERE c.article_id = $1`,
             [articleId]);
         
-        if (!result.rows[0]) throw new NotFoundError(`No comments associated with that article OR articleId doesn't exist: ${articleId}`);
+        //if (!result.rows[0]) throw new NotFoundError(`No comments associated with that article OR articleId doesn't exist: ${articleId}`);
 
+        console.log('result.rows', result.rows);
+        console.log('t/f', result.rows == false);
     
         return result.rows;
     }

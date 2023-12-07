@@ -19,13 +19,11 @@ class TigerlillyApi {
         //there are multiple ways to pass an authorization token, this is how you pass it in the header.
         //this has been provided to show you another way to pass the token. you are only expected to read this code for this project.
         const url = `${BASE_URL}/${endpoint}`;
-        const headers = { Authorization: `Bearer ${TigerlillyApi.token}` };
+        const headers = { Authorization: `Bearer ${TigerlillyApi.token}`};
         const params = (method === "get") ? data : {};
 
         try {
-            let resp = (await axios({ url, method, data, params, headers })).data;
-            console.log('returned API resp', resp);
-            return resp;
+            return (await axios({ url, method, data, params, headers })).data;
         } catch (err) {
             console.error("API Error:", err.response);
             let message = err.response.data.error.message;
@@ -50,11 +48,18 @@ class TigerlillyApi {
 
     //USERS
     static async registerUser(form) {
-        return await this.request('users/register', form, 'post');
+        const formData = new FormData();
+        const formEntries = Object.entries(form);
+        
+        for (let entry of formEntries) {
+            formData.append(entry[0], entry[1]);
+        }
+
+        return await this.request('users/register', formData, 'post');
     }
 
     static async getUser(username) {
-        return await this.request(`users/${username}`);
+        return await this.request(`users/username/${username}`);
     }
 
     static async loginUser(form) {
@@ -62,7 +67,14 @@ class TigerlillyApi {
     }
 
     static async updateProfile(user, form) {
-        return await this.request(`users/${user}`, form, 'patch');
+        const formData = new FormData();
+        const formEntries = Object.entries(form);
+        
+        for (let entry of formEntries) {
+            formData.append(entry[0], entry[1]);
+        }
+        
+        return await this.request(`users/${user}`, formData, 'patch');
     }
 
     //ARTICLES
@@ -98,8 +110,22 @@ class TigerlillyApi {
     }
 
     //ARTICLE_KEYWORDS
-    static async setKeywords(form) {
-        return await this.request('articles/keywords', form, 'post');
+    static async getArticleKeywords(articleId) {
+        return await this.request(`keywords/${articleId}`);
+    }
+
+    ////////////////////testing stuff
+
+    static async testUpload(form, username) {
+        const formData = new FormData();
+        const formEntries = Object.entries(form);
+        
+        for (let entry of formEntries) {
+            formData.append(entry[0], entry[1]);
+        }
+        formData.append('username', username);
+        return await this.request('users/testFileUpload', formData, 'post');
+
     }
 
 }

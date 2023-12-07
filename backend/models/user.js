@@ -52,7 +52,7 @@ class User {
 	 *
 	 **/
 
-	static async register({ username, password, userFirst, userLast, email, icon=null, isAdmin=false }) {
+	static async register({ username, password, userFirst, userLast, email, isAdmin=false }, icon) {
 		const duplicateCheck = await db.query(
 			`SELECT username
 			FROM users
@@ -170,7 +170,7 @@ class User {
    *
    */
 
-	static async update(id, body) {
+	static async update(id, body, icon) {
         const r = await db.query(
             `SELECT * FROM users WHERE id=$1`, [id]
         );
@@ -198,7 +198,7 @@ class User {
 				body.userLast || r.user_last,
 				body.email || r.email,
 				body.username || r.username,
-				body.icon || r.icon,
+				icon || r.icon,
 				String(body.isAdmin) || r.is_admin,
 				id
 			]

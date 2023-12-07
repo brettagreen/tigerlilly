@@ -21,15 +21,15 @@ const {
         let resp;
         for (let kwd of keywords) {
             resp = await db.query(
-                `INSERT INTO article_keywords ak
-                (ak.article_id, ak.keyword)
+                `INSERT INTO article_keywords
+                (article_id, keyword)
                 VALUES
                 ($1, $2)
-                LEFT JOIN articles a on a.id = ak.article_id
-                RETURNING a.article_title AS "articleTitle"`, [articleId, kwd]
+                RETURNING (SELECT article_title AS "articleTitle" FROM articles WHERE id = $1)`,
+                [articleId, kwd]
             );
         }
-        return {articleTitle: resp.rows[0].articleTitle, keywords: [...keywords]};
+        return {articleTitle: resp.rows[0].articleTitle, keywords: keywords};
     }
 
     /**
@@ -54,7 +54,7 @@ const {
             }
         }
 
-        return {articleTitle: 'All Articles', keywords: [...keywords]};
+        return {articleTitle: 'All Articles', keywords: keywords};
     }
 
     /**
@@ -69,7 +69,7 @@ const {
             FROM article_keywords ak
             LEFT JOIN articles a ON ak.article_id = a.id
             GROUP BY (ak.keyword, ak.article_id, a.article_title)
-            ORDER BY ak.keyword asc`
+            ORDER BY LOWER(ak.keyword) asc`
         );
         
         return result.rows;
@@ -85,9 +85,12 @@ const {
         const result = await db.query(
             `SELECT keyword
             FROM article_keywords
-            WHERE article_id = $1`, [articleId]
+            WHERE article_id = $1
+            ORDER BY LOWER(keyword) asc`, [articleId]
         );
         
+        console.log('result.rows', result.rows);
+        console.log('t/f', result.rows == false);
         return result.rows;
     }
 
@@ -143,27 +146,25 @@ const {
     static async delete(articleId, keyword) {
         if (articleId == 0) {
 
-            const result = await db.query(
-                `DELETE FROM article_keywords ak
-                WHERE ak.keyword = $1
-                LEFT JOIN articles a on a.id = ak.article_id
-                RETURNING a.article_title AS "articleTitle"`,
+            await db.query(
+                `DELETE FROM article_keywords
+                WHERE keyword = $1`,
                 [keyword]
             );
             
-            return {articleTitle: result.rows[0].articleTitle, keyword: keyword}
+            return {articleTitle: 'All Articles', keyword: keyword}
 
         } else {
-            await db.query(
-                `DELETE FROM article_keywords ak
-                WHERE ak.article_id = $1
-                AND ak.keyword = $2
-                LEFT JOIN articles a on a.id = ak.article_id
-                RETURNING a.article_title AS "articleTitle"`,
+            const result = await db.query(
+                `DELETE FROM article_keywords
+                WHERE article_id = $1
+                AND keyword = $2
+                RETURNING (SELECT article_title AS "articleTitle" FROM articles WHERE id = $1)`,
                 [articleId, keyword]
-            )
+            );
+
+            return {articleTitle: result.rows[0].articleTitle, keyword: keyword}
         }
-        return {articleTitle: 'All Articles', keyword: keyword}
     }
 
 }

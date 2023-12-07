@@ -72,10 +72,10 @@ router.get("/", ensureLoggedIn, async function (req, res, next) {
  * 
  * returns [{keyword, articleId, articleTitle}, ...]
  * 
- * any logged in user
+ * all users
  */
 
-router.get("/:articleId", ensureLoggedIn, async function (req, res, next) {
+router.get("/:articleId", async function (req, res, next) {
     try {
         const keywords = await Keyword.getArticleKeywords(req.params.articleId);
         return res.json({ keywords });

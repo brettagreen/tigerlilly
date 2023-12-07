@@ -6,8 +6,11 @@ import SignUp from "./SignUp";
 import Issue from './Issue';
 import Article from './Article';
 import Author from './Author';
+import TestFileUpload from "./TestFileUpload";
 import User from './User';
 import Error from './401';
+import ArticlePreview from "./ArticlePreview";
+import UserProfile from "./UserProfile";
 
 function TigerlillyRoutes({ profileUpdate, isLoggedIn, updateUserToken }) {
 
@@ -21,6 +24,9 @@ function TigerlillyRoutes({ profileUpdate, isLoggedIn, updateUserToken }) {
             <Route path="/login" element={<Login updateUserToken={updateUserToken}/>}/>
             <Route path="/logout" element={<Logout updateUserToken={updateUserToken}/>}/>
             <Route path="/profile" element={<User isLoggedIn={isLoggedIn()} profileUpdate={profileUpdate}/>}/>
+            <Route path="/user/:username" element={<UserProfile/>}/>
+            <Route path="/articleKeywords/:keyword" element={<ArticlePreview/>}/>
+            <Route path="/testFileUpload" element={<TestFileUpload/>}/>
             <Route path="/unauthorizeProfile" element={<Error type="profileError"/>}/>
             <Route path="/unauthorizedAdmin" element={<Error type="adminError"/>}/>
             <Route path="/badrequest" element={<Error type="nopage"/>}/>

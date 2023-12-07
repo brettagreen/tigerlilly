@@ -17,7 +17,7 @@ function User({ isLoggedIn, profileUpdate }) {
         firstName: user.userFirst,
         lastName: user.userLast,
         email: user.email,
-        icon: user.icon
+        icon: null
     }
 
     const CLEANUP_STATE = {
@@ -25,14 +25,19 @@ function User({ isLoggedIn, profileUpdate }) {
         firstName: '',
         lastName: '',
         email: '',
-        icon: ''
+        icon: null
     }
 
     const [form, setForm] = useState(INITIAL_STATE);
     const [update, setUpdate] = useState(false);
 
     function handleChange(event) {
-        setForm(form => ({...form, [event.target.name]: event.target.value}))
+        if (event.target.name === "icon") {
+            if (event.target.files[0].size > 1000000) return alert("choose a smaller file");
+            setForm({...form, [event.target.name]: event.target.files[0]});
+        } else {
+            setForm({...form, [event.target.name]: event.target.value});
+        }
     }
 
     async function submitAndClear(event) {
@@ -42,12 +47,15 @@ function User({ isLoggedIn, profileUpdate }) {
         profileUpdate(newUser.user);
         setForm(CLEANUP_STATE);
 
+        //file input is uncontrolled
+        document.getElementById('icon').value = '';
+
     }
 
     return (
         <>     
         {update ? <h3>Update your profile</h3> : null}
-        <form className="form" onSubmit={submitAndClear}>
+        <form className="form" encType="multipart/form-data" onSubmit={submitAndClear}>
             <label htmlFor="username">username: </label>
             <input type="text" className="readOnlyInput" id="username" name="username" value={user.username} readOnly={true} /><br /><br />
             <label htmlFor="password">password: </label>
@@ -61,7 +69,7 @@ function User({ isLoggedIn, profileUpdate }) {
             <label htmlFor="email">email: </label>
             <input type="email" id="email" name="email" value={form.email} onChange={handleChange} readOnly={update}/><br /><br />
             <label htmlFor="icon">icon: </label>
-            <input type="url" id="icon" name="icon" value={form.icon} onChange={handleChange} readOnly={update} /><br /><br />
+            <input type="file" id="icon" name="icon" onChange={handleChange} readOnly={update} /><br /><br />
             {update ? <button>submit</button> : <button onClick={setUpdate(true)}>edit profile</button>}
         </form>
         </>

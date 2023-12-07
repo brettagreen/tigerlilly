@@ -1,17 +1,17 @@
 import TigerlillyApi from "./api";
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Tooltip from '@mui/material/Tooltip'
+import Tooltip from '@mui/material/Tooltip';
 
 /**
  * modularize,
  * comment on code,
- * post results of any query; exception/success/etc,
  * write tests,
  * error handling
  */
 
 function Admin({ isAdmin }) {
+
     const history = useNavigate();
 
     const [category, setCategory] = useState(null);
@@ -34,6 +34,14 @@ function Admin({ isAdmin }) {
     const editDelete = useRef();
     const entryForm = useRef();
 
+    const [articles, setArticles] = useState(null);
+    const [authors, setAuthors] = useState(null);
+    const [issues, setIssues] = useState(null);
+    const [keywords, setKeywords] = useState(null);
+    const [users, setUsers] = useState(null);
+    const setTables = {"articles": setArticles, "authors": setAuthors, "issues": setIssues,
+                             "keywords": setKeywords, "users": setUsers};
+
     const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle'];
 
     useEffect(() => {
@@ -44,7 +52,40 @@ function Admin({ isAdmin }) {
             }
         }
         allowed();
+
     }, [isAdmin, history]);
+
+    //fetch table data up front on page load. reload if/when table has been updated (see submitAndClear function below)
+    //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
+    //so this is the best version of operational caching that I could come up with.
+    useEffect(() => {
+        async function loadTables() {
+            let resp;
+
+            resp = await TigerlillyApi.get('articles');
+            console.log('resp', resp['articles']);
+            setArticles(resp['articles']);
+
+            resp = await TigerlillyApi.get('authors');
+            console.log('resp', resp['authors']);
+            setAuthors(resp['authors']);
+
+            resp = await TigerlillyApi.get('issues');
+            console.log('resp', resp['issues']);
+            setIssues(resp['issues']);
+
+            resp = await TigerlillyApi.get('keywords');
+            console.log('resp', resp['keywords']);
+            setKeywords(resp['keywords']);
+
+            resp = await TigerlillyApi.get('users');
+            console.log('resp', resp['users']);
+            setUsers(resp['users']);
+
+        }
+
+        loadTables();
+    }, []);
 
     function fixCategory(event) {
         console.log('fixCategory()');
@@ -93,6 +134,8 @@ function Admin({ isAdmin }) {
 
             } else if (fields[x].field === 'isAdmin') {
                 newForm['isAdmin'] = false;
+            } else if (fields[x].field === 'icon') {
+                newForm['icon'] = null;
             } else {
                 newForm[fields[x].field] = ''; 
             }
@@ -120,6 +163,11 @@ function Admin({ isAdmin }) {
                 newForm[fields[x].field] = obj[fields[x].field];
             }
 
+            if (newForm.hasOwnProperty('icon')) {
+                newForm['icon'] = null;
+            } 
+
+
         } else {
             const num = Number(event.target.value);
             setEditObjectId(num);
@@ -141,7 +189,6 @@ function Admin({ isAdmin }) {
                 });                
             }
 
-            console.log('finalKeywordsObjects', finalKeywordsObjects);
             setKeywordObjects(finalKeywordsObjects);
 
             newForm['articleId'] = 0;
@@ -305,15 +352,20 @@ function Admin({ isAdmin }) {
 
     function handleChange(event) {
         console.log('handleChange()');
-        console.log('event val', Number(event.target.value))
-        console.log('THE FORM', form);
 
         if (!isNaN(event.target.value) && event.target.value !== '') {
             setForm({...form, [event.target.name]: Number(event.target.value)});
+
         } else if (event.target.name === 'isAdmin') {
             setForm({...form, [event.target.name]: event.target.checked});
+
+        } else if (event.target.name === 'icon') {
+            if (event.target.files[0].size > 1000000) return alert("choose a smaller file");
+            setForm({...form, [event.target.name]: event.target.files[0]});
+
         }  else if (typeof event.target.value === 'string') {
             setForm({...form, [event.target.name]: event.target.value});
+
         }  else {
             setForm({...form, [event.target.name]: ''});
         }
@@ -349,18 +401,26 @@ function Admin({ isAdmin }) {
         console.log('submitted form', form);
 
         if (method === 'delete') {
-            response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' : category, null, methodDictionary[method], objectId);
+            response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' :
+                         category, null, methodDictionary[method], objectId);
         } else if (method === 'edit') {
-            response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' : category, form, methodDictionary[method], objectId);
+            response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' :
+                         category, form, methodDictionary[method], objectId);
         } else {
             response = await TigerlillyApi.commit(category, form, methodDictionary[method]);
         }
 
-        console.log(Object.keys(response[category]));
+        //trigger reload/fetch of whatever table has been updated just above
+        //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
+        //so this is the best version of operational caching that I could come up with.
+        const cat = category==='updateKeywords'?'keywords':category;
+        const subResponse = await TigerlillyApi.get(cat);
+        setTables[cat](subResponse[cat]);
 
         if (!(category === 'users' && method === 'add')) {
             setResult([Array.from(Object.keys(response[category])), Array.from(Object.values(response[category]))]);
         }
+
         setForm(null);
         setEditValues(null);
         setFilterValues(null);
@@ -388,18 +448,15 @@ function Admin({ isAdmin }) {
         if (category === 'articles') {
             const authorItemArray = [];
             const issueItemArray = [];
-            const authors = await TigerlillyApi.get('authors');
-            const issues = await TigerlillyApi.get('issues');
 
-            for (let item of authors['authors']) {
+            for (let item of authors) {
                 authorItemArray.push({"authorId": item.id, "authorFirst": item.authorFirst, "authorLast": item.authorLast});
             }
     
-            for (let item of issues['issues']) {
+            for (let item of issues) {
                 issueItemArray.push({"issueId": item.id, "issueTitle": item.issueTitle});
             }
             
-            console.log('issueItemArray', issueItemArray);
             setAuthorObjects(authorItemArray);
             setIssueObjects(issueItemArray);
     
@@ -409,9 +466,8 @@ function Admin({ isAdmin }) {
 
             const userItemArray = [];
             const articleItemArray = [];
-            const articles = await TigerlillyApi.get('articles');
 
-            for (let item of articles['articles']) {
+            for (let item of articles) {
                 articleItemArray.push({"articleId": item.id, "articleTitle": item.articleTitle});
             }
             if (category === 'keywords' || category === 'updateKeywords') {
@@ -421,8 +477,7 @@ function Admin({ isAdmin }) {
             setArticleObjects(articleItemArray);
 
             if (category === 'comments') {
-                const users = await TigerlillyApi.get('users');
-                for (let item of users['users']) {
+                for (let item of users) {
                     userItemArray.push({"userId": item.id, "username": item.username});
                 }
                 setUserObjects(userItemArray);
@@ -460,9 +515,20 @@ function Admin({ isAdmin }) {
             if (category === 'comments') {
                 commentFilterBox.current.hidden = false;
             } else {
-                const cat = category==='updateKeywords'?'keywords':category;
-                const resp = await TigerlillyApi.get(cat);
-                editDeleteForm(resp[cat], false);
+                let cat;
+                if (category === 'articles') {
+                    cat = articles;
+                } else if (category === 'authors') {
+                    cat = authors;
+                } else if (category === 'issues') {
+                    cat = issues;
+                } else if (category === 'keywords') {
+                    cat = keywords;
+                } else { //users
+                    cat = users;
+                }
+                console.log('fix method cat',cat);
+                editDeleteForm(cat, false);
                 editDelete.current.hidden = false;
             }
         }
@@ -501,11 +567,6 @@ function Admin({ isAdmin }) {
             setMethod(null);
         }
     }, [result]);
-
-    function createURL(key, val) {
-        const link = <Link to={`/${category}/${key}/${val}`}>{val}</Link>
-        return link
-    }
 
     return (
         <div>
@@ -549,7 +610,7 @@ function Admin({ isAdmin }) {
                 </select>
             </div>
             {form ? 
-                <form hidden ref={entryForm} id="adminForm" onSubmit={submitAndClear}>
+                <form hidden ref={entryForm} id="adminForm" encType="multipart/form-data" onSubmit={submitAndClear}>
                     {Admin.defaultProps[category].fields.map((field, idx) => {
                         console.log('form category', category)
                         if ((method === 'delete' || method === 'edit') && field.field === 'password') {
@@ -563,12 +624,22 @@ function Admin({ isAdmin }) {
                                         disabled={disabled} onChange={handleChange} /> :
                             null}
 
-                            {field.type !== 'option' && field.type !== 'textarea' ?
+                            {field.type ==='checkbox' ?
                                 <input checked={form[field.field]} key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
-                                disabled={disabled} onChange={handleChange} /> :
+                                        disabled={disabled} onChange={handleChange} /> :
                             null}
 
-                            {field.type === 'option' && field.field === 'authorId' ?
+                            {field.type ==='file' ?
+                                <input key={-idx-1} id={field.field} type={field.type} name={field.field}
+                                        disabled={disabled} onChange={handleChange} /> :
+                            null}
+
+                            {field.type ==='text' ?
+                                <input key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
+                                        disabled={disabled} onChange={handleChange} /> :
+                            null}
+
+                            {field.field === 'authorId' ?
                                 <select value={form[field.field]} name={field.field} disabled={disabled} onChange={handleChange}>
                                     {authorObjects.map((obj) => {
                                         return <option type="number" value={obj.authorId}>{obj.authorId} - {obj.authorFirst} {obj.authorLast}</option>
@@ -576,7 +647,7 @@ function Admin({ isAdmin }) {
                                 </select> :
                             null}
 
-                            {field.type === 'option' && field.field === 'issueId' ?
+                            {field.field === 'issueId' ?
                                 <select value={form[field.field]} name={field.field} disabled={disabled} onChange={handleChange}>
                                     {issueObjects.map((obj) => {
                                         console.log('issueObject object', obj)
@@ -585,7 +656,7 @@ function Admin({ isAdmin }) {
                                 </select> :
                             null}                        
 
-                            {field.type === 'option' && field.field === 'articleId' ?
+                            {field.field === 'articleId' ?
                                 <select value={form[field.field]} name={field.field} disabled={false} onChange={handleChange}>
                                     {articleObjects.map((obj) => {
                                         return <option type="number" value={obj.articleId}>{obj.articleId} - {obj.articleTitle}</option>
@@ -593,7 +664,7 @@ function Admin({ isAdmin }) {
                                 </select> :
                             null}
 
-                            {field.type === 'option' && field.field === 'userId' ?
+                            {field.field === 'userId' ?
                                 <select value={form[field.field]} name={field.field} disabled={disabled} onChange={handleChange}>
                                     {userObjects.map((obj) => {
                                         return <option type="number" value={obj.userId}>{obj.userId} - {obj.username}</option>
@@ -601,7 +672,7 @@ function Admin({ isAdmin }) {
                                 </select> :
                             null}
 
-                            {field.type === 'option' && field.field === 'keyword' ?
+                            {field.field === 'keyword' ?
                                 <select value={form[field.field]} name={field.field} disabled={false} onChange={handleChange}>
                                     {keywordObjects.map((obj) => {
                                         return <option type="text" value={obj.keyword}>{obj.keyword}</option>
@@ -624,7 +695,6 @@ function Admin({ isAdmin }) {
                     <tbody>
                         <tr>
                             {result[0].map(val => {
-                                console.log('columnVal')
                                 let tds;
                                 if (val === 'keywords') {
                                     tds = [];
@@ -641,23 +711,21 @@ function Admin({ isAdmin }) {
                         <tr>
                             {result[1].map((val,idx) => {
                                 let tds;
-                                console.log('value', val);
 
                                 if (!val && typeof val !== 'boolean') val = 'null';
 
                                 const typeOf = typeof val;
 
                                 if (typeOf === 'object') {
-                                    console.log('object val', val);
                                     tds = [];
                                     for (let x=0; x<val.length;x++) {
                                             tds.push(<td>{val[x]}</td>)
                                     }
                                 } else {
-                                    console.log('column', result[0][idx]);
                                     if (linkArray.includes(result[0][idx]) && 
-                                        !(method === 'delete' && idx === 0) && val!=='null') {
-                                        val = createURL(result[0][idx], val);
+                                        !(method === 'delete' && idx === 0) &&
+                                         val !== 'All Articles' && val!=='null') {
+                                        val = <Link to={`/${category}/${result[0][idx]}/${val}`}>{val}</Link>
                                     }
                                 }
                                 return typeOf==='object'?tds:<td>{val}</td>
@@ -725,7 +793,7 @@ Admin.defaultProps = {
             },
             {
                 field: 'icon',
-                type: 'url'
+                type: 'file'
             }
         ]
     },
@@ -757,7 +825,7 @@ Admin.defaultProps = {
             },
             {
                 field: 'icon',
-                type: 'url'
+                type: 'file'
             }
         ]
     },

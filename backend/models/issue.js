@@ -46,13 +46,14 @@ class Issue {
 
     /** Given issue id, return issue.
      *
-     * Returns { issueTitle, articleTitle, text, authorFirst, authorLast, authorHandle }
+     * Returns { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
      *
      **/
 
     static async get(id) {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
+                    a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
                     au.author_first AS "authorFirst",
@@ -68,13 +69,14 @@ class Issue {
 
     /** Given title of the issue, return issue.
      *
-     * Returns { issueTitle, articleTitle, text, authorFirst, authorLast, authorHandle }
+     * Returns { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
      *
      **/
 
     static async getByTitle(issueTitle) {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
+                    a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
                     au.author_first AS "authorFirst",
@@ -92,13 +94,14 @@ class Issue {
 
     /** Return the current/latest issue.
      *
-     * Returns { issueTitle, articleTitle, text, authorFirst, authorLast, authorHandle }
+     * Returns { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
      *
      **/
 
     static async getCurrent() {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
+                    a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
                     au.author_first AS "authorFirst",

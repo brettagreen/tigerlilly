@@ -10,7 +10,9 @@ function App() {
 
 	function getLocalStorage() {
 		const token = localStorage.getItem('userToken');
-		const user = JSON.parse(localStorage.getItem('user'));
+		let user = localStorage.getItem('user');
+
+		if (user) user = JSON.parse(user); else user = null;
   
 		TigerlillyApi.token = token
   
@@ -34,8 +36,9 @@ function App() {
 			setUser(null);
 		} else {
 			const thisUser = await TigerlillyApi.getUser(username);
-			localStorage.setItem('user', JSON.stringify(thisUser.user));
-			setUser(thisUser.user);
+			console.log('thisUser.users', thisUser.users)
+			localStorage.setItem('user', JSON.stringify(thisUser.users));
+			setUser(thisUser.users);
 		}
 	
 	}

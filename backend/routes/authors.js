@@ -1,5 +1,4 @@
 const jsonschema = require("jsonschema");
-
 const express = require("express");
 const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
@@ -9,6 +8,7 @@ const authorUpdateSchema = require("../schemas/authorUpdate.json");
 
 const router = express.Router();
 
+const { upload, setFile } = require("../helpers/icons");
 
 /** POST / { author }  => { author }
  *
@@ -19,8 +19,10 @@ const router = express.Router();
  * 
  **/
 
-router.post("/", ensureAdmin, async function (req, res, next) {
+router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
+        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
+
         const validator = jsonschema.validate(req.body, authorNewSchema);
 
         if (!validator.valid) {
@@ -28,7 +30,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
             throw new BadRequestError(errs);
         }
 
-        const authors = await Author.create(req.body);
+        const authors = await Author.create(req.body, icon);
         return res.status(201).json({ authors });
 
     } catch (err) {
@@ -81,15 +83,17 @@ router.get("authorHandle/:authorHandle", ensureLoggedIn, async function (req, re
  * admin only
  **/
 
-router.patch("/:id", ensureAdmin, async function (req, res, next) {
+router.patch("/:id", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
+        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
+
         const validator = jsonschema.validate(req.body, authorUpdateSchema);
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
             throw new BadRequestError(errs);
         }
 
-        const authors = await Author.update(req.params.id, req.body);
+        const authors = await Author.update(req.params.id, req.body, icon);
         return res.json({ authors });
     } catch (err) {
         return next(err);

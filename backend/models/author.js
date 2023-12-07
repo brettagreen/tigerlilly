@@ -14,7 +14,7 @@ class Author {
 	 *
 	 **/
 
-	static async create({ authorFirst, authorLast, authorHandle, authorBio, icon=null }) {
+	static async create({ authorFirst, authorLast, authorHandle, authorBio }, icon) {
 		const duplicateCheck = await db.query(
 			`SELECT author_handle
 			FROM authors
@@ -103,13 +103,12 @@ class Author {
    *
    */
 
-	static async update(id, body) {
+	static async update(id, body, icon) {
 		const r = await db.query(
             `SELECT * FROM authors WHERE id=$1`, [id]
         );
 
 		if (!r.rows[0]) throw new NotFoundError(`No author by that id: ${id}`);
-
 
 		const result = await db.query(
 			`UPDATE authors 
@@ -130,7 +129,7 @@ class Author {
 				body.authorLast || r.author_last,
 				body.authorHandle || r.author_handle,
 				body.authorBio || r.author_bio,
-				body.icon || r.icon,
+				icon || r.icon,
 				id
 			]
 		);

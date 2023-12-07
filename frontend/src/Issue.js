@@ -28,10 +28,10 @@ function Issue() {
             <>
                 <h1>{issue[0].issueTitle}</h1>
                 <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                    {issue.map((art, idx) => {
+                    {issue.map((article, idx) => {
                         return( 
                         <Grid key={idx} item xs={1} sm={2} md={3}>
-                            <Article title={art.articleTitle} authorFirst={art.authorFirst} authorLast={art.authorLast} text={art.text}/>
+                            <Article issueArticle={article}/>
                         </Grid>)
                     })}
                 </Grid>

@@ -11,7 +11,7 @@ function Signup({ updateUserToken }) {
         firstName: '',
         lastName: '',
         email: '',
-        icon: ''
+        icon: null
       }
 
     const setCurrentUser = useContext(UserContext).setCurrentUser;
@@ -21,7 +21,12 @@ function Signup({ updateUserToken }) {
     const history = useNavigate();
 
     function handleChange(event) {
-        setForm(form => ({...form, [event.target.name]: event.target.value}))
+        if (event.target.name === "icon") {
+            if (event.target.files[0].size > 1000000) return alert("choose a smaller file");
+            setForm({...form, [event.target.name]: event.target.files[0]});
+        } else {
+            setForm({...form, [event.target.name]: event.target.value});
+        }
     }
 
     async function submitAndClear(event) {
@@ -52,12 +57,14 @@ function Signup({ updateUserToken }) {
         <>
             <h3 className="textInfo">Resigter your account</h3>
             <h5 hidden style={{color: 'red'}} ref={invalidFields}>All fields must contain a value!</h5>
-            <form className="form" onSubmit={submitAndClear}>
+            
+            <form className="form" encType="multipart/form-data" onSubmit={submitAndClear}>
                 <label htmlFor="username">username:  </label>
                 <input type="text" id="username" name="username" onChange={handleChange} /><br /><br />
                 <label htmlFor="password">password: </label>
                 <input type="password" id="password" name="password" onChange={handleChange} 
-                    placeholder="password must be at least 8 characters long and contain at least 1 capital letter, 1 number, and 1 special character e.g. @&!* etc."/><br /><br />
+                    placeholder="password must be at least 8 characters long and contain at least
+                                 1 capital letter, 1 number, and 1 special character e.g. @&!* etc."/><br /><br />
                 <label htmlFor="confirmPassword">confirm password: </label>
                 <input type="password" id="confirmPassword" name="confirmPassword" onChange={handleChange} /><br /><br />
                 <label htmlFor="firstName">first name: </label>
@@ -67,7 +74,7 @@ function Signup({ updateUserToken }) {
                 <label htmlFor="email">email: </label>
                 <input type="email" id="email" name="email" onChange={handleChange} /><br /><br />
                 <label htmlFor="icon">icon: </label>
-                <input type="url" id="icon" name="icon" onChange={handleChange} /><br /><br />
+                <input type="file" id="icon" name="icon" onChange={handleChange} /><br /><br />
                 <button>submit</button>
             </form>
         </>
