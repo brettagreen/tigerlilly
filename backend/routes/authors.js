@@ -63,7 +63,8 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  * any logged in user or admin
  **/
 
-router.get("authorHandle/:authorHandle", ensureLoggedIn, async function (req, res, next) {
+router.get("/authorHandle/:authorHandle", ensureLoggedIn, async function (req, res, next) {
+
     try {
         const authors = await Author.get(req.params.authorHandle);
         return res.json({ authors });

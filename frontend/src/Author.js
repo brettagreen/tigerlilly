@@ -15,9 +15,9 @@ function Author() {
     useEffect(() => {
         async function fetchAuthor() {
             let res = await TigerlillyApi.getAuthor(handle);
-            setAuthor(res);
+            setAuthor(res['authors']);
             res = await TigerlillyApi.getAuthorArticles(handle);
-            setLinks(res);
+            setLinks(res['articles']);
         }
         fetchAuthor();
     }, [handle]);
@@ -28,37 +28,41 @@ function Author() {
 
     return (
         <div>
-            {author ? <><img src={author.icon} alt="author icon"/>
+            {author ? 
+                <div>
+                    <img src={`/icons/${author.icon}`} width={250} height={250} alt="author icon"/>
                     <h2>name: {author.authorFirst + ' ' + author.authorLast}</h2>
                     <h3>handle: {author.authorHandle}</h3>
-                    <h4>bio: {author.authorBio}</h4> </>: null}
-                    <List
-                        sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
-                        component="nav"
-                        aria-labelledby="nested-list-subheader"
-                        subheader={
-                            <ListSubheader component="div" id="nested-list-subheader">
-                                Articles by author
-                            </ListSubheader>
-                        }
-                    >      
-                        <ListItemButton onClick={handleClick}>
-                            <ListItemText primary="Articles" />
-                            {open ? <ExpandLess /> : <ExpandMore />}
-                        </ListItemButton>
-                        <Collapse in={open} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                {links ? links.map(link => {
-                                    return(
-                                    <>
+                    <h4>bio: {author.authorBio}</h4> 
+                </div>
+            : null}
+            <List
+                sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
+                component="nav"
+                aria-labelledby="nested-list-subheader"
+                subheader={
+                    <ListSubheader component="div" id="nested-list-subheader">
+                        Articles by author
+                    </ListSubheader>
+                }
+            >      
+                <ListItemButton onClick={handleClick}>
+                    <ListItemText primary="Articles" />
+                    {open ? <ExpandLess /> : <ExpandMore />}
+                </ListItemButton>
+                <Collapse in={open} timeout="auto" unmountOnExit>
+                    <List component="div" disablePadding>
+                        {links ? links.map(link => {
+                            return(
+                                <>
                                     <Link exact="true" to={`/articles/${link.id}`}>{link.articleTitle}</Link>
                                     <h6>as seen in </h6><Link exact="true" to={`/issues/${link.issueId}`}>{link.issueTitle}</Link>
-                                    </>
-                                    )
-                                }) : null}
-                            </List>
-                        </Collapse>
-                  </List>
+                                </>
+                            )
+                        }) : null}
+                    </List>
+                </Collapse>
+            </List>
         </div>
     )
 

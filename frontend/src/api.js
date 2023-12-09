@@ -14,6 +14,7 @@ class TigerlillyApi {
     // the token for interactive with the API will be stored here.
     static token;
 
+    //turn form's json{} object into FormData() object
     static formData(form) {
         const formData = new FormData();
         const formEntries = Object.entries(form);
@@ -87,7 +88,7 @@ class TigerlillyApi {
     }
 
     static async getAuthorArticles(handle) {
-        return await this.request(`articles/author/${handle}`);
+        return await this.request(`articles/authors/${handle}`);
     }
 
     static async getTaggedArticles(keyword) {
@@ -105,7 +106,7 @@ class TigerlillyApi {
 
     //AUTHORS
     static async getAuthor(handle) {
-        return await this.request(`authors/${handle}`);
+        return await this.request(`authors/authorHandle/${handle}`);
     }
 
     //COMMENTS

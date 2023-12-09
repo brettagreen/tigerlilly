@@ -62,7 +62,7 @@ function Article({ passedArticle }) {
                 <>
                     <div>
                         <h2>{article.articleTitle}</h2>
-                        <h4>by {article.authorFirst + ' ' + article.authorLast}</h4>
+                        <h4>by {<Link to={`/author/${article.authorHandle}`}>{article.authorFirst + ' ' + article.authorLast}</Link>}</h4>
                         <p>{article.text}</p>
                     </div>
                     <div>
@@ -95,8 +95,8 @@ function Article({ passedArticle }) {
             }
             {keywords ?
                 <div>
-                    {keywords.map(keyword => {
-                        return(<p>#{<Link to={`/articleKeywords/${keyword['keyword']}`}>{keyword['keyword']}</Link>}</p>)
+                    {keywords.map((keyword, idx) => {
+                        return(<p key={idx+1}>#{<Link to={`/articleKeywords/${keyword['keyword']}`}>{keyword['keyword']}</Link>}</p>)
                     })}
                 </div>
             :null

@@ -8,7 +8,8 @@ function UserProfile() {
 
     useEffect(() => {
         async function getUser() {
-            setUser(await TigerlillyApi.getUser(username)['users']);
+            const res = await TigerlillyApi.getUser(username);
+            setUser(res['users']);
         }
         getUser();
     }, [username]);
@@ -20,7 +21,7 @@ function UserProfile() {
                     <h2>{user.username}</h2>
                     <h4>{user.userFirst} {user.userLast}</h4>
                     <h4>{user.email}</h4>
-                    <img src={`/icons/${user.icon}`} alt="user icon" />
+                    <img src={`/icons/${user.icon}`} height={250} width={250} alt="user icon" />
                 </div>
             :null}
         </>

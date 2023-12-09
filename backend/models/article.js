@@ -142,7 +142,7 @@ class Article {
      * returns [{articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
      */
 
-    static async fetchByAuthor(id) {
+    static async fetchByAuthor(handle) {
         const result = await db.query(
             `SELECT a.article_title AS "articleTitle",
                     au.author_first AS "authorFirst",
@@ -152,7 +152,7 @@ class Article {
                     a.issue_id AS "issueId"
             FROM articles a
             LEFT JOIN authors au ON a.author_id = au.id
-            WHERE au.id = $1`, [id]);
+            WHERE au.author_handle = $1`, [handle]);
 
         return result.rows;
     }

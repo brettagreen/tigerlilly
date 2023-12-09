@@ -2,7 +2,7 @@ const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 
 const express = require("express");
-const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
+const { ensureAdmin } = require("../middleware/auth");
 const newArticleSchema = require("../schemas/articleNew.json");
 const updateArticleSchema = require("../schemas/articleUpdate.json");
 const Article = require("../models/article");
@@ -110,9 +110,9 @@ router.get("/articleTitle/:articleTitle", async function (req, res, next) {
  * Open to all!
  */
 
-router.get('/authors/:id', async function (req, res, next) {
+router.get('/authors/:handle', async function (req, res, next) {
     try {
-        const articles = await Article.fetchByAuthor(req.params.id);
+        const articles = await Article.fetchByAuthor(req.params.handle);
         return res.json({ articles });
     } catch (err) {
         return next(err);

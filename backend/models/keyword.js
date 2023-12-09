@@ -89,8 +89,6 @@ const {
             ORDER BY LOWER(keyword) asc`, [articleId]
         );
         
-        console.log('result.rows', result.rows);
-        console.log('t/f', result.rows == false);
         return result.rows;
     }
 
