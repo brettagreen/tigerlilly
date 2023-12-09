@@ -171,6 +171,9 @@ class User {
    */
 
 	static async update(id, body, icon) {
+		console.log('id', id);
+		console.log('body', body);
+		console.log('icon', icon)
         const r = await db.query(
             `SELECT * FROM users WHERE id=$1`, [id]
         );

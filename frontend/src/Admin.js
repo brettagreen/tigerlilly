@@ -163,9 +163,13 @@ function Admin({ isAdmin }) {
                 newForm[fields[x].field] = obj[fields[x].field];
             }
 
-            if (newForm.hasOwnProperty('icon')) {
-                newForm['icon'] = null;
-            } 
+            // if (newForm.hasOwnProperty('icon')) {
+            //     newForm['icon'] = ob;
+            // }
+
+            if (newForm.hasOwnProperty('password')) {
+                delete newForm['password'];
+            }
 
 
         } else {
@@ -360,8 +364,11 @@ function Admin({ isAdmin }) {
             setForm({...form, [event.target.name]: event.target.checked});
 
         } else if (event.target.name === 'icon') {
-            if (event.target.files[0].size > 1000000) return alert("choose a smaller file");
-            setForm({...form, [event.target.name]: event.target.files[0]});
+            if (event.target.files[0].size > 1000000) {
+                alert("choose a smaller file");
+            } else {
+                setForm({...form, [event.target.name]: event.target.files[0]});
+            }
 
         }  else if (typeof event.target.value === 'string') {
             setForm({...form, [event.target.name]: event.target.value});
@@ -619,6 +626,11 @@ function Admin({ isAdmin }) {
                         const disabled = method === 'delete' ? true : false;
                         return (<>
                             <label key={idx+1} htmlFor={field.field}>{field.field}</label>
+                            {['text','email'].includes(field.type) ?
+                                <input key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
+                                        disabled={disabled} onChange={handleChange} /> :
+                            null}
+
                             {field.type === 'textarea' ? 
                                 <textarea key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
                                         disabled={disabled} onChange={handleChange} /> :
@@ -631,11 +643,6 @@ function Admin({ isAdmin }) {
 
                             {field.type ==='file' ?
                                 <input key={-idx-1} id={field.field} type={field.type} name={field.field}
-                                        disabled={disabled} onChange={handleChange} /> :
-                            null}
-
-                            {field.type ==='text' ?
-                                <input key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
                                         disabled={disabled} onChange={handleChange} /> :
                             null}
 

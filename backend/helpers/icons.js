@@ -21,7 +21,7 @@ async function setFile(req, type, size) {
 
     await jimp.read(req.file.path).then(
         (icon) => {
-        console.log('reading file');
+        console.log('reading/resizing file');
 
         icon
           .resize(size[0], size[1]) // resize
@@ -30,11 +30,9 @@ async function setFile(req, type, size) {
 
         //removing temp icon
         fs.rm(req.file.path, (err, resp) => {
-            console.log("removing file");
+            console.log("removing temp file");
             if (err) {
                 console.log('failed to delete temp image');
-            } else {
-                console.log('getting to file removal step');
             }
         });
     }).catch((err) => {

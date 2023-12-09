@@ -4,7 +4,15 @@
     "type": "object",
     "properties": {
       "articleId": {
-        "type": "integer"
+        "anyOf": [
+          {
+            "type": "integer"
+          },
+          {
+            "type": "string",
+            "pattern": "^\\d[0-9]{1,4}$"
+          }
+        ]
       },
       "keywords": {
         "type": "array",

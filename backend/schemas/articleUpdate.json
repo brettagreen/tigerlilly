@@ -17,6 +17,10 @@
           },
           {
             "type": "null"
+          },
+          {
+            "type": "string",
+            "pattern": "^\\d[0-9]{1,4}$"
           }
         ]
       },
@@ -27,12 +31,16 @@
       "issueId": {
         "anyOf": [
           {
-          "type": "integer",
-          "minimum": 1,
-          "maximum": 1000
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
           },
           {
             "type": "null"
+          },
+          {
+            "type": "string",
+            "pattern": "^\\d[0-9]{1,4}$"
           }
         ]
       }

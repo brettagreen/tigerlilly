@@ -31,7 +31,7 @@ function Issue() {
                     {issue.map((article, idx) => {
                         return( 
                         <Grid key={idx} item xs={1} sm={2} md={3}>
-                            <Article issueArticle={article}/>
+                            <Article passedArticle={article}/>
                         </Grid>)
                     })}
                 </Grid>

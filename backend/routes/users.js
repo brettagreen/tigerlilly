@@ -34,14 +34,14 @@ router.post("/testFileUpload", upload.single('icon'), async function (req, res, 
 
 router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
-        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
-
         const validator = jsonschema.validate(req.body, userNewSchema);
 
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
             throw new BadRequestError(errs);
         }
+
+        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
 
         const users = await User.register(req.body, icon);
         const token = createToken(users);
@@ -63,8 +63,6 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
 
 router.post("/register", upload.single('icon'), async function (req, res, next) {
     try {
-        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
-
         const validator = jsonschema.validate(req.body, userNewSchema);
 
         if (!validator.valid) {
@@ -72,8 +70,11 @@ router.post("/register", upload.single('icon'), async function (req, res, next) 
             throw new BadRequestError(errs);
         }
   
+        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
+
         const newUser = await User.register(req.body, icon);
         const token = createToken(newUser);
+
         return res.status(201).json({ token });
     } catch (err) {
         return next(err);
@@ -187,16 +188,17 @@ router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function
  * admin or same-user-as-:username
  **/
 
-router.patch("/:id", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.patch("/:id", ensureCorrectUserOrAdmin, upload.single('icon'), async function (req, res, next) {
     try {
-        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
-
         const validator = jsonschema.validate(req.body, userUpdateSchema);
 
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
             throw new BadRequestError(errs);
         }
+
+        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
+        console.log('icon', icon);
 
         const users = await User.update(req.params.id, req.body, icon);
         return res.json({ users });

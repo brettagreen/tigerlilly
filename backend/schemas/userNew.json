@@ -30,11 +30,18 @@
       "format": "email"
     },
     "icon": {
-      "type": "string",
-      "maxLength": 100
+      "type": "object"
     },
     "isAdmin": {
-      "type": "boolean"
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "enum": ["true", "false"]
+        }
+      ]
     }
   },
   "additionalProperties": false,

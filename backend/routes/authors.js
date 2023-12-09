@@ -21,14 +21,14 @@ const { upload, setFile } = require("../helpers/icons");
 
 router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
-        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
-
         const validator = jsonschema.validate(req.body, authorNewSchema);
 
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
             throw new BadRequestError(errs);
         }
+
+        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
 
         const authors = await Author.create(req.body, icon);
         return res.status(201).json({ authors });
@@ -85,13 +85,14 @@ router.get("authorHandle/:authorHandle", ensureLoggedIn, async function (req, re
 
 router.patch("/:id", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
-        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
-
         const validator = jsonschema.validate(req.body, authorUpdateSchema);
+
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
             throw new BadRequestError(errs);
         }
+        
+        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
 
         const authors = await Author.update(req.params.id, req.body, icon);
         return res.json({ authors });

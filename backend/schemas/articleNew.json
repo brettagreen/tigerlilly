@@ -9,18 +9,34 @@
         "maxLength": 300
       },
       "authorId": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 1000
+        "anyOf": [
+          {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          {
+            "type": "string",
+            "pattern": "^\\d[0-9]{1,4}$"
+          }
+        ]
       },
       "text": {
         "type": "string",
         "minLength": 1
       },
       "issueId": {
-        "type": "integer",
-        "minimum": 1,
-        "maximum": 1000
+        "anyOf": [
+          {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          {
+            "type": "string",
+            "pattern": "^\\d[0-9]{1,4}$"
+          }
+        ]
       }
 
     },

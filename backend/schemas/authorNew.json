@@ -23,8 +23,7 @@
         "maxLength": 300
       },
       "icon": {
-        "type": "string",
-        "maxLength": 100
+        "type": "object"
       }
     },
     "additionalProperties": false,

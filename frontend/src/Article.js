@@ -3,14 +3,14 @@ import { useParams, Link } from 'react-router-dom';
 import UserContext from './userContext';
 import TigerlillyApi from './api';
 
-function Article({ issueArticle }) {
+function Article({ passedArticle }) {
 
     const [article, setArticle] = useState(null);
     const [comments, setComments] = useState(null);
     const [keywords, setKeywords] = useState(null)
     const user = useContext(UserContext).user;
 
-    const [commentForm, setCommentForm] = useState({userId: user ? user.id : 0, text: '', articleId: issueArticle.articleId});
+    const [commentForm, setCommentForm] = useState({userId: user ? user.id : 0, text: '', articleId: passedArticle.articleId});
     //const { id } = useParams();
     const showCommentBox = useRef();
 
@@ -49,12 +49,12 @@ function Article({ issueArticle }) {
 
     useEffect(() => {
         async function setUp() {
-            setArticle(issueArticle);
-            await fetchComments(issueArticle.articleId);
-            await fetchKeywords(issueArticle.articleId);
+            setArticle(passedArticle);
+            await fetchComments(passedArticle.articleId);
+            await fetchKeywords(passedArticle.articleId);
         }
         setUp();
-    }, [issueArticle]);
+    }, [passedArticle]);
 
     return (
         <>

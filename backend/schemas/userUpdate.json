@@ -25,18 +25,18 @@
       "format": "email"
     },
     "icon": {
-      "anyOf": [
-        {
-          "type": "string",
-          "maxLength": 100
-        },
-        {
-          "type": "null"
-        }
-      ]
+      "type": "object"
     },
     "isAdmin": {
-      "type": "boolean"
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "string",
+          "enum": ["true", "false"]
+        }
+      ]
     }
   },
   "additionalProperties": false,

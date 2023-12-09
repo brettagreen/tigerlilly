@@ -119,7 +119,7 @@ class Article {
      * returns [{articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
      */
 
-    static async fetchByKeyword({keyword}) {
+    static async fetchByKeyword(keyword) {
         const result = await db.query(
             `SELECT a.article_title AS "articleTitle",
                     au.author_first AS "authorFirst",
@@ -128,7 +128,7 @@ class Article {
                     a.text,
                     a.issue_id AS "issueId"
             FROM articles a
-            LEFT JOIN article_keyword aw ON a.id = aw.article_id
+            LEFT JOIN article_keywords aw ON a.id = aw.article_id
             LEFT JOIN authors au ON a.author_id = au.id
             WHERE aw.keyword = $1`, [keyword]);
         

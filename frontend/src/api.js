@@ -14,6 +14,18 @@ class TigerlillyApi {
     // the token for interactive with the API will be stored here.
     static token;
 
+    static formData(form) {
+        const formData = new FormData();
+        const formEntries = Object.entries(form);
+        
+        for (let entry of formEntries) {
+            formData.append(entry[0], entry[1]);
+            console.log('entry1', entry[1]);
+            console.log('typeof variable: ', typeof formData.get(entry[0]));
+        }
+        return formData;
+    }
+
     static async request(endpoint, data = {}, method = "get") {
 
         //there are multiple ways to pass an authorization token, this is how you pass it in the header.
@@ -42,18 +54,15 @@ class TigerlillyApi {
     //GENERIC POST/PATCH/DELETE REQUEST
 
     static async commit(route, form, type, id = null) {
+        const formData = form? this.formData(form): null;
+
         id = id === null ? '': id
-        return await this.request(`${route}/${id}`, form, type);
+        return await this.request(`${route}/${id}`, formData, type);
     }
 
     //USERS
     static async registerUser(form) {
-        const formData = new FormData();
-        const formEntries = Object.entries(form);
-        
-        for (let entry of formEntries) {
-            formData.append(entry[0], entry[1]);
-        }
+        const formData = this.formData(form);
 
         return await this.request('users/register', formData, 'post');
     }
@@ -67,12 +76,7 @@ class TigerlillyApi {
     }
 
     static async updateProfile(user, form) {
-        const formData = new FormData();
-        const formEntries = Object.entries(form);
-        
-        for (let entry of formEntries) {
-            formData.append(entry[0], entry[1]);
-        }
+        const formData = this.formData(form);
         
         return await this.request(`users/${user}`, formData, 'patch');
     }
@@ -84,6 +88,10 @@ class TigerlillyApi {
 
     static async getAuthorArticles(handle) {
         return await this.request(`articles/author/${handle}`);
+    }
+
+    static async getTaggedArticles(keyword) {
+        return await this.request(`articles/keywords/${keyword}`);
     }
 
     //ISSUES
@@ -117,12 +125,8 @@ class TigerlillyApi {
     ////////////////////testing stuff
 
     static async testUpload(form, username) {
-        const formData = new FormData();
-        const formEntries = Object.entries(form);
-        
-        for (let entry of formEntries) {
-            formData.append(entry[0], entry[1]);
-        }
+        const formData = this.formData(form);
+
         formData.append('username', username);
         return await this.request('users/testFileUpload', formData, 'post');
 
