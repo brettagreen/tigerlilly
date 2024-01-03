@@ -19,6 +19,7 @@ const {
 
     static async addToArticle({articleId, keywords}) {
         let resp;
+
         for (let kwd of keywords) {
             resp = await db.query(
                 `INSERT INTO article_keywords
@@ -101,36 +102,34 @@ const {
     static async updateKeywords(articleId, {keyword, edit}) {
 
         if (articleId == 0) {
-            const subResult = await db.query(
-                `SELECT article_id FROM article_keywords
-                 WHERE keyword = $1`, [keyword]
+
+            await db.query(
+                `UPDATE article_keywords
+                SET keyword = $1
+                WHERE keyword = $2"`,
+                [edit, keyword]
             );
 
-            for (let x = 0; x < (subResult.rows).length; x++) {
-                await db.query(
-                    `UPDATE article_keywords ak
-                    SET keyword = $1
-                    WHERE ak.keyword = $2
-                    AND ak.article_id = $3
-                    LEFT JOIN articles a on a.id = ak.article_id
-                    RETURNING a.article_title AS "articleTitle"`,
-                    [edit, keyword, subResult.rows[x].article_id]
-                );
-            }
             return {articleTitle: 'All Articles', keyword: edit}
 
         } else {
-            const result = await db.query(
-                    `UPDATE article_keywords ak
-                    SET keyword = $1
-                    WHERE ak.keyword = $2
-                    AND ak.article_id = $3
-                    LEFT JOIN articles a on a.id = ak.article_id
-                    RETURNING ak.keyword, a.article_title AS "articleTitle"`,
-                    [edit, keyword, articleId]
-                );
 
-            return {articleTitle: result.rows[0].articleTitle, keyword: edit}
+            const result = await db.query(
+                `UPDATE article_keywords
+                SET keyword = $1
+                WHERE keyword = $2
+                AND article_id = $3`,
+                [edit, keyword, articleId]
+            );
+
+            const subResult = await db.query(
+                `SELECT article_title AS "articleTitle"
+                FROM articles
+                WHERE id = $1`,
+                [articleId]
+            )
+
+            return {articleTitle: subResult.rows[0].articleTitle, keyword: edit}
         }
 
     }

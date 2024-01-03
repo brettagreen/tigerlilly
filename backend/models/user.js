@@ -53,6 +53,7 @@ class User {
 	 **/
 
 	static async register({ username, password, userFirst, userLast, email, isAdmin=false }, icon) {
+
 		const duplicateCheck = await db.query(
 			`SELECT username
 			FROM users
@@ -65,7 +66,25 @@ class User {
 
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
-		const result = await db.query(
+		let query;
+		let args;
+
+		if (!icon) {
+			query = 
+			`INSERT INTO users
+				(username,
+				password,
+				user_first,
+				user_last,
+				email,
+				is_admin)
+			VALUES ($1, $2, $3, $4, $5, $6)
+			RETURNING username, user_first AS "userFirst", user_last AS "userLast", email, is_admin AS "isAdmin", icon`;
+
+			args = [username, hashedPassword, userFirst, userLast, email, isAdmin];
+
+		} else {
+			query =
 			`INSERT INTO users
 				(username,
 				password,
@@ -75,16 +94,13 @@ class User {
 				icon,
 				is_admin)
 			VALUES ($1, $2, $3, $4, $5, $6, $7)
-			RETURNING username, user_first AS "userFirst", user_last AS "userLast", email, is_admin AS "isAdmin", icon`,
-			[
-				username,
-				hashedPassword,
-				userFirst,
-				userLast,
-				email,
-				icon,
-				isAdmin
-			],
+			RETURNING username, user_first AS "userFirst", user_last AS "userLast", email, is_admin AS "isAdmin", icon`;
+
+			args = [username, hashedPassword, userFirst, userLast, email, icon, isAdmin];
+		}
+
+		const result = await db.query(
+			query, args
 		);
 
 		const user = result.rows[0];
@@ -171,9 +187,7 @@ class User {
    */
 
 	static async update(id, body, icon) {
-		console.log('id', id);
-		console.log('body', body);
-		console.log('icon', icon)
+
         const r = await db.query(
             `SELECT * FROM users WHERE id=$1`, [id]
         );

@@ -1,0 +1,36 @@
+body {
+    background-color: azure;
+}
+
+.Select, .MenuItem {
+    background-color: #f3f2f2;
+}
+
+.FormControl {
+    width: 50vw;
+}
+
+#adminHR {
+    border-top: dotted 2px;
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
+    width: 60vw;
+}
+
+.Box {
+    margin-left: 20vw;
+    margin-right: 20vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+main {
+    margin-top: 7vh;
+    margin-bottom: 7vh;
+}
+
+#th {
+    color: red;
+}

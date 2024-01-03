@@ -28,6 +28,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
         }
 
         const comments = await Comment.create(req.body);
+        console.log('server returned comment', comments);
         return res.status(201).json({ comments });
 
     } catch (err) {
@@ -40,7 +41,7 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  * Return all comments associated with :userId
  *
  * Return value:
- *  {[{ id, userId, text, articleTitle, postDate, userFirst, userLast, username, icon }, ...]}
+ *  {[{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]}
  *
  * all users
  **/
@@ -59,7 +60,7 @@ router.get("/users/:userId", async function (req, res, next) {
  * Return all comments associated with :articleId
  *
  * Return value:
- *  {[{ id, userId, text, articleTitle, postDate, userFirst, userLast, username, icon }, ...]}
+ *  {[{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]}
  *
  * all users
  **/

@@ -11,12 +11,14 @@ import User from './User';
 import Error from './401';
 import ArticlePreview from "./ArticlePreview";
 import UserProfile from "./UserProfile";
+import SignIn from "./SignIn";
 
 function TigerlillyRoutes({ profileUpdate, isLoggedIn, updateUserToken }) {
 
     return (
         <Routes>
             <Route path="/" element={<Issue />}/>
+            <Route path="/signMyAssUp" element={<SignIn />}/> 
             <Route path="/issues/:id" element={<Issue />}/>
             <Route path="/articles/:id" element={<Article />}/>
             <Route path="/author/:handle" element={<Author />}/>

@@ -62,7 +62,8 @@ function Article({ passedArticle }) {
                 <>
                     <div>
                         <h2>{article.articleTitle}</h2>
-                        <h4>by {<Link to={`/author/${article.authorHandle}`}>{article.authorFirst + ' ' + article.authorLast}</Link>}</h4>
+                        {!article.authorHandle?<h4>by anonymous</h4>:<h4>by {<Link to={`/author/${article.authorHandle}`}>
+                            {article.authorFirst + ' ' + article.authorLast}</Link>}</h4>}
                         <p>{article.text}</p>
                     </div>
                     <div>

@@ -13,21 +13,96 @@ class Comment {
      **/
 
 	static async create({ userId, text, articleId, postDate }) {
-        console.log('fields:', userId, text, articleId, postDate);
-        const cols = postDate ? '(user_id, text, article_id, post_date)' : '(user_id, text, article_id)';
-        const args = postDate ? '($1, $2, $3, $4)' : '($1, $2, $3)';
-        const vals = postDate ? [userId, text, articleId, postDate] : [userId, text, articleId];
-		
-		const result = await db.query(
+
+        let query;
+        let args;
+
+        if (!userId && !articleId && !postDate) {
+            query = 
             `INSERT INTO comments 
-                ${cols} 
-                VALUES ${args}
+                (text) 
+                VALUES ($1)
+                RETURNING id, user_id AS "userId",
+                text, post_date AS "postDate"`;
+            
+            args = [text]
+
+        } else if (!userId && !articleId) {
+            query =
+            `INSERT INTO comments 
+                (text, post_date) 
+                VALUES ($1, $2)
+                RETURNING id, user_id AS "userId", text, post_date AS "postDate"`;
+            
+            args = [text, postDate];
+
+        } else if (!userId && !postDate) {
+            query =
+            `INSERT INTO comments 
+                (text, article_id) 
+                VALUES ($1, $2)
+                RETURNING id, user_id AS "userId", text, post_date AS "postDate",
+                (SELECT article_title AS "articleTitle" from articles where id = $3)`;
+
+            args = [text, articleId];
+
+        } else if (!articleId && !postDate) {
+            query =
+            `INSERT INTO comments 
+                (user_id, text) 
+                VALUES ($1, $2)
                 RETURNING id, user_id AS "userId", (SELECT username FROM users WHERE id = $1),
-                text, post_date AS "postDate", (SELECT article_title AS "articleTitle" from articles where id = $3)`, 
-                vals
+                text, post_date AS "postDate"`;
+            
+            args = [userId, text];
+
+        } else if (!articleId) {
+            query =
+            `INSERT INTO comments 
+                (user_id, text, post_date) 
+                VALUES ($1, $2, $3)
+                RETURNING id, user_id AS "userId", (SELECT username FROM users WHERE id = $1),
+                text, post_date AS "postDate"`;
+
+            args = [userId, text, postDate];
+
+        } else if (!userId) {
+            query =
+            `INSERT INTO comments 
+                (text, article_id, post_date) 
+                VALUES ($1, $2, $3)
+                RETURNING id, user_id AS "userId",
+                text, post_date AS "postDate", (SELECT article_title AS "articleTitle" from articles where id = $3)`;
+
+            args = [text, articleId, postDate];
+
+        } else if (!postDate) {
+            query =
+            `INSERT INTO comments 
+                (user_id, text, article_id) 
+                VALUES ($1, $2, $3)
+                RETURNING id, user_id AS "userId", (SELECT username FROM users WHERE id = $1),
+                text, post_date AS "postDate", (SELECT article_title AS "articleTitle" from articles where id = $3)`;
+            
+            args = [userId, text, articleId];
+
+        } else {
+            query =
+            `INSERT INTO comments 
+                (user_id, text, article_id, post_date) 
+                VALUES ($1, $2, $3, $4)
+                RETURNING id, user_id AS "userId", (SELECT username FROM users WHERE id = $1),
+                text, post_date AS "postDate", (SELECT article_title AS "articleTitle" from articles where id = $3)`;
+
+            args = [userId, text, articleId, postDate];
+        }
+
+		const result = await db.query( 
+            query, args
 		);
 
 		const comment = result.rows[0];
+        console.log('inserted comment', result.rows);
         
         return comment;
 
@@ -35,7 +110,7 @@ class Comment {
 
     /** return all comments associated with userId
      *
-     * Returns [{ id, userId, text, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
+     * Returns [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
      *
      **/
 
@@ -44,6 +119,7 @@ class Comment {
             `SELECT c.id,
                     c.user_id AS "userId",
                     c.text,
+                    a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     c.post_date AS "postDate",
                     u.user_first AS "userFirst",
@@ -63,7 +139,7 @@ class Comment {
 
     /** return all comments associated with articleId
      *
-     * Returns [{ id, userId, text, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
+     * Returns [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
      *
      **/
 
@@ -72,6 +148,7 @@ class Comment {
             `SELECT c.id,
                     c.user_id AS "userId",
                     c.text,
+                    a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     c.post_date AS "postDate",
                     u.user_first AS "userFirst",
@@ -125,6 +202,7 @@ class Comment {
     */
 
 	static async edit(id, body) {
+
         const r = await db.query(
             `SELECT * FROM comments WHERE id=$1`, [id]
         );

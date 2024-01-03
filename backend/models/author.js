@@ -3,7 +3,6 @@
 const db = require("../db");
 const { NotFoundError, BadRequestError } = require("../expressError");
 
-
 /** Related functions for authors. */
 
 class Author {
@@ -26,24 +25,63 @@ class Author {
 			throw new BadRequestError(`Duplicate author handle: ${authorHandle}`);
 		}
 
-		const result = await db.query(
-			`INSERT INTO authors
+		let query;
+		let args;
+
+		if (!authorBio && !icon) {
+			query = 			
+				`INSERT INTO authors
+				(author_first,
+				author_last,
+				author_handle)
+				VALUES ($1, $2, $3)
+				RETURNING id, CONCAT(author_first, ' ', author_last) AS "author", author_first AS "authorFirst",
+							author_last AS "authorLast", author_handle AS "authorHandle", author_bio AS "authorBio", icon`;
+			args = [authorFirst, authorLast, authorHandle];
+
+		} else if (!authorBio) {
+			query = 			
+				`INSERT INTO authors
+				(author_first,
+				author_last,
+				author_handle,
+				icon)
+				VALUES ($1, $2, $3, $4)
+				RETURNING id, CONCAT(author_first, ' ', author_last) AS "author", author_first AS "authorFirst",
+							author_last AS "authorLast", author_handle AS "authorHandle", author_bio AS "authorBio", icon`;
+			args = [authorFirst, authorLast, authorHandle, icon];
+		} else if (!icon) {
+			query = 			
+				`INSERT INTO authors
+				(author_first,
+				author_last,
+				author_handle,
+				author_bio)
+				VALUES ($1, $2, $3, $4)
+				RETURNING id, CONCAT(author_first, ' ', author_last) AS "author", author_first AS "authorFirst",
+							author_last AS "authorLast", author_handle AS "authorHandle", author_bio AS "authorBio", icon`;
+				args = [authorFirst, authorLast, authorHandle, authorBio];
+		} else {
+			query = 			
+				`INSERT INTO authors
 				(author_first,
 				author_last,
 				author_handle,
 				author_bio,
 				icon)
-			VALUES ($1, $2, $3, $4, $5)
-			RETURNING id, CONCAT(author_first, ' ', author_last) AS "author", author_first AS "authorFirst",
-							author_last AS "authorLast", author_handle AS "authorHandle", author_bio AS "authorBio", icon`,
-			[
-				authorFirst,
-				authorLast,
-				authorHandle,
-				authorBio,
-				icon
-            ]
+				VALUES ($1, $2, $3, $4, $5)
+				RETURNING id, CONCAT(author_first, ' ', author_last) AS "author", author_first AS "authorFirst",
+							author_last AS "authorLast", author_handle AS "authorHandle", author_bio AS "authorBio", icon`;
+				args = [authorFirst, authorLast, authorHandle, authorBio, icon];
+		}
+
+		const result = await db.query(
+			query, args
 		);
+
+		if (authorBio && authorBio.length > 200) {
+			result.rows[0].authorBio = authorBio.substring(0, 200) + "...";
+		}
 
 		return result.rows[0];
 	}
@@ -104,6 +142,7 @@ class Author {
    */
 
 	static async update(id, body, icon) {
+
 		const r = await db.query(
             `SELECT * FROM authors WHERE id=$1`, [id]
         );
@@ -134,6 +173,9 @@ class Author {
 			]
 		);
 
+		if (result.rows[0].authorBio && (result.rows[0].authorBio).length > 200) {
+			result.rows[0].authorBio = (result.rows[0].authorBio).substring(0, 200) + "...";
+		}
 
 		if (!result.rows[0]) throw new NotFoundError(`No author found by that id: ${id}`);
 

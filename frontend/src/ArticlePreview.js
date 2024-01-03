@@ -10,7 +10,9 @@ function ArticlePreview() {
 
     useEffect(() => {
         async function getArticles() {
-            setArticles(await TigerlillyApi.getTaggedArticles(keyword)['articles']);
+            console.log('KEYWORD', keyword);
+            const res = await TigerlillyApi.getTaggedArticles(keyword);
+            setArticles(res['articles']);
         }
         getArticles();
     }, [keyword]);
@@ -18,19 +20,18 @@ function ArticlePreview() {
 
     return (
         <>
-        {articles ?
-            <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                {articles.map((article, idx) => {
-                    return( 
-                        <Grid key={idx} item xs={1} sm={2} md={3}>
-                            <Article passedArticle={article}/>
-                        </Grid>
-                    )
-                })}
-            </Grid>
-        :null}
+            {articles ?
+                <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                    {articles.map((article, idx) => {
+                        return( 
+                            <Grid key={idx} item xs={1} sm={2} md={3}>
+                                <Article passedArticle={article}/>
+                            </Grid>
+                        )
+                    })}
+                </Grid>
+            :null}
         </>
-
     )
 }
 

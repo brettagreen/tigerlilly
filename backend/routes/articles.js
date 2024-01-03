@@ -105,7 +105,7 @@ router.get("/articleTitle/:articleTitle", async function (req, res, next) {
 /**
  * returns all articles written by specific author
  * 
- * returns [{articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+ * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
  * 
  * Open to all!
  */
@@ -122,7 +122,7 @@ router.get('/authors/:handle', async function (req, res, next) {
 /**
  * returns all articles tagged with keyword
  * 
- * returns [{articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+ * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
  * 
  * Open to all!
  */
@@ -148,6 +148,7 @@ router.get('/keywords/:keyword', async function (req, res, next) {
 */
 
 router.patch("/:id", ensureAdmin, async function (req, res, next) {
+
     try {
         const validator = jsonschema.validate(req.body, updateArticleSchema);
 

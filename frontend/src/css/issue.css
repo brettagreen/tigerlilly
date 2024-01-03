@@ -1,0 +1,7 @@
+.Box {
+    margin-left: 20vw;
+    margin-right: 20vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

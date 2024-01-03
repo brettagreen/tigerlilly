@@ -15,8 +15,52 @@ class Article {
      **/
 
 	static async create({ articleTitle, authorId, text, issueId }) {
-		const result = await db.query(
-            `INSERT INTO articles 
+
+        let query;
+		let args;
+
+        if (!authorId && !issueId) {
+            query =
+                `INSERT INTO articles 
+                    (article_title,
+                    text)
+                    VALUES ($1, $2)
+                    RETURNING id, article_title AS "articleTitle", 
+                    author_id AS "authorId", text,
+                    issue_id AS "issueId"`;
+
+            args = [articleTitle, text];
+
+        } else if (!authorId) {
+            query =
+                `INSERT INTO articles 
+                    (article_title,
+                    text,
+                    issue_id)
+                    VALUES ($1, $2, $3)
+                    RETURNING id, article_title AS "articleTitle",
+                    author_id AS "authorId", text, (SELECT issue_title AS "issueTitle" FROM issues WHERE id = $3),
+                    issue_id AS "issueId"`;
+
+            args = [articleTitle, text, issueId];
+
+        } else if (!issueId) {
+            query =
+                `INSERT INTO articles 
+                    (article_title,
+                    author_id,
+                    text)
+                    VALUES ($1, $2, $3)
+                    RETURNING id, article_title AS "articleTitle", 
+                    (SELECT author_first AS "authorFirst" FROM authors WHERE id = $2), 
+                    (SELECT author_last AS "authorLast" FROM authors WHERE id = $2),
+                    (SELECT author_handle AS "authorHandle" FROM authors WHERE id = $2),
+                    author_id AS "authorId", text, issue_id AS "issueId"`;
+
+            args = [articleTitle, authorId, text];
+        } else {
+            query =
+                `INSERT INTO articles 
                     (article_title,
                     author_id,
                     text,
@@ -27,10 +71,19 @@ class Article {
                     (SELECT author_last AS "authorLast" FROM authors WHERE id = $2),
                     (SELECT author_handle AS "authorHandle" FROM authors WHERE id = $2),
                     author_id AS "authorId", text, (SELECT issue_title AS "issueTitle" FROM issues WHERE id = $4),
-                    issue_id AS "issueId"`,
-			[articleTitle, authorId, text, issueId]
+                    issue_id AS "issueId"`;
+
+            args = [articleTitle, authorId, text, issueId];
+        }
+        
+		const result = await db.query(
+            query, args
 		);
         
+        if (text.length > 200) {
+            result.rows[0].text = text.substring(0, 200) + "...";
+        }
+
         return result.rows[0];
 
 	}
@@ -116,12 +169,13 @@ class Article {
     /**
      * return all articles that contain specified keyword
      * 
-     * returns [{articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
      */
 
     static async fetchByKeyword(keyword) {
         const result = await db.query(
-            `SELECT a.article_title AS "articleTitle",
+            `SELECT a.id AS "articleId",
+                    a.article_title AS "articleTitle",
                     au.author_first AS "authorFirst",
                     au.author_last AS "authorLast",
                     au.author_handle AS "authorHandle",
@@ -139,12 +193,13 @@ class Article {
     /**
      * return all articles written by specific author
      * 
-     * returns [{articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
      */
 
     static async fetchByAuthor(handle) {
         const result = await db.query(
-            `SELECT a.article_title AS "articleTitle",
+            `SELECT a.id AS "articleId",
+                    a.article_title AS "articleTitle",
                     au.author_first AS "authorFirst",
                     au.author_last AS "authorLast",
                     au.author_handle AS "authorHandle",
@@ -217,6 +272,10 @@ class Article {
                 id
             ]
         );
+
+        if ((result.rows[0].text).length > 200) {
+            result.rows[0].text = (result.rows[0].text).substring(0, 200) + "...";
+        }
 
         return result.rows[0];
 	}

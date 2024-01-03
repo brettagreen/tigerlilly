@@ -25,7 +25,8 @@
       "format": "email"
     },
     "icon": {
-      "type": "object"
+      "type": "string",
+      "pattern": "^[\\w\\-.]+p?jpe?g|svg|png|jfif|pjp$|^null$"
     },
     "isAdmin": {
       "anyOf": [

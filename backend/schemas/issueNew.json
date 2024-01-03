@@ -9,15 +9,13 @@
         "maxLength": 500
       },
       "pubDate": {
-        "type": "string",
-        "minLength": 0,
-        "maxLength": 25
+          "type": "string",
+          "minLength": 0,
+          "maxLength": 25
       }
     },
     "additionalProperties": false,
     "required": [
-      "issueTitle",
-      "pubDate"
+      "issueTitle"
     ]
-  }
-  
+}

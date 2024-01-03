@@ -1,4 +1,6 @@
+import './css/issue.css';
 import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import Article from './Article';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -10,14 +12,12 @@ function Issue() {
 
     useEffect(() => {
         async function fetchIssue() {
-            console.log('id', id);
             let resp;
             if (id) {
                 resp = await TigerlillyApi.getIssue(id);
             } else {
                 resp = await TigerlillyApi.getCurrentIssue();
             }
-            console.log('resp', resp);
             setIssue(resp.issues);
         }
 		fetchIssue();
@@ -25,7 +25,7 @@ function Issue() {
     
     if (issue) {
         return (
-            <>
+            <Box Box className="Box" component="main">
                 <h1>{issue[0].issueTitle}</h1>
                 <Grid container rowSpacing={2} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                     {issue.map((article, idx) => {
@@ -35,7 +35,7 @@ function Issue() {
                         </Grid>)
                     })}
                 </Grid>
-            </>
+            </Box>
         );
     }
 

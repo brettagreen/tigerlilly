@@ -1,7 +1,11 @@
+import './css/admin.css';
 import TigerlillyApi from "./api";
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import Tooltip from '@mui/material/Tooltip';
+import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText,
+            InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Tooltip } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
+import { formTheme, textareaTheme } from './css/styles';
 
 /**
  * modularize,
@@ -11,11 +15,28 @@ import Tooltip from '@mui/material/Tooltip';
  */
 
 function Admin({ isAdmin }) {
-
     const history = useNavigate();
 
-    const [category, setCategory] = useState(null);
-    const [method, setMethod] = useState(null);
+    //filter/search related variables
+    const [category, setCategory] = useState('');
+    const [method, setMethod] = useState('');
+    const [filterVal, setFilterVal] = useState('');
+    const [commentObject, setCommentObject] = useState('');
+    const [selectedObject, setSelectedObject] = useState('');
+
+    const [showMethodBox, setMethodBox] = useState(false)
+    const [showCommentFilterBox, setCommentFilterBox] = useState(false);
+    const [showFilterItems, setFilterItems] = useState(false);
+    const [showEditDelete, setEditDelete] = useState(false);
+    const entryForm = useRef();
+
+    const [articles, setArticles] = useState(null);
+    const [authors, setAuthors] = useState(null);
+    const [issues, setIssues] = useState(null);
+    const [keywords, setKeywords] = useState(null);
+    const [users, setUsers] = useState(null);
+
+    //submit form variables
     const [form, setForm] = useState(null);
     const [editValues, setEditValues] = useState(null);
     const [filterValues, setFilterValues] = useState(null);
@@ -28,20 +49,11 @@ function Admin({ isAdmin }) {
     const [keywordEditValues, setKeywordEditValues] = useState(null);
     const [result, setResult] = useState(null);
 
-    const methodBox = useRef();
-    const commentFilterBox = useRef();
-    const filterItems = useRef();
-    const editDelete = useRef();
-    const entryForm = useRef();
-
-    const [articles, setArticles] = useState(null);
-    const [authors, setAuthors] = useState(null);
-    const [issues, setIssues] = useState(null);
-    const [keywords, setKeywords] = useState(null);
-    const [users, setUsers] = useState(null);
+    const [modalOpen, setModalOpen] = useState(true);
     const setTables = {"articles": setArticles, "authors": setAuthors, "issues": setIssues,
-                             "keywords": setKeywords, "users": setUsers};
+                        "keywords": setKeywords, "users": setUsers};
 
+    //result related
     const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle'];
 
     useEffect(() => {
@@ -60,26 +72,22 @@ function Admin({ isAdmin }) {
     //so this is the best version of operational caching that I could come up with.
     useEffect(() => {
         async function loadTables() {
+            console.log('gETTing to loadTables() useEffect');
             let resp;
 
             resp = await TigerlillyApi.get('articles');
-            console.log('resp', resp['articles']);
             setArticles(resp['articles']);
 
             resp = await TigerlillyApi.get('authors');
-            console.log('resp', resp['authors']);
             setAuthors(resp['authors']);
 
             resp = await TigerlillyApi.get('issues');
-            console.log('resp', resp['issues']);
             setIssues(resp['issues']);
 
             resp = await TigerlillyApi.get('keywords');
-            console.log('resp', resp['keywords']);
             setKeywords(resp['keywords']);
 
             resp = await TigerlillyApi.get('users');
-            console.log('resp', resp['users']);
             setUsers(resp['users']);
 
         }
@@ -89,50 +97,45 @@ function Admin({ isAdmin }) {
 
     function fixCategory(event) {
         console.log('fixCategory()');
-        if (category) {
-            setResult(null);
-            setMethod(null);
-            setForm(null);
-            setEditValues(null);
-            setFilterValues(null);
-            setEditObjectId(null);
-            setAuthorObjects(null);
-            setIssueObjects(null);
-            setUserObjects(null);
-            setArticleObjects(null);
-            setKeywordObjects(null);
-            setKeywordEditValues(null);
-            methodBox.current.value = "";
-            methodBox.current.hidden = true;
-            commentFilterBox.current.value = "";
-            commentFilterBox.current.hidden = true;
-            filterItems.current.value = "";
-            filterItems.current.hidden = true;
-            editDelete.current.value = "";
-            editDelete.current.hidden = true;
-            if (form) {
-                entryForm.current.hidden = true;
-            }
+        setMethod('');
+        setFilterVal('');
+        setCommentObject('');
+        setSelectedObject('');
+
+        setForm(null);
+        setEditValues(null);
+        setFilterValues(null);
+        setEditObjectId(null);
+        setAuthorObjects(null);
+        setIssueObjects(null);
+        setUserObjects(null);
+        setArticleObjects(null);
+        setKeywordObjects(null);
+        setKeywordEditValues(null);
+        setMethodBox(false);
+        setCommentFilterBox(false);
+        setFilterItems(false);
+        setEditDelete(false);
+
+        setResult(null);
+        setModalOpen(true);
+
+        if (form) {
+            entryForm.current.hidden = true;
         }
         setCategory(event.target.value);
-        methodBox.current.hidden = false;
+        setMethodBox(true);
     }
 
-    function addForm(selectVals) {
+    function addForm() {
         console.log('addForm()');
 
         const fields = Admin.defaultProps[category].fields;
         let newForm = {};
 
         for (let x = 0; x < fields.length; x++) {
-            if (fields[x].type === 'option') {
-                if (fields[x].field === 'authorId' || fields[x].field === 'userId') {
-                    newForm[fields[x].field] = selectVals[0];
-                } else {
-                    newForm[fields[x].field] = selectVals[1];
-                }
 
-            } else if (fields[x].field === 'isAdmin') {
+            if (fields[x].field === 'isAdmin') {
                 newForm['isAdmin'] = false;
             } else if (fields[x].field === 'icon') {
                 newForm['icon'] = null;
@@ -151,21 +154,26 @@ function Admin({ isAdmin }) {
 
         if (category !== 'keywords' && category !== 'updateKeywords') {
             const fields = Admin.defaultProps[category].fields;
-            const targetId = Number(event.target.value);
+
+            const val = event.target.value;
+            const targetId = Number(val.id);
+            setSelectedObject(val);
 
             const obj = editValues.find(val => {
                 return val.id === targetId;
             });
-    
+            
+            console.log('object', obj);
             setEditObjectId(obj.id);
 
             for (let x = 0; x < fields.length; x++) {
                 newForm[fields[x].field] = obj[fields[x].field];
             }
 
-            // if (newForm.hasOwnProperty('icon')) {
-            //     newForm['icon'] = ob;
-            // }
+            //get that pesky 'Z' on the timestamp trimmed off
+            if (newForm['postDate']) {
+                newForm['postDate'] = obj['postDate'].substring(0, obj['postDate'].length -1);
+            }
 
             if (newForm.hasOwnProperty('password')) {
                 delete newForm['password'];
@@ -173,9 +181,13 @@ function Admin({ isAdmin }) {
 
 
         } else {
-            const num = Number(event.target.value);
+            const num = Number(event.target.value.articleId);
+            console.log("NUM", num);
             setEditObjectId(num);
+            setSelectedObject(event.target.value);
+
             const finalKeywordsObjects = [];
+            console.log('keywordeditvals', keywordEditValues);
 
             if (num === 0) {
                 const dupes = new Set();
@@ -196,7 +208,8 @@ function Admin({ isAdmin }) {
             setKeywordObjects(finalKeywordsObjects);
 
             newForm['articleId'] = 0;
-            newForm['keyword'] = finalKeywordsObjects[0].keyword;
+            newForm['keyword'] = finalKeywordsObjects[0]['keyword'];
+
             if (method !== 'delete') {
                 newForm['edit'] = '';
             }
@@ -209,23 +222,22 @@ function Admin({ isAdmin }) {
     //this is probably the hackiest part of the app
     //formatting data field values per instance.
     function editDeleteForm(editValues, isFilter, type="") {
-
         console.log('edits()');
-        console.log('CHECK editValues', editValues);
         let att1;
         let att2;
         let att3;
         let att4;
         let quotes1;
         let quotes2;
-        const maxLength = 17;
+        const maxLength = 30;
 
         if (isFilter) {
             if (type === 'articles') {
-                att1 = 'text';
+                att1 = 'articleTitle';
                 quotes1 = true;
-                att2 = 'articleTitle';
+                att2 = 'text';
                 quotes2 = true;
+                att3 = [att1, att2];
                 type = 'articles';
             } else {
                 att1 = 'userFirst';
@@ -260,16 +272,15 @@ function Admin({ isAdmin }) {
                 att2 = 'userLast';
                 quotes2 = false;
                 att3 = [att1, att2]; 
-            } else if (category === 'comments') {
-                att1 = 'text';
-                quotes1 = true;
-                att2 = 'username';
-                quotes2 = false;
-                att3 = [att1, att2];
-            } else { //category === 'keywords'
+            } else if (category === 'keywords' || category === 'updateKeywords') { 
                 att1 = 'articleTitle';
                 quotes1 = false;
                 att2 = 'articleTitle';
+                quotes2 = false;
+            } else { //comments
+                att1 = 'username';
+                quotes1 = false;
+                att2 = 'text';
                 quotes2 = false;
             }
         }
@@ -288,7 +299,7 @@ function Admin({ isAdmin }) {
                 }
             });
 
-            filteredArticles.unshift({"id": 0, "articleTitle": "--All Articles--"});
+            filteredArticles.unshift({"articleId": 0, "articleTitle": "All Articles"});
 
             editValues = filteredArticles;
         }
@@ -364,8 +375,10 @@ function Admin({ isAdmin }) {
             setForm({...form, [event.target.name]: event.target.checked});
 
         } else if (event.target.name === 'icon') {
-            if (event.target.files[0].size > 1000000) {
-                alert("choose a smaller file");
+            if (event.target.files[0].size > 3000000) {
+                <Alert variant="filled" severity="warning">
+                    Please choose a file 3MB or smaller.
+                </Alert>
             } else {
                 setForm({...form, [event.target.name]: event.target.files[0]});
             }
@@ -408,26 +421,35 @@ function Admin({ isAdmin }) {
         console.log('submitted form', form);
 
         if (method === 'delete') {
+            console.log('ksdjfalskdfjal;skjdf;aslkdjfa;klsdjfa', category);
             response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' :
                          category, null, methodDictionary[method], objectId);
+            console.log('RESPONSE', response)
         } else if (method === 'edit') {
             response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' :
                          category, form, methodDictionary[method], objectId);
         } else {
             response = await TigerlillyApi.commit(category, form, methodDictionary[method]);
+            console.log('comment response', response);
         }
 
         //trigger reload/fetch of whatever table has been updated just above
         //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
         //so this is the best version of operational caching that I could come up with.
         const cat = category==='updateKeywords'?'keywords':category;
-        const subResponse = await TigerlillyApi.get(cat);
-        setTables[cat](subResponse[cat]);
+        if (category !== 'comments') {
+            const subResponse = await TigerlillyApi.get(cat);
+            setTables[cat](subResponse[cat]);
+        }
 
         if (!(category === 'users' && method === 'add')) {
             setResult([Array.from(Object.keys(response[category])), Array.from(Object.values(response[category]))]);
         }
 
+        setFilterVal('');
+        setCommentObject('');
+        setSelectedObject('');
+        
         setForm(null);
         setEditValues(null);
         setFilterValues(null);
@@ -438,16 +460,15 @@ function Admin({ isAdmin }) {
         setArticleObjects(null);
         setKeywordObjects(null);
         setKeywordEditValues(null);
-        methodBox.current.value = "";
-        editDelete.current.value = "";
-        editDelete.current.hidden = true;
-        entryForm.current.hidden = true;
-        commentFilterBox.current.value = "";
-        commentFilterBox.current.hidden = true;
-        filterItems.current.value = "";
-        filterItems.current.hidden = true;
+        setMethodBox(false);
+        setEditDelete(false);
+        setCommentFilterBox(false);
+        setFilterItems(false);
 
-     }
+        setCategory('');
+        entryForm.current.hidden = true;
+
+    }
 
     async function assignSelectObjects() {
         console.log('assignSelectObjects()')
@@ -488,11 +509,7 @@ function Admin({ isAdmin }) {
                     userItemArray.push({"userId": item.id, "username": item.username});
                 }
                 setUserObjects(userItemArray);
-                return [userItemArray[0].userId, articleItemArray[0].articleId];
-            } else {
-                return [null, articleItemArray[0].articleId];
             }
-
         }
     }
 
@@ -503,24 +520,22 @@ function Admin({ isAdmin }) {
 
         if (method) {
             if (event.target.value === 'add') {
-                editDelete.current.value = "";
-                editDelete.current.hidden = true;
+                setEditDelete(false);
             }
             setForm(null);
         }
 
         const tempMethod = event.target.value;
-        let initialSelectVals;
 
         if (['articles', 'comments', 'keywords', 'updateKeywords'].includes(category)) {
-           initialSelectVals = await assignSelectObjects();
+           await assignSelectObjects();
         }
         
         if (tempMethod === 'add') {
-            setForm(addForm(initialSelectVals));
+            setForm(addForm());
         } else {
             if (category === 'comments') {
-                commentFilterBox.current.hidden = false;
+                setCommentFilterBox(true)
             } else {
                 let cat;
                 if (category === 'articles') {
@@ -529,14 +544,16 @@ function Admin({ isAdmin }) {
                     cat = authors;
                 } else if (category === 'issues') {
                     cat = issues;
-                } else if (category === 'keywords') {
+                } else if (category === 'keywords' || category === 'updateKeywords') {
+                    if (selectedObject) {
+                        setSelectedObject('');
+                    }
                     cat = keywords;
                 } else { //users
                     cat = users;
                 }
-                console.log('fix method cat',cat);
                 editDeleteForm(cat, false);
-                editDelete.current.hidden = false;
+                setEditDelete(true);
             }
         }
 
@@ -546,21 +563,30 @@ function Admin({ isAdmin }) {
     async function fixFilter(event) {
         console.log('fixFilter()');
 
+        setFilterVal(event.target.value);
+
         //users or articles
         const resp = await TigerlillyApi.getObjectsWithComments(event.target.value);
+        console.log('this is the comments resp', resp);
         
         editDeleteForm(resp[event.target.value], true, event.target.value);
-        filterItems.current.hidden = false;
+        setFilterItems(true);
     }
 
     async function selectFilteredComments(event) {
         console.log('selectFilterItem()');
-        const [id, filterType] = (event.target.value).split(',');
+        const val = event.target.value;
+        
+        const id = val.id;
+        const filterType = val.type;
 
         const resp = await TigerlillyApi.getComments(Number(id), filterType);
+        console.log('more comments returned', resp);
 
         editDeleteForm(resp[category], false);
-        editDelete.current.hidden = false;
+        setEditDelete(true);
+
+        setCommentObject(val);
     }
 
     useEffect(() => {
@@ -571,178 +597,286 @@ function Admin({ isAdmin }) {
 
     useEffect(() => {
         if (!result) {
-            setMethod(null);
+            setMethod('');
         }
+         console.log("RESULT", result);
     }, [result]);
 
-    return (
-        <div>
-            <div className="selectOptions">
-                <select name="type" onChange={fixCategory}>
-                    <option value="">--Select one of the following--</option>
-                    <option value="issues">Issues</option>
-                    <option value="articles">Articles</option>
-                    <option value="authors">Authors</option>
-                    <option value="users">Users</option>
-                    <option value="comments">Comments</option>
-                    <option value="keywords">Article keywords</option>
-                </select>
-                <select hidden ref={methodBox} onChange={fixMethod}>
-                    <option value="">--Select type of operation--</option>
-                    <option value="add">Add</option>
-                    <option value="edit">Edit</option>
-                    <option value="delete">Delete</option>
-                </select>
-                <select hidden ref={commentFilterBox} onChange={fixFilter}>
-                    <option value="">--Filter By: --</option>
-                    <option value="articles">Article</option>
-                    <option value="users">User</option>
-                </select>
-                <select hidden ref={filterItems} onChange={selectFilteredComments}>
-                    <option value="">--Select object to filter by--</option>
-                    {filterValues ? filterValues.map((val, idx) => {
-                        return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
-                            <option key={-idx-1} value={[val.id, val.type]}>{val.display2}</option>
-                                </Tooltip>)
-                    }) : null}
-                </select>
-                <select hidden ref={editDelete} onChange={selectItem}>
-                    <option value="">--Select {category ? category==='keywords' ? 'Article to filter by' : category.substring(0,category.length-1):null} 
-                                        &nbsp;to {category? category!=='keywords' ? method === 'delete'? 'delete': 'modify':null:null}--</option>
-                    {editValues ? editValues.map((val, idx) => {
-                        return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
-                            <option key={-idx-1} value={val.id}>{val.display2}</option>
-                                </Tooltip>)
-                    }) : null}
-                </select>
-            </div>
-            {form ? 
-                <form hidden ref={entryForm} id="adminForm" encType="multipart/form-data" onSubmit={submitAndClear}>
-                    {Admin.defaultProps[category].fields.map((field, idx) => {
-                        console.log('form category', category)
-                        if ((method === 'delete' || method === 'edit') && field.field === 'password') {
-                            return null;
-                        }
-                        const disabled = method === 'delete' ? true : false;
-                        return (<>
-                            <label key={idx+1} htmlFor={field.field}>{field.field}</label>
-                            {['text','email'].includes(field.type) ?
-                                <input key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
-                                        disabled={disabled} onChange={handleChange} /> :
-                            null}
+    function returnTable() {
+        const handleClose = () => setModalOpen(false);
 
-                            {field.type === 'textarea' ? 
-                                <textarea key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
-                                        disabled={disabled} onChange={handleChange} /> :
-                            null}
+        //shamelessly 'stolen' css from https://mui.com
+        const style = {
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: '99%',
+            bgcolor: 'background.paper',
+            border: '2px solid #000',
+            boxShadow: 24,
+            p: 4
+        };
 
-                            {field.type ==='checkbox' ?
-                                <input checked={form[field.field]} key={-idx-1} id={field.field} type={field.type} name={field.field} value={form[field.field]}
-                                        disabled={disabled} onChange={handleChange} /> :
-                            null}
-
-                            {field.type ==='file' ?
-                                <input key={-idx-1} id={field.field} type={field.type} name={field.field}
-                                        disabled={disabled} onChange={handleChange} /> :
-                            null}
-
-                            {field.field === 'authorId' ?
-                                <select value={form[field.field]} name={field.field} disabled={disabled} onChange={handleChange}>
-                                    {authorObjects.map((obj) => {
-                                        return <option type="number" value={obj.authorId}>{obj.authorId} - {obj.authorFirst} {obj.authorLast}</option>
-                                    })}
-                                </select> :
-                            null}
-
-                            {field.field === 'issueId' ?
-                                <select value={form[field.field]} name={field.field} disabled={disabled} onChange={handleChange}>
-                                    {issueObjects.map((obj) => {
-                                        console.log('issueObject object', obj)
-                                        return <option type="number" value={obj.issueId}>{obj.issueId} - {obj.issueTitle}</option>
-                                    })}
-                                </select> :
-                            null}                        
-
-                            {field.field === 'articleId' ?
-                                <select value={form[field.field]} name={field.field} disabled={false} onChange={handleChange}>
-                                    {articleObjects.map((obj) => {
-                                        return <option type="number" value={obj.articleId}>{obj.articleId} - {obj.articleTitle}</option>
-                                    })}
-                                </select> :
-                            null}
-
-                            {field.field === 'userId' ?
-                                <select value={form[field.field]} name={field.field} disabled={disabled} onChange={handleChange}>
-                                    {userObjects.map((obj) => {
-                                        return <option type="number" value={obj.userId}>{obj.userId} - {obj.username}</option>
-                                    })}
-                                </select> :
-                            null}
-
-                            {field.field === 'keyword' ?
-                                <select value={form[field.field]} name={field.field} disabled={false} onChange={handleChange}>
-                                    {keywordObjects.map((obj) => {
-                                        return <option type="text" value={obj.keyword}>{obj.keyword}</option>
-                                    })}
-                                </select> :
-                            null}
-                            <br />
-                        </>)
-                    })}
-                <button>{method === 'delete' ? "Delete" : "Submit"}</button>
-            </form> : null}
-            {result && !(category === 'users' && method === 'add') ?
-                <table>
-                    <thead>
-                        <tr>
-                            <th colSpan={result[1][1] === undefined?result[1].length:result[1][1].length+1}>
-                            {method==='add'?'ADDED':method==='edit'?'UPDATED':'DELETED'}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            {result[0].map(val => {
-                                let tds;
-                                if (val === 'keywords') {
-                                    tds = [];
-                                    let count = 0;
-                                    while (count < result[1][1].length) {
-                                        count++;
-                                        tds.push(<td>keyword</td>);
+        return(
+            <div>
+                <Modal open={modalOpen} onClose={handleClose}>
+                    <Box sx={style}>
+                        <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell key="whofuckingcares" sx={{textAlign: "center"}}colSpan={!result[1][1]?result[1].length:result[1][1].length+1}>
+                                    {method==='add'?'ADDED':method==='edit'?'UPDATED':<span id="th">DELETED</span>}</TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                {result[0].map((val, idx) => {
+                                    let tds;
+                                    if (val === 'keywords') {
+                                        tds = [];
+                                        let count = 0;
+                                        while (count < result[1][1].length) {
+                                            count++;
+                                            tds.push(<TableCell key={idx}>keyword</TableCell>);
+                                        }
                                     }
+                                    return val==='keywords'?tds:<TableCell key={idx}>{val}</TableCell>
+                                })
                                 }
-                                return val==='keywords'?tds:<td>{val}</td>
-                            })
-                            }
-                        </tr>
-                        <tr>
-                            {result[1].map((val,idx) => {
-                                let tds;
+                            </TableRow>
+                            <TableRow>
+                                {result[1].map((val,idx) => {
+                                    let tds;
 
-                                if (!val && typeof val !== 'boolean') val = 'null';
+                                    if (!val && typeof val !== 'boolean') val = 'null';
 
-                                const typeOf = typeof val;
+                                    const typeOf = typeof val;
 
-                                if (typeOf === 'object') {
-                                    tds = [];
-                                    for (let x=0; x<val.length;x++) {
-                                            tds.push(<td>{val[x]}</td>)
+                                    if (typeOf === 'object') {
+                                        tds = [];
+                                        for (let x=0; x<val.length;x++) {
+                                            tds.push(<TableCell key={idx}>{val[x]}</TableCell>);
+                                        }
+                                    } else {
+                                        if (linkArray.includes(result[0][idx]) && 
+                                            !(method === 'delete' && idx === 0) &&
+                                            val !== 'All Articles' && val!=='null') {
+
+                                            val = <Link key={-idx} to={`/${category}/${result[0][idx]}/${val}`}>{val}</Link>
+                                        }
                                     }
-                                } else {
-                                    if (linkArray.includes(result[0][idx]) && 
-                                        !(method === 'delete' && idx === 0) &&
-                                         val !== 'All Articles' && val!=='null') {
-                                        val = <Link to={`/${category}/${result[0][idx]}/${val}`}>{val}</Link>
-                                    }
+                                    return typeOf==='object'?tds:<TableCell key={idx}>{val}</TableCell>
+                                })
                                 }
-                                return typeOf==='object'?tds:<td>{val}</td>
-                            })
-                            }
-                        </tr>
-                    </tbody>
-                </table>
-            : null}
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                    <Button onClick={handleClose}>close</Button>
+                </Box>
+            </Modal>
         </div>
+        )
+    }
+
+    return (
+        <ThemeProvider theme={formTheme}>
+            <main>
+                <Box className="Box" component="section">
+                    <div className="FormControl">
+                        <FormControl margin="normal" className="FormControl">
+                            <InputLabel id="cat">--Select one of the following--</InputLabel>
+                            <Select className="Select" component="select" labelId="cat" name="type" onChange={fixCategory} 
+                                    value={category==='updateKeywords'?'keywords':category}>
+                                <MenuItem key="issues" className="MenuItem" value="issues">Issues</MenuItem>
+                                <MenuItem key="articles" className="MenuItem" value="articles">Articles</MenuItem>
+                                <MenuItem key="authors" className="MenuItem" value="authors">Authors</MenuItem>
+                                <MenuItem key="users" className="MenuItem" value="users">Users</MenuItem>
+                                <MenuItem key="comments" className="MenuItem" value="comments">Comments</MenuItem>
+                                <MenuItem key="keywords" className="MenuItem" value="keywords">Article keywords</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl margin="normal" className="FormControl" sx={{display: showMethodBox? undefined: 'none'}}>
+                            <InputLabel id="meth">--Select type of operation--</InputLabel>
+                            <Select className="Select" component="select" labelId="meth" onChange={fixMethod} value={method}>
+                                <MenuItem key="add" className="MenuItem" value="add">Add</MenuItem>
+                                <MenuItem key="edit" className="MenuItem" value="edit">Edit</MenuItem>
+                                <MenuItem key="delete" className="MenuItem" value="delete">Delete</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl margin="normal" className="FormControl" sx={{display: showCommentFilterBox? undefined: 'none'}}>
+                            <InputLabel id="filterby">--Filter By: --</InputLabel>
+                            <Select className="Select" component="select" labelId="filterby" onChange={fixFilter} value={filterVal}>
+                                <MenuItem key="filterArticles" className="MenuItem" value="articles">Article</MenuItem>
+                                <MenuItem key="filterUsers" className="MenuItem" value="users">User</MenuItem>
+                            </Select>
+                        </FormControl>
+                        <FormControl margin="normal" className="FormControl" sx={{display: showFilterItems? undefined: 'none'}}>
+                            <InputLabel id="objectfilter">--Select object to filter by--</InputLabel>
+                            <Select className="Select" component="select" labelId="objectfilter" 
+                                        onChange={selectFilteredComments} value={commentObject}>
+                                {filterValues ? filterValues.map((val, idx) => {
+                                    return (//<Tooltip disableFocusListener key={idx+1} title={val.display1}>
+                                                <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
+                                            //</Tooltip>
+                                            )
+                                }) : null}
+                            </Select>
+                        </FormControl>
+                        <FormControl margin="normal" className="FormControl" sx={{display: showEditDelete? undefined: 'none'}}>
+                            <InputLabel id="finalboss">--Select {category==='keywords'||category==='updateKeywords' ?
+                                                'Article to filter by' : category.substring(0,category.length-1)}
+                                                {category!=='keywords'&&category!=='updateKeywords' ? method === 'delete'?
+                                                'to delete': 'to modify':null}--
+                            </InputLabel>
+                            <Select className="Select" component="select" labelId="finalboss" onChange={selectItem} value={selectedObject}>
+                                {editValues ? editValues.map((val, idx) => {
+                                    return (//<Tooltip disableFocusListener key={idx+1} title={val.display1}>
+                                                <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
+                                            //</Tooltip>
+                                            )
+                                }) : null}
+                            </Select>
+                        </FormControl>
+                    </div>
+                </Box>
+                {form ?
+                <>
+                <hr id="adminHR" />
+                <Box className="Box" component="section">
+                    <div hidden ref={entryForm}>
+                        <form id="adminForm" encType="multipart/form-data" onSubmit={submitAndClear}> 
+                            {Admin.defaultProps[category].fields.map((field, idx) => {
+                                if ((method === 'delete' || method === 'edit') && field.field === 'password') {
+                                    return null;
+                                }
+                                const disabled = method === 'delete' ? true : false;
+                                return (<>
+                                    <FormControl margin="normal" className="FormControl">
+                                        {['text','email'].includes(field.type) ?
+                                            <TextField key={-idx-1} type={field.type} name={field.field} value={form[field.field]}
+                                                    label={field.field} disabled={disabled} onChange={handleChange} /> :
+                                        null}
+
+                                        {field.type === 'textarea' ?
+                                            <ThemeProvider theme={textareaTheme}>
+                                                <TextField key={-idx-1} type={field.field} name={field.field} value={form[field.field]}
+                                                        multiline minRows={5} label={field.field} disabled={disabled} onChange={handleChange}
+                                                        sx={{height: 'inherit'}} />
+                                            </ThemeProvider> :
+                                        null}
+
+                                        {field.type ==='checkbox' ?
+                                        <>
+                                            <InputLabel id={idx+field.field} shrink={true}>{field.field}</InputLabel>
+                                            <FormControlLabel control={
+                                                <Checkbox checked={form[field.field]} key={-idx-1} type={field.type} name={field.field} value={form[field.field]}
+                                                        disableRipple={true} disabled={disabled} onChange={handleChange} 
+                                                        sx={{position: 'inherit', ml: '1em', mt: '1em'}}/>
+                                                }/>
+                                        </> :
+                                        null}
+
+                                        {field.type ==='file' ?
+                                            <>
+                                                <InputLabel id={idx+field.field} shrink={true}>{field.field}</InputLabel>
+                                                <TextField key={-idx-1} type={field.type} name={field.field} variant="standard"
+                                                         disabled={disabled} onChange={handleChange} />
+                                            </> :
+                                        null}
+
+                                        {field.type ==='datetime-local' ?
+                                            <>
+                                                <InputLabel id={idx+field.field} shrink={true}>{field.field}</InputLabel>
+                                                <TextField key={-idx-1} type={field.type} name={field.field} variant="standard"
+                                                         value={form[field.field]} disabled={disabled} onChange={handleChange} />
+                                            </> :
+                                        null}
+
+                                        {field.field === 'authorId' ?
+                                            <>  
+                                                <InputLabel id={idx+field.field}>{field.field}</InputLabel>
+                                                <Select className="Select" component="select" value={form[field.field]} name={field.field} disabled={disabled} 
+                                                            labelId={idx+field.field} onChange={handleChange}>
+                                                    <MenuItem key={-1} className="MenuItem" value=''> </MenuItem>
+                                                    {authorObjects.map((obj, idx) => {
+                                                        return <MenuItem key={idx} className="MenuItem" type="number" value={obj.authorId}>{obj.authorId} - {obj.authorFirst} {obj.authorLast}</MenuItem>
+                                                    })}
+                                                </Select>
+                                            </> :
+                                        null}
+
+                                        {field.field === 'issueId' ?
+                                            <>
+                                                <InputLabel id={idx+field.field}>{field.field}</InputLabel>
+                                                <Select className="Select" component="select" value={form[field.field]} name={field.field} disabled={disabled} 
+                                                            labelId={idx+field.field} onChange={handleChange}>
+                                                    <MenuItem key={-1} className="MenuItem" value=''> </MenuItem>
+                                                    {issueObjects.map((obj, idx) => {
+                                                        return <MenuItem key={idx} className="MenuItem" type="number" value={obj.issueId}>{obj.issueId} - {obj.issueTitle}</MenuItem>
+                                                    })}
+                                                </Select>
+                                            </> :
+                                        null}                        
+
+                                        {field.field === 'articleId' ?
+                                            <>
+                                                <InputLabel id={idx+field.field}>{field.field}</InputLabel>
+                                                <Select className="Select" component="select" value={form[field.field]} name={field.field} disabled={false} 
+                                                        labelId={idx+field.field} onChange={handleChange}>
+                                                    <MenuItem key={-1} className="MenuItem" value=''> </MenuItem>
+                                                    {articleObjects.map((obj, idx) => {
+                                                        return <MenuItem key={idx} className="MenuItem" type="number" value={obj.articleId}>{obj.articleId} - {obj.articleTitle}</MenuItem>
+                                                    })}
+                                                </Select>
+                                            </> :
+                                        null}
+
+                                        {field.field === 'userId' ?
+                                            <>
+                                                <InputLabel id={idx+field.field}>{field.field}</InputLabel>
+                                                <Select className="Select" component="select" value={form[field.field]} name={field.field} disabled={disabled} 
+                                                        labelId={idx+field.field} onChange={handleChange}>
+                                                    <MenuItem key={-1} className="MenuItem" value=''> </MenuItem>
+                                                    {userObjects.map((obj, idx) => {
+                                                        return <MenuItem key={idx} className="MenuItem" type="number" value={obj.userId}>{obj.userId} - {obj.username}</MenuItem>
+                                                    })}
+                                                </Select>
+                                            </> :
+                                        null}
+
+                                        {field.field === 'keyword' ?
+                                            <>
+                                                <InputLabel id={idx+field.field}>{field.field}</InputLabel>
+                                                <Select className="Select" component="select" value={form[field.field]} name={field.field} disabled={false} 
+                                                        labelId={idx+field.field} onChange={handleChange}>
+                                                    {keywordObjects.map((obj, idx) => {
+                                                        return <MenuItem key={idx} className="MenuItem" type="text" value={obj.keyword}>{obj.keyword}</MenuItem>
+                                                    })}
+                                                </Select> 
+                                            </>:
+                                        null}
+                                        {field.optional ?
+                                            <FormHelperText sx={{marginTop: '0px'}}>*optional</FormHelperText>
+                                        :null}
+                                    </FormControl>
+                                    <br />
+                                </>)
+                            })}
+                            {method === 'delete' ?
+                                <Button className="SubmitButton" type="submit" variant="outlined" size="small" sx={{backgroundColor: 'red', color: 'white', marginTop: '2em'}}>Delete</Button> :
+                                <Button className="SubmitButton" type="submit" variant="outlined" size="small" sx={{backgroundColor: '#f3f2f2', color: '#171515', 
+                                        borderColor: '#171515', marginTop: '2em'}}>Submit</Button>
+                            }
+                        </form> 
+                    </div>
+                </Box></>: null}
+                
+                {result && !(category === 'users' && method === 'add') ?
+                    returnTable()
+                : null}
+            </main>
+        </ThemeProvider>
     )
 }
 
@@ -752,11 +886,13 @@ Admin.defaultProps = {
         fields: [
              {
                 field: 'issueTitle', 
-                type: 'text'
+                type: 'text',
+                optional: false
              },
              {
                 field: 'pubDate',
-                type: 'datetime-local'
+                type: 'datetime-local',
+                optional: true
              }
         ]
     },
@@ -764,19 +900,23 @@ Admin.defaultProps = {
         fields: [
             {
                 field: 'articleTitle',
-                type: 'text'
+                type: 'text',
+                optional: false
             },
             {
                 field: 'authorId',
-                type: 'option'
+                type: 'option',
+                optional: true
             },
             {
                 field: 'text',
-                type: 'textarea'
+                type: 'textarea',
+                optional: false
             },
             {
                 field: 'issueId',
-                type: 'option'
+                type: 'option',
+                optional: true
             }   
         ]
     },
@@ -784,23 +924,28 @@ Admin.defaultProps = {
         fields: [
             {
                 field: 'authorFirst',
-                type: 'text'
+                type: 'text',
+                optional: false
             },
             {
                 field: 'authorLast',
-                type: 'text'
+                type: 'text',
+                optional: false
             },
             {
                 field: 'authorHandle',
-                type: 'text'
+                type: 'text',
+                optional: false
             },
             {
                 field: 'authorBio',
-                type: 'textarea'
+                type: 'textarea',
+                optional: true
             },
             {
                 field: 'icon',
-                type: 'file'
+                type: 'file',
+                optional: true
             }
         ]
     },
@@ -808,31 +953,38 @@ Admin.defaultProps = {
         fields: [
             {
                 field: 'userFirst',
-                type: 'text'
+                type: 'text',
+                optional: false
             },
             {
                 field: 'userLast',
-                type: 'text'
+                type: 'text',
+                optional: false
             },
             {
                 field: 'email',
-                type: 'email'
+                type: 'email',
+                optional: false
             },
             {
                 field: 'username',
-                type: 'text'
+                type: 'text',
+                optional: false
             },
             {
                 field: 'password',
-                type: 'password'
+                type: 'password',
+                optional: false
             },
             {
                 field: 'isAdmin',
-                type: 'checkbox'
+                type: 'checkbox',
+                optional: true
             },
             {
                 field: 'icon',
-                type: 'file'
+                type: 'file',
+                optional: true
             }
         ]
     },
@@ -840,19 +992,23 @@ Admin.defaultProps = {
         fields: [
             {
                 field: 'userId',
-                type: 'option'
+                type: 'option',
+                optional: false
             },
             {
                 field: 'text',
-                type: 'textarea'
+                type: 'textarea',
+                optional: false
             },
             {
                 field: 'articleId',
-                type: 'option'
+                type: 'option',
+                optional: false
             },
             {
                 field: 'postDate',
-                type: 'datetime-local'
+                type: 'datetime-local',
+                optional: true
             }
         ]
     },
@@ -860,11 +1016,13 @@ Admin.defaultProps = {
         fields: [
             {
                 field: 'articleId',
-                type: 'option'
+                type: 'option',
+                optional: false
             },
             {
                 field: 'keywords',
-                type: 'textarea'
+                type: 'textarea',
+                optional: false
             }
         ]
     },
@@ -872,15 +1030,16 @@ Admin.defaultProps = {
         fields: [
             {
                 field: 'keyword',
-                type: 'option'
+                type: 'option',
+                optional: false
             },
             {
                 field: 'edit',
-                type: 'text'
+                type: 'text',
+                optional: false
             }
         ]
     }
-
 };
 
 export default Admin;

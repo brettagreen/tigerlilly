@@ -21,9 +21,8 @@ class TigerlillyApi {
         
         for (let entry of formEntries) {
             formData.append(entry[0], entry[1]);
-            console.log('entry1', entry[1]);
-            console.log('typeof variable: ', typeof formData.get(entry[0]));
         }
+
         return formData;
     }
 
@@ -55,8 +54,8 @@ class TigerlillyApi {
     //GENERIC POST/PATCH/DELETE REQUEST
 
     static async commit(route, form, type, id = null) {
-        const formData = form? this.formData(form): null;
-
+        const formData = (route==='users'||route==='authors') && type!=='delete'? this.formData(form): form;
+        
         id = id === null ? '': id
         return await this.request(`${route}/${id}`, formData, type);
     }
@@ -115,6 +114,7 @@ class TigerlillyApi {
     }
 
     static async getObjectsWithComments(type) {
+        console.log('what is the type here?', type);
         return await this.request(`${type}/comments`);
     }
 

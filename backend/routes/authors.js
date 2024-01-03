@@ -21,6 +21,7 @@ const { upload, setFile } = require("../helpers/icons");
 
 router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
+        console.log('req.body', req.body);
         const validator = jsonschema.validate(req.body, authorNewSchema);
 
         if (!validator.valid) {
@@ -85,6 +86,7 @@ router.get("/authorHandle/:authorHandle", ensureLoggedIn, async function (req, r
  **/
 
 router.patch("/:id", ensureAdmin, upload.single('icon'), async function (req, res, next) {
+    console.log('req.body', req.body);
     try {
         const validator = jsonschema.validate(req.body, authorUpdateSchema);
 

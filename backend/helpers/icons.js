@@ -8,6 +8,8 @@ const storage = multer.diskStorage({
         cb(null, process.env.UPLOAD_PATH)
     },
     filename: function (req, file, cb) {
+        console.log('REQ', req);
+        console.log('FILE', file);
         cb(null, 'tempIcon_' + Date.now());
     }
 });
@@ -25,7 +27,7 @@ async function setFile(req, type, size) {
 
         icon
           .resize(size[0], size[1]) // resize
-          .quality(60) // set JPEG quality
+          .quality(100) // set JPEG quality
           .write(OUTFILE); // save
 
         //removing temp icon

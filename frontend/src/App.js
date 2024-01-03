@@ -1,4 +1,3 @@
-import './css/App.css';
 import TigerlillyApi from './api';
 import { BrowserRouter } from 'react-router-dom';
 import { useState } from 'react';

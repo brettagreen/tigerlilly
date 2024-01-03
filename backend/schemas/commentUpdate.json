@@ -7,12 +7,15 @@
         "anyOf": [
           {
             "type": "integer",
-            "minimum": 1,
+            "minimum": 0,
             "maximum": 1000
           },
           {
             "type": "string",
-            "pattern": "^\\d[0-9]{1,4}$"
+            "pattern": "^\\d[0-9]{1,4}$||^null$"
+          },
+          {
+            "type":"null"
           }
         ]
       },
@@ -29,18 +32,23 @@
           },
           {
             "type": "string",
-            "pattern": "^\\d[0-9]{1,4}$"
+            "pattern": "^\\d[0-9]{1,4}$||^null$"
+          },
+          {
+            "type":"null"
           }
         ]
       },
       "postDate": {
-        "type": "string"
+        "type": "string",
+        "minLength": 0,
+        "maxLength": 25
+          
       }
-
     },
     "additionalProperties": false,
     "required": [
       "text"    
     ]
-  }
+}
   

@@ -16,11 +16,11 @@
           "maximum": 1000
           },
           {
-            "type": "null"
+            "type": "string",
+            "pattern": "^\\d[0-9]{1,4}$||^null$"
           },
           {
-            "type": "string",
-            "pattern": "^\\d[0-9]{1,4}$"
+            "type":"null"
           }
         ]
       },
@@ -36,11 +36,11 @@
             "maximum": 1000
           },
           {
-            "type": "null"
+            "type": "string",
+            "pattern": "^\\d[0-9]{1,4}$||^null$"
           },
           {
-            "type": "string",
-            "pattern": "^\\d[0-9]{1,4}$"
+            "type":"null"
           }
         ]
       }

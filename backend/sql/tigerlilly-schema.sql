@@ -9,7 +9,8 @@ CREATE TABLE authors (
   author_first TEXT NOT NULL,
   author_last TEXT NOT NULL,
   author_handle TEXT NOT NULL UNIQUE,
-  author_bio TEXT DEFAULT 'this author prefers to keep an air of mystery about them',
+  author_bio TEXT CONSTRAINT bio_length CHECK (char_length(author_bio) <= 1000);
+    DEFAULT 'this author prefers to keep an air of mystery about them',
   icon TEXT DEFAULT 'defaultUserIcon.jpg'
 );
 
@@ -45,19 +46,10 @@ CREATE TABLE comments (
   id SERIAL PRIMARY KEY,
   user_id INTEGER
     REFERENCES users ON DELETE SET NULL,
-  text TEXT NOT NULL,
+  text TEXT CONSTRAINT comment_length CHECK (char_length(text) <= 1000);
   article_id INTEGER
     REFERENCES articles ON DELETE CASCADE,
   post_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-CREATE TABLE private_messages (
-  id SERIAL PRIMARY KEY,
-  sender INTEGER NOT NULL
-    REFERENCES users ON DELETE CASCADE,
-  recipient INTEGER NOT NULL
-    REFERENCES users ON DELETE CASCADE,
-  message_text TEXT NOT NULL
 );
 
 CREATE TABLE user_favorites (
