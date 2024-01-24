@@ -1,4 +1,5 @@
 import { Route, Navigate, Routes } from "react-router-dom";
+import About from "./About";
 import Admin from "./Admin";
 import Login from "./Login";
 import Logout from './Logout';
@@ -18,6 +19,7 @@ function TigerlillyRoutes({ profileUpdate, isLoggedIn, updateUserToken }) {
     return (
         <Routes>
             <Route path="/" element={<Issue />}/>
+            <Route path="/about" element={<About />}/>
             <Route path="/signMyAssUp" element={<SignIn />}/> 
             <Route path="/issues/:id" element={<Issue />}/>
             <Route path="/articles/:id" element={<Article />}/>

@@ -2,10 +2,17 @@ import TigerlillyApi from './api';
 import { BrowserRouter } from 'react-router-dom';
 import { useState } from 'react';
 import UserContext from "./userContext";
-import Nav from './Nav';
+import NavigationBar from './NavigationBar';
 import TigerlillyRoutes from './TigerlillyRoutes';
+import Box from '@mui/material/Box';
+import './css/app.css';
 
 function App() {
+	
+	const [localToken, localUser] = getLocalStorage();
+  
+	const [userToken, setUserToken] = useState(localToken);
+	const [user, setUser] = useState(localUser);
 
 	function getLocalStorage() {
 		const token = localStorage.getItem('userToken');
@@ -17,11 +24,6 @@ function App() {
   
 		return [token, user];
 	}
-  
-	const [localToken, localUser] = getLocalStorage();
-  
-	const [userToken, setUserToken] = useState(localToken);
-	const [user, setUser] = useState(localUser);
 
 	function updateUserToken(value) {
 		localStorage.setItem('userToken', value);
@@ -47,15 +49,17 @@ function App() {
 	}
 	
 	function isLoggedIn() {
-		return user;
+		return !!user;
 	}
 
 	return (
 		<UserContext.Provider value={{user, setCurrentUser}}>
 			<div className="App">
 				<BrowserRouter>
-					<Nav isLoggedIn={isLoggedIn}></Nav>
-					<TigerlillyRoutes profileUpdate={profileUpdate} isLoggedIn={isLoggedIn} updateUserToken={updateUserToken}/>
+					<NavigationBar />
+					<Box className="IssueBox" component="main">
+						<TigerlillyRoutes profileUpdate={profileUpdate} isLoggedIn={isLoggedIn} updateUserToken={updateUserToken}/>
+					</Box>
 				</BrowserRouter>
 			</div>
 	  </UserContext.Provider>

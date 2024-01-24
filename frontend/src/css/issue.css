@@ -1,7 +1,108 @@
-.Box {
-    margin-left: 20vw;
-    margin-right: 20vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+@font-face {
+    font-family: "Wmcorners2";
+    src: url("../../public/fonts/Wmcorners2-xjgV.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
 }
+
+#daGrid {
+    box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);
+    background-color: rgb(239, 230, 174);
+    border-radius: 2.5px;
+}
+
+#issueTitle {
+    font-style: italic;
+    text-align: center;
+    font-size: 3em;
+    font-family: Cinzel, serif;
+    font-variant: small-caps;
+    border-style: double none;
+    border-color: rgba(0, 0, 0, 0.87);
+    border-width: medium;
+    width: 100%;
+    box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);
+    background-color: rgb(239, 230, 174);
+
+}
+
+.bottomBorder {
+    border-bottom: solid 1px;
+    border-color: rgba(0,0,0,.1);
+}
+
+.sideBorders {
+    border-left: solid 1px;
+    border-right: solid 1px;
+    border-color: rgba(0,0,0,.1);
+}
+
+/* this goes for the whole site! */
+body {
+    background-color: rgba(239, 230, 174, .75);
+    margin: 0;
+    color: rgba(0, 0, 0, 0.87);
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5;
+    letter-spacing: 0.00938em;
+    background-image: url("../../public/images/extraextra.png");
+    background-repeat: repeat; 
+}
+
+#masthead {
+    width: 85vw;
+    height: 30vh;
+    border-radius: 2.5px;
+}
+
+#footer {
+    width: 85vw;
+    border-radius: 2.5px;
+    margin-top: 5vh;
+
+}
+
+/*#borderTopLeft {
+    float: left;
+}
+
+#borderTopRight {
+    rotate: 90deg;
+    float: right;
+}
+
+#borderBottomLeft {
+    rotate: 270deg;
+    float: left;
+}
+
+#borderBottomRight {
+    rotate: 180deg;
+    float: right;
+}
+
+.gridFrame {
+    font-family: "Wmcorners2";
+    display: inline-block;
+    font-size: 100pt;
+}
+
+ @media (min-width: 900px) {
+    .gridFrame {
+        font-size: 100pt;
+    }
+}
+
+@media (min-width: 600px) {
+    .gridFrame {
+        font-size: 75pt;
+    }
+}
+
+@media (min-width: 0px) {
+    .gridFrame {
+        font-size: 50pt;
+    }
+} */

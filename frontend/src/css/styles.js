@@ -1,5 +1,7 @@
 import createTheme from "@mui/material/styles/createTheme";
 
+const VIEW_WIDTH = document.documentElement.clientWidth;
+
 const formTheme = 
 	createTheme({
 		components: {
@@ -44,5 +46,99 @@ const textareaTheme =
 		}
 	});
 
+const issueTheme =
+	createTheme({
+		components: {
+			MuiLink: {
+				styleOverrides: {
+					root: {
+						color: '#434445',
+						textDecorationColor: '#434445',
+						fontWeight: 'bold'
+					}
+				}
+			},
+			MuiGrid: {
+				styleOverrides: {
+					root: {
+						'@media (min-width: 600px)': {
+							width: 'auto',
+							marginLeft: 'auto',
+							paddingLeft: '24px',
+							paddingRight: '24px',
+						},
+						'@media (min-width: 900px)': {
+							width: 'auto',
+							marginLeft: 'auto',
+							paddingLeft: '24px',
+							paddingRight: '24px'
+						},
+						'@media (min-width: 0px)': {
+							width: 'auto',
+							marginLeft: 'auto',
+							paddingLeft: '24px',
+							paddingRight: '24px'
+						}
+					}
+				}
+			}
+		}		
+	});
 
-export {formTheme, textareaTheme};
+const toolbarMenuTheme =
+	createTheme({
+		components: {
+			MuiPaper: {
+				styleOverrides: {
+					root: {
+						color: '#fff',
+						backgroundColor: 'rgba(0,0,0,.85)',
+						width: '22vw'
+					}
+				}
+			},
+			MuiListSubheader: {
+				styleOverrides: {
+					root: {
+						backgroundColor: 'rgba(239, 230, 174, .75)',
+						paddingLeft: '10px',
+						paddingRight: '10px',
+						height: '64px',
+						lineHeight: '0px'
+					}
+				}
+			},
+			MuiMenu: {
+				styleOverrides: {
+					list: {
+						backgroundColor: 'rgba(0,0,0,.85)'
+					}
+				}
+			}
+		}
+	});
+
+const userMenuTheme =
+createTheme({
+	components: {
+		MuiPaper: {
+			styleOverrides: {
+				root: {
+					width: '11vw',
+					backgroundColor: 'rgba(0,0,0,.85)',
+					top: '64px',
+					left: `calc(${VIEW_WIDTH}px - 11vw)`
+				}
+			}
+		},
+		MuiMenu: {
+			styleOverrides: {
+				paper: {
+					top: '64px'
+				}
+			}
+		}
+	}
+});
+
+export {formTheme, textareaTheme, issueTheme, toolbarMenuTheme, userMenuTheme};

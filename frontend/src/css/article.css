@@ -1,0 +1,46 @@
+@font-face {
+    font-family: "LimeGloryCaps";
+    src: url("../../public/fonts/LimeGloryCaps.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+#commentText {
+    font-size: small;
+}
+
+#commentHR {
+    border-top: dotted 1.5px;
+}
+
+#articleTitle {
+    font-variant: small-caps;
+}
+
+.borders {
+    border-left: solid 1px;
+    border-right: solid 1px;
+    border-color: rgba(0,0,0,.1);
+}
+
+.borderRight {
+    border-right: solid 1px;
+    border-color: rgba(0,0,0,.1);
+}
+
+.articleText::first-letter {
+    font-family: "LimeGloryCaps";
+    text-transform: capitalize;
+    font-size: 40pt;
+}
+
+.articleText::first-line {
+    font-family: 'LimeGloryCaps';
+    padding-bottom: 0px;
+    font-style: italic;
+    line-height: 1.4em;
+}
+
+.articleText {
+    margin-top: 2.5em;
+}
