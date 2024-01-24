@@ -2,6 +2,7 @@ import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TigerlillyApi from './api';
 import UserContext from './userContext';
+import {FormControl, TextField, InputLabel, Button} from '@mui/material';
 
 function Login({ updateUserToken }) {
 
@@ -18,7 +19,7 @@ function Login({ updateUserToken }) {
     const history = useNavigate();
 
     function handleChange(event) {
-        setForm(form => ({...form, [event.target.name]: event.target.value}));
+        setForm({...form, [event.target.name]: event.target.value});
     }
 
     async function submitAndClear(event) {
@@ -46,13 +47,14 @@ function Login({ updateUserToken }) {
     return (
         <>
             <h3 className="textInfo">Account login</h3>
-            <form className="form" onSubmit={submitAndClear}>
-                <label htmlFor="username">username: </label>
-                <input type="text" id="username" name="username" onChange={handleChange} /><br /><br />
-                <label htmlFor="password">password: </label>
-                <input type="password" id="password" name="password" onChange={handleChange} /><br /><br />
-                <button>submit</button>
-            </form>
+            <FormControl className="form" onSubmit={submitAndClear}>
+                <InputLabel htmlFor="username">username: </InputLabel>
+                <TextField type="text" id="username" name="username" onChange={handleChange} /><br /><br />
+                <InputLabel htmlFor="password">password: </InputLabel>
+                <TextField type="password" id="password" name="password" onChange={handleChange} /><br /><br />
+                <Button className="SubmitButton" type="submit" variant="outlined" size="small" sx={{backgroundColor: '#f3f2f2',
+                        color: '#171515', borderColor: '#171515', marginTop: '2em'}}>Submit</Button>
+            </FormControl>
             {error ? <h1>{error} please try again.</h1> : null}
         </>
     )

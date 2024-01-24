@@ -3,15 +3,19 @@ import TigerlillyApi from "./api";
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText,
-            InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Tooltip } from '@mui/material';
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
+            InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider } from '@mui/material';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { formTheme, textareaTheme } from './css/styles';
 
 /**
  * modularize,
  * comment on code,
  * write tests,
- * error handling
+ * error handling,
+ * search feature,
+ * update user/author icon on username change,
+ * fix stylized first sentence of articles,
+ * 
  */
 
 function Admin({ isAdmin }) {
@@ -57,7 +61,7 @@ function Admin({ isAdmin }) {
     const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle'];
 
     useEffect(() => {
-        console.log('useEffect() history');
+        console.log('allowed() useEffect');
         function allowed() {
             if (!isAdmin) {
                 history('/unauthorizedAdmin');
@@ -72,7 +76,7 @@ function Admin({ isAdmin }) {
     //so this is the best version of operational caching that I could come up with.
     useEffect(() => {
         async function loadTables() {
-            console.log('gETTing to loadTables() useEffect');
+            console.log('loadTables() useEffect');
             let resp;
 
             resp = await TigerlillyApi.get('articles');
@@ -163,7 +167,6 @@ function Admin({ isAdmin }) {
                 return val.id === targetId;
             });
             
-            console.log('object', obj);
             setEditObjectId(obj.id);
 
             for (let x = 0; x < fields.length; x++) {
@@ -182,12 +185,10 @@ function Admin({ isAdmin }) {
 
         } else {
             const num = Number(event.target.value.articleId);
-            console.log("NUM", num);
             setEditObjectId(num);
             setSelectedObject(event.target.value);
 
             const finalKeywordsObjects = [];
-            console.log('keywordeditvals', keywordEditValues);
 
             if (num === 0) {
                 const dupes = new Set();
@@ -421,16 +422,13 @@ function Admin({ isAdmin }) {
         console.log('submitted form', form);
 
         if (method === 'delete') {
-            console.log('ksdjfalskdfjal;skjdf;aslkdjfa;klsdjfa', category);
             response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' :
                          category, null, methodDictionary[method], objectId);
-            console.log('RESPONSE', response)
         } else if (method === 'edit') {
             response = await TigerlillyApi.commit(category === 'updateKeywords' ? 'keywords' :
                          category, form, methodDictionary[method], objectId);
         } else {
             response = await TigerlillyApi.commit(category, form, methodDictionary[method]);
-            console.log('comment response', response);
         }
 
         //trigger reload/fetch of whatever table has been updated just above
@@ -567,7 +565,6 @@ function Admin({ isAdmin }) {
 
         //users or articles
         const resp = await TigerlillyApi.getObjectsWithComments(event.target.value);
-        console.log('this is the comments resp', resp);
         
         editDeleteForm(resp[event.target.value], true, event.target.value);
         setFilterItems(true);
@@ -581,7 +578,6 @@ function Admin({ isAdmin }) {
         const filterType = val.type;
 
         const resp = await TigerlillyApi.getComments(Number(id), filterType);
-        console.log('more comments returned', resp);
 
         editDeleteForm(resp[category], false);
         setEditDelete(true);
@@ -590,16 +586,17 @@ function Admin({ isAdmin }) {
     }
 
     useEffect(() => {
+        console.log('form() useEffect');
         if (form) {
             entryForm.current.hidden = false;
         }
     }, [form]);
 
     useEffect(() => {
+        console.log('result() useEffect');
         if (!result) {
             setMethod('');
         }
-         console.log("RESULT", result);
     }, [result]);
 
     function returnTable() {
@@ -681,8 +678,8 @@ function Admin({ isAdmin }) {
 
     return (
         <ThemeProvider theme={formTheme}>
-            <main>
-                <Box className="Box" component="section">
+            <main id="adminMain">
+                <Box className="AdminBox" component="section">
                     <div className="FormControl">
                         <FormControl margin="normal" className="FormControl">
                             <InputLabel id="cat">--Select one of the following--</InputLabel>
@@ -743,7 +740,7 @@ function Admin({ isAdmin }) {
                 {form ?
                 <>
                 <hr id="adminHR" />
-                <Box className="Box" component="section">
+                <Box className="AdminBox" component="section">
                     <div hidden ref={entryForm}>
                         <form id="adminForm" encType="multipart/form-data" onSubmit={submitAndClear}> 
                             {Admin.defaultProps[category].fields.map((field, idx) => {
@@ -753,7 +750,7 @@ function Admin({ isAdmin }) {
                                 const disabled = method === 'delete' ? true : false;
                                 return (<>
                                     <FormControl margin="normal" className="FormControl">
-                                        {['text','email'].includes(field.type) ?
+                                        {['text','email','password'].includes(field.type) ?
                                             <TextField key={-idx-1} type={field.type} name={field.field} value={form[field.field]}
                                                     label={field.field} disabled={disabled} onChange={handleChange} /> :
                                         null}

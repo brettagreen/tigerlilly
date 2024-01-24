@@ -39,7 +39,7 @@ class Issue {
                 issue_title AS "issueTitle",
                 pub_date AS "pubDate"
             FROM issues
-            ORDER BY LOWER(issue_title)`);
+            ORDER BY pub_date`);
 
         return result.rows;
     }

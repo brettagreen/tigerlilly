@@ -1,0 +1,17 @@
+.IssueBox {
+    margin-top: 2vh;
+    margin-left: 7vw;
+    margin-right: 7vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding-left: 0px;
+    padding-top: 0px;
+}
+
+.NavBox {
+    margin: 0px;
+    display: flex;
+    padding: 0px;
+}    
