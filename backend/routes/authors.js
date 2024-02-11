@@ -44,10 +44,10 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
  *
  * Returns list of all authors
  *
- * admin only.
+ * any user
  **/
 
-router.get("/", ensureAdmin, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
     try {
         const authors = await Author.findAll();
         return res.json({ authors });

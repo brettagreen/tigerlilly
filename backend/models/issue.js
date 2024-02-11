@@ -126,11 +126,13 @@ class Issue {
 
     static async update(id, body) {
 
-        const r = await db.query(
+        let r = await db.query(
             `SELECT * FROM issues WHERE id=$1`, [id]
         );
 
 		if (!r.rows[0]) throw new NotFoundError(`No issue by that id: ${id}`);
+
+        r = r.rows[0];
         
 		const result = await db.query(
             `UPDATE issues

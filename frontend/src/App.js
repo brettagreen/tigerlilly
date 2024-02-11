@@ -9,9 +9,7 @@ import './css/app.css';
 
 function App() {
 	
-	const [localToken, localUser] = getLocalStorage();
-  
-	const [userToken, setUserToken] = useState(localToken);
+	const localUser = getLocalStorage();
 	const [user, setUser] = useState(localUser);
 
 	function getLocalStorage() {
@@ -22,34 +20,23 @@ function App() {
   
 		TigerlillyApi.token = token
   
-		return [token, user];
+		return user;
 	}
 
 	function updateUserToken(value) {
 		localStorage.setItem('userToken', value);
 		TigerlillyApi.token = value;
-		setUserToken(value);
-	  }
+	}
 	
-	async function setCurrentUser(username) {
-		if (!username) {
+	async function setCurrentUser(newUser) {
+		if (!newUser) {
 			localStorage.setItem('user', null);
 			setUser(null);
 		} else {
-			const thisUser = await TigerlillyApi.getUser(username);
-			console.log('thisUser.users', thisUser.users)
-			localStorage.setItem('user', JSON.stringify(thisUser.users));
-			setUser(thisUser.users);
+			localStorage.setItem('user', JSON.stringify(newUser));
+			setUser(newUser);
 		}
 	
-	}
-	
-	function profileUpdate(newUser) {
-		setUser(newUser);
-	}
-	
-	function isLoggedIn() {
-		return !!user;
 	}
 
 	return (
@@ -58,7 +45,7 @@ function App() {
 				<BrowserRouter>
 					<NavigationBar />
 					<Box className="IssueBox" component="main">
-						<TigerlillyRoutes profileUpdate={profileUpdate} isLoggedIn={isLoggedIn} updateUserToken={updateUserToken}/>
+						<TigerlillyRoutes updateUserToken={updateUserToken}/>
 					</Box>
 				</BrowserRouter>
 			</div>

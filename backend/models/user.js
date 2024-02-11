@@ -10,7 +10,7 @@ const { BCRYPT_WORK_FACTOR } = require("../config.js");
 class User {
   /** authenticate user with username, password.
    * 
-   * returns user sans password {userFirst, userLast, email, username, isAdmin, icon}
+   * returns user sans password { id, userFirst, userLast, email, username, isAdmin, icon }
    *  
    **/
 
@@ -18,7 +18,8 @@ class User {
 
 		// first, try to find the user
 		const result = await db.query(
-				`SELECT user_first AS "userFirst",
+				`SELECT id,
+						user_first AS "userFirst",
 						user_last AS "userLast",
 						email,
 						username,
@@ -48,7 +49,7 @@ class User {
 
 	/** Register user with passed form data.
 	 *
-	 * Returns { username, userFirst, userLast, email, isAdmin, icon }
+	 * Returns { id, username, userFirst, userLast, email, isAdmin, icon }
 	 *
 	 **/
 
@@ -79,7 +80,7 @@ class User {
 				email,
 				is_admin)
 			VALUES ($1, $2, $3, $4, $5, $6)
-			RETURNING username, user_first AS "userFirst", user_last AS "userLast", email, is_admin AS "isAdmin", icon`;
+			RETURNING id, username, user_first AS "userFirst", user_last AS "userLast", email, is_admin AS "isAdmin", icon`;
 
 			args = [username, hashedPassword, userFirst, userLast, email, isAdmin];
 
@@ -94,7 +95,7 @@ class User {
 				icon,
 				is_admin)
 			VALUES ($1, $2, $3, $4, $5, $6, $7)
-			RETURNING username, user_first AS "userFirst", user_last AS "userLast", email, is_admin AS "isAdmin", icon`;
+			RETURNING id, username, user_first AS "userFirst", user_last AS "userLast", email, is_admin AS "isAdmin", icon`;
 
 			args = [username, hashedPassword, userFirst, userLast, email, icon, isAdmin];
 		}
@@ -155,6 +156,24 @@ class User {
 		return user;
 	}
 
+  /** Return username based on user id
+   *
+   * Returns username
+   *
+   **/
+
+  static async getUsername(id) {
+	const user = await db.query(
+			`SELECT username
+			FROM users
+			WHERE id = $1`, [id]
+	);
+
+	if (!user) throw new NotFoundError(`No user with that id: ${id}`);
+
+	return user.rows[0].username;
+}
+
     /**
      * return all users that have made one or more comments
      * 
@@ -180,30 +199,45 @@ class User {
 
   /** 
    * Data can include:
-   *   { userFirst, userLast, email, username, icon, isAdmin }
+   *   { userFirst, userLast, email, username, password, icon }
    *
-   * Returns { userFirst, userLast, email, username, isAdmin, icon }
+   * Returns { id, userFirst, userLast, email, username, isAdmin, icon }
    *
    */
 
 	static async update(id, body, icon) {
 
-        const r = await db.query(
+        let r = await db.query(
             `SELECT * FROM users WHERE id=$1`, [id]
         );
 
 		if (!r.rows[0]) throw new NotFoundError(`No user found by that id: ${id}`);
 
+		let hashedPW;
+
+		if (body.password) {
+			hashedPW = await bcrypt.hash(body.password, BCRYPT_WORK_FACTOR);
+		}
+
+		if (body.isAdmin) {
+			body.isAdmin = String(body.isAdmin);
+		}
+
+		r = r.rows[0];
+
 		const result = await db.query(
 			`UPDATE users 
 			SET user_first = $1,
-			user_last = $2,
-			email = $3,
-			username = $4,
-			icon = $5,
-			is_admin = $6
-			WHERE id = $7
-			RETURNING username,
+				user_last = $2,
+				email = $3,
+				username = $4,
+				password = $5,
+				icon = $6,
+				is_admin = $7
+			WHERE id = $8
+			RETURNING 
+				id,
+				username,
 				user_first AS "userFirst",
 				user_last AS "userLast",
 				email,
@@ -215,8 +249,9 @@ class User {
 				body.userLast || r.user_last,
 				body.email || r.email,
 				body.username || r.username,
+				hashedPW || r.password,
 				icon || r.icon,
-				String(body.isAdmin) || r.is_admin,
+				body.isAdmin || r.is_admin,
 				id
 			]
 		);

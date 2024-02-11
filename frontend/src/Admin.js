@@ -1,24 +1,27 @@
 import './css/admin.css';
 import TigerlillyApi from "./api";
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText,
-            InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider } from '@mui/material';
+            InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Tooltip } from '@mui/material';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { formTheme, textareaTheme } from './css/styles';
+import UserContext from './userContext';
+
 
 /**
  * modularize,
  * comment on code,
  * write tests,
  * error handling,
- * search feature,
  * update user/author icon on username change,
- * fix stylized first sentence of articles,
+ *** better understand chrome dev tools
+ *** better understand debugging
+ *** SEO
  * 
  */
 
-function Admin({ isAdmin }) {
+function Admin() {
     const history = useNavigate();
 
     //filter/search related variables
@@ -33,6 +36,7 @@ function Admin({ isAdmin }) {
     const [showFilterItems, setFilterItems] = useState(false);
     const [showEditDelete, setEditDelete] = useState(false);
     const entryForm = useRef();
+    const hiddenFileInput = useRef();
 
     const [articles, setArticles] = useState(null);
     const [authors, setAuthors] = useState(null);
@@ -60,16 +64,18 @@ function Admin({ isAdmin }) {
     //result related
     const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle'];
 
+    const isAdmin = useContext(UserContext).user.isAdmin;
+
     useEffect(() => {
         console.log('allowed() useEffect');
         function allowed() {
             if (!isAdmin) {
-                history('/unauthorizedAdmin');
+                history('/unauthorized/notAdmin');
             }
         }
         allowed();
 
-    }, [isAdmin, history]);
+    }, [history, isAdmin]);
 
     //fetch table data up front on page load. reload if/when table has been updated (see submitAndClear function below)
     //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
@@ -80,19 +86,19 @@ function Admin({ isAdmin }) {
             let resp;
 
             resp = await TigerlillyApi.get('articles');
-            setArticles(resp['articles']);
+            setArticles(resp.articles);
 
             resp = await TigerlillyApi.get('authors');
-            setAuthors(resp['authors']);
+            setAuthors(resp.authors);
 
             resp = await TigerlillyApi.get('issues');
-            setIssues(resp['issues']);
+            setIssues(resp.issues);
 
             resp = await TigerlillyApi.get('keywords');
-            setKeywords(resp['keywords']);
+            setKeywords(resp.keywords);
 
             resp = await TigerlillyApi.get('users');
-            setUsers(resp['users']);
+            setUsers(resp.users);
 
         }
 
@@ -377,9 +383,11 @@ function Admin({ isAdmin }) {
 
         } else if (event.target.name === 'icon') {
             if (event.target.files[0].size > 3000000) {
+                return(
                 <Alert variant="filled" severity="warning">
                     Please choose a file 3MB or smaller.
                 </Alert>
+                )
             } else {
                 setForm({...form, [event.target.name]: event.target.files[0]});
             }
@@ -585,6 +593,10 @@ function Admin({ isAdmin }) {
         setCommentObject(val);
     }
 
+    function handleFileClick() {
+        hiddenFileInput.current.click();
+    };
+
     useEffect(() => {
         console.log('form() useEffect');
         if (form) {
@@ -679,70 +691,68 @@ function Admin({ isAdmin }) {
     return (
         <ThemeProvider theme={formTheme}>
             <main id="adminMain">
-                <Box className="AdminBox" component="section">
-                    <div className="FormControl">
-                        <FormControl margin="normal" className="FormControl">
-                            <InputLabel id="cat">--Select one of the following--</InputLabel>
-                            <Select className="Select" component="select" labelId="cat" name="type" onChange={fixCategory} 
-                                    value={category==='updateKeywords'?'keywords':category}>
-                                <MenuItem key="issues" className="MenuItem" value="issues">Issues</MenuItem>
-                                <MenuItem key="articles" className="MenuItem" value="articles">Articles</MenuItem>
-                                <MenuItem key="authors" className="MenuItem" value="authors">Authors</MenuItem>
-                                <MenuItem key="users" className="MenuItem" value="users">Users</MenuItem>
-                                <MenuItem key="comments" className="MenuItem" value="comments">Comments</MenuItem>
-                                <MenuItem key="keywords" className="MenuItem" value="keywords">Article keywords</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl margin="normal" className="FormControl" sx={{display: showMethodBox? undefined: 'none'}}>
-                            <InputLabel id="meth">--Select type of operation--</InputLabel>
-                            <Select className="Select" component="select" labelId="meth" onChange={fixMethod} value={method}>
-                                <MenuItem key="add" className="MenuItem" value="add">Add</MenuItem>
-                                <MenuItem key="edit" className="MenuItem" value="edit">Edit</MenuItem>
-                                <MenuItem key="delete" className="MenuItem" value="delete">Delete</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl margin="normal" className="FormControl" sx={{display: showCommentFilterBox? undefined: 'none'}}>
-                            <InputLabel id="filterby">--Filter By: --</InputLabel>
-                            <Select className="Select" component="select" labelId="filterby" onChange={fixFilter} value={filterVal}>
-                                <MenuItem key="filterArticles" className="MenuItem" value="articles">Article</MenuItem>
-                                <MenuItem key="filterUsers" className="MenuItem" value="users">User</MenuItem>
-                            </Select>
-                        </FormControl>
-                        <FormControl margin="normal" className="FormControl" sx={{display: showFilterItems? undefined: 'none'}}>
-                            <InputLabel id="objectfilter">--Select object to filter by--</InputLabel>
-                            <Select className="Select" component="select" labelId="objectfilter" 
-                                        onChange={selectFilteredComments} value={commentObject}>
-                                {filterValues ? filterValues.map((val, idx) => {
-                                    return (//<Tooltip disableFocusListener key={idx+1} title={val.display1}>
-                                                <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
-                                            //</Tooltip>
-                                            )
-                                }) : null}
-                            </Select>
-                        </FormControl>
-                        <FormControl margin="normal" className="FormControl" sx={{display: showEditDelete? undefined: 'none'}}>
-                            <InputLabel id="finalboss">--Select {category==='keywords'||category==='updateKeywords' ?
-                                                'Article to filter by' : category.substring(0,category.length-1)}
-                                                {category!=='keywords'&&category!=='updateKeywords' ? method === 'delete'?
-                                                'to delete': 'to modify':null}--
-                            </InputLabel>
-                            <Select className="Select" component="select" labelId="finalboss" onChange={selectItem} value={selectedObject}>
-                                {editValues ? editValues.map((val, idx) => {
-                                    return (//<Tooltip disableFocusListener key={idx+1} title={val.display1}>
-                                                <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
-                                            //</Tooltip>
-                                            )
-                                }) : null}
-                            </Select>
-                        </FormControl>
-                    </div>
+                <Box className="BackdropBox" component="section">
+                    <FormControl margin="normal" className="FormControl">
+                        <InputLabel id="cat">--Select one of the following--</InputLabel>
+                        <Select className="Select" component="select" labelId="cat" name="type" onChange={fixCategory} 
+                                value={category==='updateKeywords'?'keywords':category}>
+                            <MenuItem key="issues" className="MenuItem" value="issues">Issues</MenuItem>
+                            <MenuItem key="articles" className="MenuItem" value="articles">Articles</MenuItem>
+                            <MenuItem key="authors" className="MenuItem" value="authors">Authors</MenuItem>
+                            <MenuItem key="users" className="MenuItem" value="users">Users</MenuItem>
+                            <MenuItem key="comments" className="MenuItem" value="comments">Comments</MenuItem>
+                            <MenuItem key="keywords" className="MenuItem" value="keywords">Article keywords</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl margin="normal" className="FormControl" sx={{display: showMethodBox? undefined: 'none'}}>
+                        <InputLabel id="meth">--Select type of operation--</InputLabel>
+                        <Select className="Select" component="select" labelId="meth" onChange={fixMethod} value={method}>
+                            <MenuItem key="add" className="MenuItem" value="add">Add</MenuItem>
+                            <MenuItem key="edit" className="MenuItem" value="edit">Edit</MenuItem>
+                            <MenuItem key="delete" className="MenuItem" value="delete">Delete</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl margin="normal" className="FormControl" sx={{display: showCommentFilterBox? undefined: 'none'}}>
+                        <InputLabel id="filterby">--Filter By: --</InputLabel>
+                        <Select className="Select" component="select" labelId="filterby" onChange={fixFilter} value={filterVal}>
+                            <MenuItem key="filterArticles" className="MenuItem" value="articles">Article</MenuItem>
+                            <MenuItem key="filterUsers" className="MenuItem" value="users">User</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl margin="normal" className="FormControl" sx={{display: showFilterItems? undefined: 'none'}}>
+                        <InputLabel id="objectfilter">--Select object to filter by--</InputLabel>
+                        <Select className="Select" component="select" labelId="objectfilter" 
+                                    onChange={selectFilteredComments} value={commentObject}>
+                            {filterValues ? filterValues.map((val, idx) => {
+                                return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
+                                            <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
+                                        </Tooltip>
+                                        );
+                            }) : null}
+                        </Select>
+                    </FormControl>
+                    <FormControl margin="normal" className="FormControl" sx={{display: showEditDelete? undefined: 'none'}}>
+                        <InputLabel id="finalboss">--Select {category==='keywords'||category==='updateKeywords' ?
+                                            'Article to filter by' : category.substring(0,category.length-1)}
+                                            {category!=='keywords'&&category!=='updateKeywords' ? method === 'delete'?
+                                            'to delete': 'to modify':null}--
+                        </InputLabel>
+                        <Select className="Select" component="select" labelId="finalboss" onChange={selectItem} value={selectedObject}>
+                            {editValues ? editValues.map((val, idx) => {
+                                return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
+                                            <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
+                                        </Tooltip>
+                                        )
+                            }) : null}
+                        </Select>
+                    </FormControl>
                 </Box>
                 {form ?
                 <>
                 <hr id="adminHR" />
-                <Box className="AdminBox" component="section">
+                <Box className="BackdropBox" component="section">
                     <div hidden ref={entryForm}>
-                        <form id="adminForm" encType="multipart/form-data" onSubmit={submitAndClear}> 
+                        <form id="adminForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}> 
                             {Admin.defaultProps[category].fields.map((field, idx) => {
                                 if ((method === 'delete' || method === 'edit') && field.field === 'password') {
                                     return null;
@@ -765,7 +775,7 @@ function Admin({ isAdmin }) {
 
                                         {field.type ==='checkbox' ?
                                         <>
-                                            <InputLabel id={idx+field.field} shrink={true}>{field.field}</InputLabel>
+                                            <InputLabel id={idx+field.field} shrink={false}>{field.field}</InputLabel>
                                             <FormControlLabel control={
                                                 <Checkbox checked={form[field.field]} key={-idx-1} type={field.type} name={field.field} value={form[field.field]}
                                                         disableRipple={true} disabled={disabled} onChange={handleChange} 
@@ -776,15 +786,23 @@ function Admin({ isAdmin }) {
 
                                         {field.type ==='file' ?
                                             <>
-                                                <InputLabel id={idx+field.field} shrink={true}>{field.field}</InputLabel>
-                                                <TextField key={-idx-1} type={field.type} name={field.field} variant="standard"
-                                                         disabled={disabled} onChange={handleChange} />
+                                                <div style={{display: 'block'}}>
+                                                    <Button type="button" variant="outlined" onClick={handleFileClick}
+                                                            sx={{ display: 'inline-block', maxWidth: '10em', backgroundColor: '#f3f2f2', fontSize: '.6em',
+                                                            color: '#171515', borderColor: '#171515', marginTop: '1em', fontVariant: 'small-caps'}}
+                                                    >Select icon</Button>
+                                                    <span style={{display: 'inline-block', verticalAlign: 'bottom', marginLeft: '0.5em'}}>{form.icon?form.icon.name:"no file selected"}</span>
+
+                                                    <TextField className="HiddenField" key={-idx-1} type={field.type} name={field.field} variant="standard" onChange={handleChange}
+                                                                inputRef={hiddenFileInput} 
+                                                    />
+                                                </div>
                                             </> :
                                         null}
 
                                         {field.type ==='datetime-local' ?
                                             <>
-                                                <InputLabel id={idx+field.field} shrink={true}>{field.field}</InputLabel>
+                                                <InputLabel id={idx+field.field} shrink={false}>{field.field}</InputLabel>
                                                 <TextField key={-idx-1} type={field.type} name={field.field} variant="standard"
                                                          value={form[field.field]} disabled={disabled} onChange={handleChange} />
                                             </> :
@@ -854,16 +872,20 @@ function Admin({ isAdmin }) {
                                             </>:
                                         null}
                                         {field.optional ?
-                                            <FormHelperText sx={{marginTop: '0px'}}>*optional</FormHelperText>
+                                            <FormHelperText>*optional</FormHelperText>
                                         :null}
                                     </FormControl>
                                     <br />
                                 </>)
                             })}
                             {method === 'delete' ?
-                                <Button className="SubmitButton" type="submit" variant="outlined" size="small" sx={{backgroundColor: 'red', color: 'white', marginTop: '2em'}}>Delete</Button> :
-                                <Button className="SubmitButton" type="submit" variant="outlined" size="small" sx={{backgroundColor: '#f3f2f2', color: '#171515', 
-                                        borderColor: '#171515', marginTop: '2em'}}>Submit</Button>
+                                <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: 'red',
+                                        color: 'white', fontSize: '.6em', borderColor: '#171515', marginTop: '2em',
+                                        fontVariant: 'small-caps'}}
+                                >Delete</Button> :
+                                <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: '#f3f2f2',
+                                        color: '#171515', fontSize: '.6em', borderColor: '#171515', marginTop: '2em', fontVariant: 'small-caps'}}
+                                >Submit</Button>
                             }
                         </form> 
                     </div>

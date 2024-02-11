@@ -114,7 +114,7 @@ const {
 
         } else {
 
-            const result = await db.query(
+            await db.query(
                 `UPDATE article_keywords
                 SET keyword = $1
                 WHERE keyword = $2

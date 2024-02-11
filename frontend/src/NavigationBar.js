@@ -109,7 +109,7 @@ function NavigationBar() {
         setIssuesOpen(false);
 
         const resp = await TigerlillyApi.getIssue(id);
-        setMenuArticles(resp['issues']);
+        setMenuArticles(resp.issues);
     }
 
     function handleAuthorsClose() {
@@ -132,10 +132,7 @@ function NavigationBar() {
     }
 
 function handleOutsideClick(event) {
-    console.log('menuref current', menuRef.current);
-    console.log('event target', event.target);
     if (menuRef.current && !menuRef.current.contains(event.target)) {
-        console.log('closing menu');
         setMenuOpen(false);
         setAuthorsOpen(false);
         setIssuesOpen(false);
@@ -147,18 +144,19 @@ function handleOutsideClick(event) {
       document.addEventListener('click', handleOutsideClick);
 
       async function loadTables() {
-        console.log('loading data for menu');
         let resp;
 
         resp = await TigerlillyApi.get('authors');
-        setMenuAuthors(resp['authors']);
+        setMenuAuthors(resp.authors);
 
         resp = await TigerlillyApi.get('issues');
-        setMenuIssues(resp['issues']);
+        setMenuIssues(resp.issues);
 
     }
-    loadTables();
-  }, []);
+    if (user) {
+        loadTables();
+    }
+  }, [user]);
 
   return (
     <Box ref={menuRef}>
@@ -172,9 +170,9 @@ function handleOutsideClick(event) {
                 </Typography>
                     {user ?
                     <>
-                        <Tooltip disableFocusListener title={user['username']}>
+                        <Tooltip disableFocusListener title={user.username}>
                             <IconButton name="aviClick" p={0} onClick={toggleOpenUserMenu} disableRipple={true}>
-                                <Avatar alt="avatar" src={`/icons/${user['icon']}`}/>
+                                <Avatar alt="avatar" src={`/icons/${user.icon}`}/>
                             </IconButton>
                         </Tooltip>
                         <ThemeProvider theme={userMenuTheme}>
@@ -194,7 +192,7 @@ function handleOutsideClick(event) {
                         </ThemeProvider>
                     </>
                     :<>
-                        <Link href='/signup' underline='hover' color='#fff'>
+                        <Link href='/signup' underline='hover' color='#fff' sx={{marginRight: '3.3em'}}>
                             Signup
                         </Link>
                         <Link href='/login' underline='hover' color="#fff">
@@ -214,6 +212,13 @@ function handleOutsideClick(event) {
                             <CancelIcon sx={{height: '.8em'}}/>
                         </IconButton>
                     </ListSubheader>
+                    <ListItem>
+                        <Link href="/" underline='hover' color="#fff">
+                            <Typography color="inherit" component='span'>
+                                <ListItemText primary="Current Issue" />
+                            </Typography>
+                        </Link>
+                    </ListItem>
                     <ListItem key="issues" onClick={handleIssuesOpen} sx={{display:'block', width: '75%'}}>
                         <Typography component='span'>
                             <ListItemText sx={{float: 'left'}} primary="Issues" />

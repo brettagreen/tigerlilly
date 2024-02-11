@@ -11,7 +11,7 @@ const formTheme =
 						"&.Mui-selected": {
 							backgroundColor: '#fcfafa'
 						},
-						"&.Mui-hover": {
+						"&.:hover": {
 							backgroundColor: '#f3f2f2'
 						}
 					}
@@ -22,8 +22,41 @@ const formTheme =
 					root: {
 						height: '2em',
 						marginTop: '.5em',
-						marginBottom: '.5em',
-						width: '100%'
+						marginBottom: '.8em',
+						width: '100%',
+						'&.Mui-focused': {
+							borderColor: "rgba(0,0,0,.9)"
+						}
+					}
+				}
+			},
+			MuiFormLabel:  {
+				styleOverrides: {
+					root: {
+						'&.:after': {
+							color: "rgba(0, 0, 0, 0.9)"
+						}
+					}
+				}
+			},
+			MuiButtonBase: {
+				styleOverrides: {
+					root: {
+						'&.:hover': {
+							bgcolor: 'transparent',
+							borderColor: "rgba(0,0,0,.9)"
+						},
+						'&.Mui-focused': {
+							borderColor: "rgba(0,0,0,.9)"
+						}
+					}
+				}
+			},
+			MuiFormHelperText: {
+				styleOverrides: {
+					root: {
+						marginTop: '-4px',
+						marginBottom: '14px'
 					}
 				}
 			}
@@ -119,26 +152,26 @@ const toolbarMenuTheme =
 	});
 
 const userMenuTheme =
-createTheme({
-	components: {
-		MuiPaper: {
-			styleOverrides: {
-				root: {
-					width: '11vw',
-					backgroundColor: 'rgba(0,0,0,.85)',
-					top: '64px',
-					left: `calc(${VIEW_WIDTH}px - 11vw)`
+	createTheme({
+		components: {
+			MuiPaper: {
+				styleOverrides: {
+					root: {
+						width: '11vw',
+						backgroundColor: 'rgba(0,0,0,.85)',
+						top: '64px',
+						left: `calc(${VIEW_WIDTH}px - 11vw)`
+					}
 				}
-			}
-		},
-		MuiMenu: {
-			styleOverrides: {
-				paper: {
-					top: '64px'
+			},
+			MuiMenu: {
+				styleOverrides: {
+					paper: {
+						top: '64px'
+					}
 				}
 			}
 		}
-	}
-});
+	});
 
 export {formTheme, textareaTheme, issueTheme, toolbarMenuTheme, userMenuTheme};
