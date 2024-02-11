@@ -26,7 +26,7 @@ router.post("/testFileUpload", upload.single('icon'), async function (req, res, 
  * Registers/Adds new user to DB.
  *
  * This returns the newly created user and an authentication token for them:
- *  { { username, firstName, lastName, email, icon, isAdmin }, token }
+ *  { { id, username, firstName, lastName, email, icon, isAdmin }, token }
  * 
  * admin only backend for creating a user
  *
@@ -43,9 +43,9 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
 
         const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
 
-        const users = await User.register(req.body, icon);
-        const token = createToken(users);
-        return res.status(201).json({ users, token });
+        const user = await User.register(req.body, icon);
+        const token = createToken(user);
+        return res.status(201).json({ user, token });
 
     } catch (err) {
         return next(err);
@@ -56,7 +56,7 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
  *
  * user must include { username, password, firstName, lastName, email }
  *
- * Returns JWT token which can be used to authenticate further requests.
+ * Returns { user, token }. Token is used to authenticate further requests.
  *
  * all users.
  */
@@ -72,10 +72,10 @@ router.post("/register", upload.single('icon'), async function (req, res, next) 
   
         const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
 
-        const newUser = await User.register(req.body, icon);
-        const token = createToken(newUser);
+        const user = await User.register(req.body, icon);
+        const token = createToken(user);
 
-        return res.status(201).json({ token });
+        return res.status(201).json({ user, token });
     } catch (err) {
         return next(err);
     }
@@ -86,7 +86,7 @@ router.post("/register", upload.single('icon'), async function (req, res, next) 
  * Logs user into site, returns token.
  *
  * This returns the logged in user and an authentication token for them:
- *  {user: { username, firstName, lastName, email, isAdmin }, token }
+ *  {user: { id, username, firstName, lastName, email, isAdmin }, token }
  *
  * all users.
  **/
@@ -101,7 +101,7 @@ router.post("/login", async function (req, res, next) {
 
         const user = await User.authenticate(req.body);
         const token = createToken(user);
-        return res.status(201).json({ token });
+        return res.status(201).json({ user, token });
     } catch (err) {
         return next(err);
     }
@@ -172,7 +172,7 @@ router.get('/comments', ensureAdmin, async function (req, res, next) {
  * admin or same-user-as-:username
  */
 
-router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function (req, res,next) {
+router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function (req, res, next) {
 
 });
 
@@ -180,8 +180,7 @@ router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function
 /** PATCH /[id] { user } => { users }
  *
  * Data can include:
- *   { userFirst, userLast, email, icon } for actual user
- *   { userFirst, userLast, email, username, isAdmin, icon } for admin
+ *   { userFirst, userLast, email, username, password, icon }
  *
  * Returns { userFirst, userLast, email, username, isAdmin, icon }
  *
@@ -189,6 +188,7 @@ router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function
  **/
 
 router.patch("/:id", ensureCorrectUserOrAdmin, upload.single('icon'), async function (req, res, next) {
+    console.log('req.body', req.body);
     try {
         const validator = jsonschema.validate(req.body, userUpdateSchema);
 
@@ -197,7 +197,17 @@ router.patch("/:id", ensureCorrectUserOrAdmin, upload.single('icon'), async func
             throw new BadRequestError(errs);
         }
 
-        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
+        let icon;
+
+        if (!req.file) {
+            icon === undefined;
+        } else if (!req.body.username) {
+            const username = await User.getUsername(req.params.id);
+            icon = await setFile(req, 'user', [100, 100], username);
+        } else {
+            icon = await setFile(req, 'user', [100, 100]);
+        }
+
         console.log('icon', icon);
 
         const users = await User.update(req.params.id, req.body, icon);

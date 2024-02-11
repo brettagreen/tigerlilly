@@ -25,7 +25,7 @@ function Article({ passedArticle }) {
         console.log('user', user);
         console.log('commentForm', commentForm);
         const resp = await TigerlillyApi.commit('comments', commentForm, 'post');
-        setComments([...comments].unshift(resp['comments']));
+        setComments([...comments].unshift(resp.comments));
         setCommentForm({...commentForm, 'text': ''});
     }
 
@@ -41,8 +41,8 @@ function Article({ passedArticle }) {
         console.log('fetchComments() useEffect')
         const resp = await TigerlillyApi.getComments(id, 'articles');
 
-        if (resp['comments'].length !== 0) {
-            setComments(resp['comments']);
+        if (resp.comments.length !== 0) {
+            setComments(resp.comments);
         }
     }
 
@@ -50,7 +50,7 @@ function Article({ passedArticle }) {
         console.log('fetchKeywords() useEffect');
         const resp = await TigerlillyApi.getArticleKeywords(id);
 
-        setKeywords(resp['keywords']);
+        setKeywords(resp.keywords);
     }
 
     function toggleComments() {

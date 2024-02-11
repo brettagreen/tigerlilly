@@ -8,6 +8,11 @@
       "minLength": 3,
       "maxLength": 30
     },
+    "password": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 30
+    },
     "userFirst": {
       "type": "string",
       "minLength": 1,
@@ -21,7 +26,7 @@
     "email": {
       "type": "string",
       "minLength": 6,
-      "maxLength": 60,
+      "maxLength": 50,
       "format": "email"
     },
     "icon": {

@@ -43,10 +43,10 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  *
  * Returns [{id, issueTitle, pubDate }, ...]
  *
- * Admin only!
+ * any user
  **/
 
-router.get("/", ensureAdmin, async function (req, res, next) {
+router.get("/", async function (req, res, next) {
     try {
         const issues = await Issue.getAll();
         return res.json({ issues });

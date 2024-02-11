@@ -75,10 +75,10 @@ class TigerlillyApi {
         return await this.request('users/login', form, 'post');
     }
 
-    static async updateProfile(user, form) {
+    static async updateProfile(id, form) {
         const formData = this.formData(form);
         
-        return await this.request(`users/${user}`, formData, 'patch');
+        return await this.request(`users/${id}`, formData, 'patch');
     }
 
     //ARTICLES

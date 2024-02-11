@@ -11,31 +11,26 @@ import TestFileUpload from "./TestFileUpload";
 import User from './User';
 import Error from './401';
 import ArticlePreview from "./ArticlePreview";
-import UserProfile from "./UserProfile";
-import SignIn from "./SignIn";
 
-function TigerlillyRoutes({ profileUpdate, isLoggedIn, updateUserToken }) {
+function TigerlillyRoutes({ updateUserToken }) {
 
     return (
         <Routes>
             <Route path="/" element={<Issue />}/>
             <Route path="/about" element={<About />}/>
-            <Route path="/signMyAssUp" element={<SignIn />}/> 
             <Route path="/issues/:id" element={<Issue />}/>
             <Route path="/articles/:id" element={<Article />}/>
             <Route path="/author/:handle" element={<Author />}/>
             <Route path="/signup" element={<SignUp updateUserToken={updateUserToken}/>}/>
             <Route path="/login" element={<Login updateUserToken={updateUserToken}/>}/>
             <Route path="/logout" element={<Logout updateUserToken={updateUserToken}/>}/>
-            <Route path="/profile" element={<User isLoggedIn={isLoggedIn()} profileUpdate={profileUpdate}/>}/>
-            <Route path="/user/:username" element={<UserProfile/>}/>
+            <Route path="/profile" element={<User />}/>
             <Route path="/articleKeywords/:keyword" element={<ArticlePreview/>}/>
             <Route path="/testFileUpload" element={<TestFileUpload/>}/>
-            <Route path="/unauthorizeProfile" element={<Error type="profileError"/>}/>
-            <Route path="/unauthorizedAdmin" element={<Error type="adminError"/>}/>
-            <Route path="/badrequest" element={<Error type="nopage"/>}/>
-            <Route path="/admin" element={<Admin isAdmin={isLoggedIn() ? isLoggedIn().isAdmin : false}/>}/>
-            <Route path="*" element={<Navigate to="/badrequest" replace/>}/>
+            <Route path="/unauthorized/:type" element={<Error />}/>
+            <Route path="/badrequest/:type" element={<Error />}/>
+            <Route path="/admin" element={<Admin />}/>
+            <Route path="*" element={<Navigate to="/badrequest/noPage" replace/>}/>
         </Routes>
     )
 

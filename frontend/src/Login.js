@@ -1,22 +1,42 @@
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TigerlillyApi from './api';
 import UserContext from './userContext';
-import {FormControl, TextField, InputLabel, Button} from '@mui/material';
+import { FormControl, TextField, Button, Box, ThemeProvider, InputAdornment, IconButton } from '@mui/material';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import { formTheme } from './css/styles';
 
 function Login({ updateUserToken }) {
+
+    const loggedIn = useContext(UserContext).user;
+    const history = useNavigate();
+
+    useEffect(() => {
+        console.log('alreadyLoggedIn() useEffect');
+        function alreadyLoggedIn() {
+            if (loggedIn) {
+                history(`/badrequest/alreadyLoggedIn}`);
+            }
+        }
+        alreadyLoggedIn();
+
+    }, [history, loggedIn]);
 
     const INITIAL_STATE = {
         username: '',
         password: ''
     }
 
+    const [show1, setShow1] = useState(false);
+    const pwIcon1 = { endAdornment: <InputAdornment position="end"><IconButton onMouseOver={() => setShow1(true)}
+                        onMouseLeave={() => setShow1(false)}>{show1?<VisibilityOutlinedIcon />
+                        :<VisibilityOffIcon />}</IconButton></InputAdornment> };
+
     const setCurrentUser = useContext(UserContext).setCurrentUser;
 
     const [form, setForm] = useState(INITIAL_STATE);
     const [error, setError] = useState(null);
-
-    const history = useNavigate();
 
     function handleChange(event) {
         setForm({...form, [event.target.name]: event.target.value});
@@ -25,15 +45,15 @@ function Login({ updateUserToken }) {
     async function submitAndClear(event) {
         event.preventDefault();
 
-        let allAnswered = Object.values(form).every(item => {
+        const allAnswered = Object.values(form).every(item => {
             return item !== '';
         });
 
         if (allAnswered) {
             try {
-                const userToken = await TigerlillyApi.loginUser(form);
-                updateUserToken(userToken.token);
-                setCurrentUser(form.username);
+                const user = await TigerlillyApi.loginUser(form);
+                updateUserToken(user.token);
+                setCurrentUser(user.user);
                 setForm(INITIAL_STATE);
                 history('/');
             } catch (error) {
@@ -41,20 +61,30 @@ function Login({ updateUserToken }) {
                 setForm(INITIAL_STATE);
             }
         }
-
     }
 
     return (
         <>
-            <h3 className="textInfo">Account login</h3>
-            <FormControl className="form" onSubmit={submitAndClear}>
-                <InputLabel htmlFor="username">username: </InputLabel>
-                <TextField type="text" id="username" name="username" onChange={handleChange} /><br /><br />
-                <InputLabel htmlFor="password">password: </InputLabel>
-                <TextField type="password" id="password" name="password" onChange={handleChange} /><br /><br />
-                <Button className="SubmitButton" type="submit" variant="outlined" size="small" sx={{backgroundColor: '#f3f2f2',
-                        color: '#171515', borderColor: '#171515', marginTop: '2em'}}>Submit</Button>
-            </FormControl>
+            <h2 className="textInfo">Log in to your account</h2>
+
+            <ThemeProvider theme={formTheme}>
+                <div className="FormWrapper">
+                    <Box className="BackdropBox" component="section">
+                        <form id="loginForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}> 
+                            <FormControl margin="normal">
+                                <TextField type="text" label="username" name="username" variant="outlined" onChange={handleChange }
+                                        value={form.username} sx={{marginBottom: '.5em'}} />
+                                <TextField type={show1?"text":"password"} label="password" name="password" value={form.password} onChange={handleChange}
+                                            InputProps={pwIcon1} />
+                                <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: '#f3f2f2',
+                                        color: '#171515', fontSize: '.6em', borderColor: '#171515', marginTop: '2em',
+                                        fontVariant: 'small-caps'}}
+                                >Submit</Button>
+                            </FormControl>
+                        </form>
+                    </Box>
+                </div>
+            </ThemeProvider>
             {error ? <h1>{error} please try again.</h1> : null}
         </>
     )
