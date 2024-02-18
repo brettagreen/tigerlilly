@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import UserContext from './userContext';
 import { styled } from '@mui/material/styles';
 import TigerlillyApi from "./api";
@@ -11,6 +12,7 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ListItem from '@mui/material/ListItem';
@@ -26,27 +28,26 @@ import MenuItem from '@mui/material/MenuItem';
 import { ThemeProvider } from '@mui/material/styles';
 import { toolbarMenuTheme, userMenuTheme } from './css/styles';
 
-
 const drawerWidth = 225;
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, menuOpen }) => ({
+  })  (({ theme, menuOpen }) => ({
   
-  transition: theme.transitions.create(['margin', 'width'], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(menuOpen && {
-    width: `calc(100% - ${drawerWidth}px)`,
-    zIndex: theme.zIndex.drawer + 1,
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        ...(menuOpen && {
+            width: `calc(100% - ${drawerWidth}px)`,
+            zIndex: theme.zIndex.drawer + 1,
 
-    marginLeft: `${drawerWidth}px`,
-    transition: theme.transitions.create(['margin', 'width'], {
-      easing: theme.transitions.easing.easeOut,
-      duration: theme.transitions.duration.enteringScreen,
+            marginLeft: `${drawerWidth}px`,
+            transition: theme.transitions.create(['margin', 'width'], {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+        }),
     }),
-  }),
 }));
 
 const drawerStyle = {
@@ -73,7 +74,7 @@ function NavigationBar() {
     const [menuArticles, setMenuArticles] = useState(null);
 
     const user = useContext(UserContext).user;
-
+    const history = useNavigate();
     const menuRef = useRef();
 
     //right facing avatar options, for logged in users
@@ -164,8 +165,11 @@ function handleOutsideClick(event) {
             <AppBar position="static" sx={{backgroundColor: 'rgba(0,0,0,.85)', width: '100%'}}>
                 <Toolbar>
                 <Typography sx={{ flexGrow: 1 }}>
-                    <IconButton color="inherit" onClick={handleMenuOpen} edge="start" mr={2} disableRipple={true}>
+                    <IconButton color="inherit" onClick={handleMenuOpen} edge="start" disableRipple={true} sx={{marginRight: '.83em'}}>
                         <MenuIcon />
+                    </IconButton>
+                    <IconButton color="inherit" onClick={() => history('/')} disableRipple={true}>
+                        <HomeIcon />
                     </IconButton>
                 </Typography>
                     {user ?
@@ -234,6 +238,13 @@ function handleOutsideClick(event) {
                         <ListItemIcon sx={{float:'right'}}>
                             <ChevronRightIcon sx={{color: '#fff'}}/>
                         </ListItemIcon>
+                    </ListItem>
+                    <ListItem>
+                        <Link href="/games" underline='hover' color="#fff">
+                            <Typography color="inherit" component='span'>
+                                <ListItemText primary="Games!" />
+                            </Typography>
+                        </Link>
                     </ListItem>
                     <ListItem>
                         <Link href="/about" underline='hover' color="#fff">

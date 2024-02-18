@@ -15,7 +15,7 @@ const { upload, setFile } = require("../helpers/icons");
  * Registers/Adds new author to DB.
  *
  * This returns the newly created author:
- *  { id, author, authorFirst, authorLast, authorHandle, authorBio, icon }
+ *  { id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
  * 
  **/
 
@@ -40,7 +40,7 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
 });
 
 
-/** GET / => {[ { id, authorFirst, authorLast, authorHandle, authorBio, icon }, ... ] }
+/** GET / => {[ { id, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }, ... ] }
  *
  * Returns list of all authors
  *
@@ -59,7 +59,7 @@ router.get("/", async function (req, res, next) {
 
 /** GET /authorHandle[authorHandle] => { author }
  *
- * Returns { authorFirst, authorLast, authorHandle, authorBio, icon }
+ * Returns { authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
  *
  * any logged in user or admin
  **/
@@ -78,15 +78,14 @@ router.get("/authorHandle/:authorHandle", ensureLoggedIn, async function (req, r
 /** PATCH /[handle] { author } => { author }
  *
  * Data can include:
- *   { authorFirst, authorLast, authorHandle, authorBio, icon }
+ *   { authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
  *
- * Returns { authorFirst, authorLast, authorHandle, authorBio, icon }
+ * Returns { authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
  *
  * admin only
  **/
 
 router.patch("/:id", ensureAdmin, upload.single('icon'), async function (req, res, next) {
-    console.log('req.body', req.body);
     try {
         const validator = jsonschema.validate(req.body, authorUpdateSchema);
 
@@ -94,10 +93,20 @@ router.patch("/:id", ensureAdmin, upload.single('icon'), async function (req, re
             const errs = validator.errors.map(e => e.stack);
             throw new BadRequestError(errs);
         }
-        
-        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
+
+        let icon;
+
+        if (!req.file) {
+            icon = undefined;
+        } else if (!req.body.authorHandle) {
+            const authorHandle = await User.getHandle(req.params.id);
+            icon = await setFile(req, 'user', [300, 300], authorHandle);
+        } else {
+            icon = await setFile(req, 'user', [300, 300], req.body.authorHandle);
+        }
 
         const authors = await Author.update(req.params.id, req.body, icon);
+        
         return res.json({ authors });
     } catch (err) {
         return next(err);
@@ -107,7 +116,7 @@ router.patch("/:id", ensureAdmin, upload.single('icon'), async function (req, re
 
 /** Delete author from database
  *
- * returns { author, authorFirst, authorLast, authorHandle, authorBio, icon }
+ * returns { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
  * 
  * admin only
  **/

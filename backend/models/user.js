@@ -4,6 +4,7 @@ const db = require("../db");
 const bcrypt = require("bcrypt");
 const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expressError");
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
+const { renameFile } = require("../helpers/icons");
 
 /** Related functions for users. */
 
@@ -224,6 +225,12 @@ class User {
 		}
 
 		r = r.rows[0];
+
+		if (!icon && r.icon) {
+			if (req.body.username) {
+				icon = await renameFile(r.username, req.body.username, 'user');
+			}
+		}
 
 		const result = await db.query(
 			`UPDATE users 

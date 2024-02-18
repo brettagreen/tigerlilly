@@ -83,6 +83,19 @@ function User() {
         hiddenFileInput.current.click();
     };
 
+    function revertUpdate() {
+        setUpdate(false); 
+        setForm({
+            password: {value: ''},
+            confirmPassword: {value: ''},
+            username: {value: user.username},
+            userFirst: {value: user.userFirst},
+            userLast: {value: user.userLast},
+            email: {value: user.email},
+            icon: null
+        });
+    }
+
     useEffect(() => {
         function allowed() {
             if (!user) {
@@ -113,15 +126,18 @@ function User() {
                     Please choose a file 3MB or smaller.
             </Alert>:null}
         {update ? 
-        <>
-            <h2>Update your profile</h2><h3>Only fields you provide a value for will be updated</h3>
-        </> : null}
+            <div id="instructions">
+                <h2>Update your profile</h2>
+                <h3>Only fields you provide a value for will be updated</h3>
+                <h4>click on a field to see its current - unupdated - value</h4>
+            </div>
+        :null}
 
         {form?<ThemeProvider theme={formTheme}>
                 <div className="FormWrapper" style={{minWidth: '80vw', minHeight: '40vh'}}>
                     <Box component="section" sx={{marginLeft: '10vw', display: 'block', float: 'left', width: '50%'}}>
                         <form autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}>
-                            <FormControl margin="normal">
+                            <FormControl margin="normal" sx={{width: '90%'}}>
 
                                 <TextField type="text" label="username" name="username" value={form.username.value} disabled={!update}
                                             placeholder={update?user.username:null} error={form.username.error} onChange={handleChange} />
@@ -162,9 +178,8 @@ function User() {
                                     return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
                                 }):null}
 
-                                {update ?<>
-                                {/* icon file selection stuff*/}
-                                <div style={{display: 'block'}}>
+                                {update ?
+                                <div>
                                     <Button type="button" variant="outlined" onClick={handleFileClick}
                                             sx={{ display: 'inline-block', maxWidth: '10em', backgroundColor: '#f3f2f2', fontSize: '.6em',
                                             color: '#171515', borderColor: '#171515', marginTop: '1em', fontVariant: 'small-caps'}}
@@ -174,15 +189,21 @@ function User() {
                                     <TextField className="HiddenField" type="file" name="icon" variant="standard" onChange={handleChange}
                                                 inputRef={hiddenFileInput} 
                                     />
-                                </div></>
+                                </div>
                                 : null
                                 }
 
-                                {update ? 
-                                    <Button className="SubmitButton" type="submit" variant="outlined" sx={{ maxWidth: '10em',
-                                                backgroundColor: '#f3f2f2', color: '#171515', fontSize: '.6em',
-                                                borderColor: '#171515', marginTop: '2em', fontVariant: 'small-caps'}}
-                                    >Submit</Button>
+                                {update ?
+                                    <div>
+                                        <Button type="submit" variant="outlined" sx={{ display: 'inline-block', maxWidth: '10em',
+                                                    backgroundColor: '#f3f2f2', color: '#171515', fontSize: '.6em',
+                                                    borderColor: '#171515', marginTop: '2em', fontVariant: 'small-caps'}}
+                                        >Submit</Button>
+                                        <Button type="button" variant="outlined" sx={{ display: 'inline-block', maxWidth: '10em',
+                                                backgroundColor: 'red', color: '#171515', fontSize: '.6em', borderColor: '#171515',
+                                                marginTop: '2em', fontVariant: 'small-caps', marginLeft: '0.5em'}} onClick={revertUpdate}
+                                        >Cancel</Button>
+                                    </div>
                                 : null
                                 }
                             </FormControl>
@@ -195,7 +216,7 @@ function User() {
                         : null
                         }
                     </Box>
-                    {user?<img style={{display: 'block', float: 'left', width: '10vh', height: '10vh', borderRadius: '4px', marginLeft: 'auto',
+                    {user?<img style={{display: 'block', float: 'left', width: '20vh', height: '20vh', borderRadius: '4px', marginLeft: 'auto',
                                     marginRight: 'auto', marginTop: '2vh'}} src={`/icons/${user.icon}`} alt="user icon" />:null}
                 </div>
             </ThemeProvider>:null}

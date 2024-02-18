@@ -18,11 +18,16 @@
         "minLength": 2,
         "maxLength": 30
       },
+      "authorSlogan": {
+        "type": "string",
+        "minLength": 2,
+        "maxLength": 100
+      },
       "authorBio": {
         "anyOf": [
           {
             "type": "string",
-            "maxLength": 300
+            "maxLength": 5000
           }
         ]
       },

@@ -3,3 +3,17 @@
     width: 10vw;
     border-radius: 3px;
 }
+
+#instructions {
+    background-color: rgba(0,0,0,.85);
+    border-radius: 3px;
+    padding-top: .83em;
+    padding-bottom: .83em;
+    margin-bottom: .5em;
+    text-align: center;
+}
+
+#instructions > h2, h3, h4 {
+    color: #f3f2f2;
+    margin: 0;
+}

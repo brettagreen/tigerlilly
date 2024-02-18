@@ -10,7 +10,6 @@ function ArticlePreview() {
 
     useEffect(() => {
         async function getArticles() {
-            console.log('KEYWORD', keyword);
             const res = await TigerlillyApi.getTaggedArticles(keyword);
             setArticles(res.articles);
         }

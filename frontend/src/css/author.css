@@ -1,0 +1,32 @@
+@font-face {
+    font-family: "RainbowRegular";
+    src: url("../../public/fonts/RainbowColorsRegular-yaq2.ttf") format("truetype");
+    font-weight: bolder;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "TindakFundi";
+    src: url("../../public/fonts/TindakFundi-7BD0R.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+}
+
+#authorHeader {
+    font-family: 'RainbowRegular';
+    font-size: 3em;
+    margin-bottom: 0;
+}
+
+#authorSlogan {
+    font-family: "TindakFundi";
+    font-size: 4em;
+    font-style: italic;
+    margin: 0;
+    margin-bottom: .5em;
+}
+
+#authorCaption {
+    width: 250px; /* this is the width of the author image. */
+    font-size: .7em;
+}

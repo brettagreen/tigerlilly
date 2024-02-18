@@ -1,6 +1,5 @@
 const fs = require('fs');
 const jimp = require('jimp');
-
 const multer  = require('multer');
 
 const storage = multer.diskStorage({
@@ -15,9 +14,9 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-async function setFile(req, type, size, username=undefined) {
+async function setFile(req, type, size, username) {
 
-    let filename = (type==='user'?`${req.body.username || username}`:`${req.body.authorHandle}`) + `_${type}Icon.jpeg`;
+    const filename = (`${username}`) + `_${type}Icon.jpeg`;
     const OUTFILE = process.env.UPLOAD_PATH+'/'+filename;
 
     await jimp.read(req.file.path).then(
@@ -42,7 +41,23 @@ async function setFile(req, type, size, username=undefined) {
     });
 
     return filename;
-
 }
 
-module.exports = { upload, setFile }
+async function renameFile(oldUsername, newUsername, type) {
+    const oldFilename = (`${oldUsername}`) + `_${type}Icon.jpeg`;
+    const oldPath = process.env.UPLOAD_PATH+'/'+oldFilename;
+    
+    const newFilename = (`${newUsername}`) + `_${type}Icon.jpeg`;
+    const newPath = process.env.UPLOAD_PATH+'/'+newFilename;
+
+    fs.rename(oldPath, newPath, (err, resp) => {
+        console.log("renaming user icon file");
+        if (err) {
+            console.log('failed to rename user icon file');
+        }
+    });
+
+    return newFilename;
+}
+
+module.exports = { upload, setFile, renameFile }

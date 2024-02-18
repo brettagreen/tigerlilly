@@ -1,9 +1,10 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import TigerlillyApi from './api';
+import './css/author.css';
 import Link from '@mui/material/Link';
 
-import { Box, ListSubheader, List, ListItemButton, ListItemText, ListItem, Collapse } from '@mui/material';
+import { ListSubheader, List, ListItemButton, ListItemText, ListItem, Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material'
 
 function Author() {
@@ -22,35 +23,27 @@ function Author() {
         fetchAuthor();
     }, [handle]);
  
-    return (
-        <div className="FormWrapper">
-            <Box className="BackdropBox" component="section">
-                <div>
-                    {author ? 
-                        <div>
-                            <img src={`/icons/${author.icon}`} width={250} height={250} alt="author icon"/>
-                            <h2>name: {author.authorFirst + ' ' + author.authorLast}</h2>
-                            <h3>handle: {author.authorHandle}</h3>
-                            <h4>bio: {author.authorBio}</h4> 
-                        </div>
-                    : null}
-                </div>
-                <div>
-                    <List sx={{ width: '100%', backgroundColor: 'rgba(0,0,0,.85)' }} aria-labelledby="nested-list-subheader">
-                        <ListSubheader component="div" id="nested-list-subheader">
-                            Articles by author
-                        </ListSubheader>      
-                        <ListItemButton onClick={() => setOpen(!open)}>
-                            <ListItemText primary="Articles" />
+    return (<>
+        {author?
+            <>
+            <h1 id="authorHeader">Hey! Let's give it up for the one and only {author.author}!</h1>
+            <blockquote id="authorSlogan">
+                "{author.authorSlogan}"
+            </blockquote>
+            <div style={{display: 'block', width: '100%'}}>
+                <div style={{float: 'left', width: '30%'}}>
+                    <List sx={{ float: 'left', width: '80%'}} aria-labelledby="nested-list-subheader">
+                        <ListItemButton sx={{maxWidth: '120px'}} onClick={() => setOpen(!open)}>
+                            <ListItemText primary="Author articles" />
                             {open ? <ExpandLess /> : <ExpandMore />}
                         </ListItemButton>
                         <Collapse in={open} timeout="auto" unmountOnExit>
-                            {links ? links.map((link,idx) => {
+                            {links ? links.map((link, idx) => {
                                 return(
                                     <> 
                                         <ListItem key={idx}>
-                                            <Link href={`/articles/${link.id}`} underline='always' color="#fff">{link.articleTitle}</Link>
-                                            <Link href={`/issues/${link.issueId}`} underline='always' color="#fff">{link.issueTitle}</Link>
+                                            <Link href={`/articles/${link.id}`} underline='hover' color='inherit'>{link.articleTitle}</Link>
+                                            <Link href={`/issues/${link.issueId}`} underline='hover' color='inherit'>{link.issueTitle}</Link>
                                         </ListItem>
                                     </>
                                 )
@@ -58,8 +51,24 @@ function Author() {
                         </Collapse>
                     </List>
                 </div>
-            </Box>
-        </div>    
+                <div style={{float: 'right', width: '70%'}}>
+                    <div style={{float: 'right', margin: '10px'}}>
+                        {author ? 
+                            <div>
+                                <img src={`/icons/${author.icon}`} width={250} height={250} alt="author icon"/>
+                                <caption id="authorCaption">{`${author.author} aka ${author.authorHandle}`}</caption>
+                            </div>
+                        : null}
+                    </div>
+                    <div>
+                        <p>
+                            {author.authorBio}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            </>
+        :null}</>
     );
 
 }
