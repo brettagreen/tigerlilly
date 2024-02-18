@@ -37,20 +37,6 @@
     border-color: rgba(0,0,0,.1);
 }
 
-/* this goes for the whole site! */
-body {
-    background-color: rgba(239, 230, 174, .75);
-    margin: 0;
-    color: rgba(0, 0, 0, 0.87);
-    font-family: "Roboto","Helvetica","Arial",sans-serif;
-    font-weight: 400;
-    font-size: 1rem;
-    line-height: 1.5;
-    letter-spacing: 0.00938em;
-    background-image: url("../../public/images/extraextra.png");
-    background-repeat: repeat; 
-}
-
 #masthead {
     width: 85vw;
     height: 30vh;
@@ -64,7 +50,7 @@ body {
 
 }
 
-/*#borderTopLeft {
+#borderTopLeft {
     float: left;
 }
 
@@ -85,11 +71,12 @@ body {
 
 .gridFrame {
     font-family: "Wmcorners2";
-    display: inline-block;
+    display: block;
     font-size: 100pt;
+    line-height: 0;
 }
 
- @media (min-width: 900px) {
+/*@media (min-width: 900px) {
     .gridFrame {
         font-size: 100pt;
     }

@@ -9,6 +9,7 @@ CREATE TABLE authors (
   author_first TEXT NOT NULL,
   author_last TEXT NOT NULL,
   author_handle TEXT NOT NULL UNIQUE,
+  author_slogan TEXT NOT NULL,
   author_bio TEXT CONSTRAINT bio_length CHECK (char_length(author_bio) <= 1000);
     DEFAULT 'this author prefers to keep an air of mystery about them',
   icon TEXT DEFAULT 'defaultUserIcon.jpg'

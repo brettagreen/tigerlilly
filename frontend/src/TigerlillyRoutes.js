@@ -9,6 +9,7 @@ import Article from './Article';
 import Author from './Author';
 import TestFileUpload from "./TestFileUpload";
 import User from './User';
+import Games from './Games';
 import Error from './401';
 import ArticlePreview from "./ArticlePreview";
 
@@ -25,6 +26,7 @@ function TigerlillyRoutes({ updateUserToken }) {
             <Route path="/login" element={<Login updateUserToken={updateUserToken}/>}/>
             <Route path="/logout" element={<Logout updateUserToken={updateUserToken}/>}/>
             <Route path="/profile" element={<User />}/>
+            <Route path="/games" element={<Games />}/>
             <Route path="/articleKeywords/:keyword" element={<ArticlePreview/>}/>
             <Route path="/testFileUpload" element={<TestFileUpload/>}/>
             <Route path="/unauthorized/:type" element={<Error />}/>

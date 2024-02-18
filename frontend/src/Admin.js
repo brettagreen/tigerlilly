@@ -10,15 +10,19 @@ import UserContext from './userContext';
 
 
 /**
+ * author page,
+ * articles by keyword page,
+ * search feature? --> later
  * modularize,
  * comment on code,
  * write tests,
  * error handling,
- * update user/author icon on username change,
- *** better understand chrome dev tools
- *** better understand debugging
+ * mobile friendly --> later
+ * mui toolpad,
+ *** better understand chrome dev tools,
+ *** better understand debugging,
  *** SEO
- * 
+ *
  */
 
 function Admin() {
@@ -230,6 +234,7 @@ function Admin() {
     //formatting data field values per instance.
     function editDeleteForm(editValues, isFilter, type="") {
         console.log('edits()');
+        
         let att1;
         let att2;
         let att3;
@@ -621,7 +626,7 @@ function Admin() {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: '99%',
-            bgcolor: 'background.paper',
+            bgcolor: '#f3f2f2',
             border: '2px solid #000',
             boxShadow: 24,
             p: 4
@@ -880,7 +885,7 @@ function Admin() {
                             })}
                             {method === 'delete' ?
                                 <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: 'red',
-                                        color: 'white', fontSize: '.6em', borderColor: '#171515', marginTop: '2em',
+                                        color: '#171515', fontSize: '.6em', borderColor: '#171515', marginTop: '2em',
                                         fontVariant: 'small-caps'}}
                                 >Delete</Button> :
                                 <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: '#f3f2f2',
@@ -953,6 +958,11 @@ Admin.defaultProps = {
             },
             {
                 field: 'authorHandle',
+                type: 'text',
+                optional: false
+            },
+            {
+                field: 'authorSlogan',
                 type: 'text',
                 optional: false
             },

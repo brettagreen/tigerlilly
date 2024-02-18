@@ -7,11 +7,9 @@ const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const userLoginSchema = require("../schemas/userLogin.json");
-
-const router = express.Router();
-
 const { upload, setFile } = require("../helpers/icons");
 
+const router = express.Router();
 
 router.post("/testFileUpload", upload.single('icon'), async function (req, res, next) {
     const filename = !req.file ? null : await setFile(req, 'user', [100, 100]);
@@ -200,15 +198,13 @@ router.patch("/:id", ensureCorrectUserOrAdmin, upload.single('icon'), async func
         let icon;
 
         if (!req.file) {
-            icon === undefined;
+            icon = undefined;
         } else if (!req.body.username) {
             const username = await User.getUsername(req.params.id);
             icon = await setFile(req, 'user', [100, 100], username);
         } else {
-            icon = await setFile(req, 'user', [100, 100]);
+            icon = await setFile(req, 'user', [100, 100], req.body.username);
         }
-
-        console.log('icon', icon);
 
         const users = await User.update(req.params.id, req.body, icon);
         return res.json({ users });
