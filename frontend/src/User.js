@@ -127,9 +127,9 @@ function User() {
             </Alert>:null}
         {update ? 
             <div id="instructions">
-                <h2>Update your profile</h2>
-                <h3>Only fields you provide a value for will be updated</h3>
-                <h4>click on a field to see its current - unupdated - value</h4>
+                <h2 className="userEditAnnouncement">Update your profile</h2>
+                <h3 className="userEditAnnouncement">Only fields you provide a value for will be updated</h3>
+                <h4 className="userEditAnnouncement">click on a field to see its current - unupdated - value</h4>
             </div>
         :null}
 

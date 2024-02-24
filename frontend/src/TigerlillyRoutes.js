@@ -20,7 +20,7 @@ function TigerlillyRoutes({ updateUserToken }) {
             <Route path="/" element={<Issue />}/>
             <Route path="/about" element={<About />}/>
             <Route path="/issues/:id" element={<Issue />}/>
-            <Route path="/articles/:id" element={<Article />}/>
+            <Route path="/articles/:id" element={<Article passedArticle={null} issueArticle={false} />}/>
             <Route path="/author/:handle" element={<Author />}/>
             <Route path="/signup" element={<SignUp updateUserToken={updateUserToken}/>}/>
             <Route path="/login" element={<Login updateUserToken={updateUserToken}/>}/>

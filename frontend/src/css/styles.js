@@ -79,7 +79,7 @@ const textareaTheme =
 		}
 	});
 
-const issueTheme =
+const linkTheme =
 	createTheme({
 		components: {
 			MuiLink: {
@@ -90,7 +90,13 @@ const issueTheme =
 						fontWeight: 'bold'
 					}
 				}
-			},
+			}
+		}
+	});
+
+const gridTheme =
+	createTheme({
+		components: {
 			MuiGrid: {
 				styleOverrides: {
 					root: {
@@ -174,4 +180,4 @@ const userMenuTheme =
 		}
 	});
 
-export {formTheme, textareaTheme, issueTheme, toolbarMenuTheme, userMenuTheme};
+export {formTheme, textareaTheme, gridTheme, toolbarMenuTheme, userMenuTheme, linkTheme};

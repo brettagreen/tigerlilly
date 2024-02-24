@@ -4,69 +4,124 @@ import TigerlillyApi from './api';
 import './css/author.css';
 import Link from '@mui/material/Link';
 
-import { ListSubheader, List, ListItemButton, ListItemText, ListItem, Collapse } from '@mui/material';
-import { ExpandLess, ExpandMore } from '@mui/icons-material'
+import { List, ListItemButton, ListItemText, ListItem, Collapse } from '@mui/material';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
 
 function Author() {
     const { handle } = useParams();
     const [author, setAuthor] = useState(null);
     const [links, setLinks]  = useState(null);
-    const [open, setOpen] = useState(false);
+    const [primaryOpen, setPrimaryOpen] = useState(false);
+    const [uniqueIssues, setUniqueIssues] = useState(null);
+    const [issuesMap, setIssuesMap] = useState({});
 
     useEffect(() => {
-        async function fetchAuthor() {
+        console.log('useEffect() Author');
+
+        async function fetchAndFilter() {
             let res = await TigerlillyApi.getAuthor(handle);
             setAuthor(res.authors);
+
             res = await TigerlillyApi.getAuthorArticles(handle);
-            setLinks(res.articles);
+            let cutoff;
+            const articleArray = [];
+            for (let article of res.articles) {
+                cutoff = (article.pubDate).indexOf('T');
+                article.pubDate = (article.pubDate).substring(0, cutoff);
+                articleArray.push(article);
+            }
+
+            setLinks(articleArray);
+            console.log('links', articleArray);
+        
+            const filter = new Set();
+            for (let link of articleArray) {
+                filter.add(link.issueTitle+' '+link.pubDate);
+            }
+
+            const tempArray = Array.from(filter);
+            setUniqueIssues(tempArray);
+
+            const tempMap = {};
+            for (let item of tempArray) {
+                tempMap[item] = false;
+            }
+
+            setIssuesMap(tempMap);
         }
-        fetchAuthor();
+
+        fetchAndFilter()
     }, [handle]);
+
+    function setIssuesOpen(val) {
+        const tempMap = {...issuesMap};
+        tempMap[val] = !tempMap[val];
+        setIssuesMap(tempMap);
+    }
  
     return (<>
         {author?
             <>
-            <h1 id="authorHeader">Hey! Let's give it up for the one and only {author.author}!</h1>
-            <blockquote id="authorSlogan">
-                "{author.authorSlogan}"
-            </blockquote>
-            <div style={{display: 'block', width: '100%'}}>
-                <div style={{float: 'left', width: '30%'}}>
-                    <List sx={{ float: 'left', width: '80%'}} aria-labelledby="nested-list-subheader">
-                        <ListItemButton sx={{maxWidth: '120px'}} onClick={() => setOpen(!open)}>
-                            <ListItemText primary="Author articles" />
-                            {open ? <ExpandLess /> : <ExpandMore />}
-                        </ListItemButton>
-                        <Collapse in={open} timeout="auto" unmountOnExit>
-                            {links ? links.map((link, idx) => {
-                                return(
-                                    <> 
-                                        <ListItem key={idx}>
-                                            <Link href={`/articles/${link.id}`} underline='hover' color='inherit'>{link.articleTitle}</Link>
-                                            <Link href={`/issues/${link.issueId}`} underline='hover' color='inherit'>{link.issueTitle}</Link>
-                                        </ListItem>
-                                    </>
-                                )
-                            }) : null}
-                        </Collapse>
-                    </List>
-                </div>
-                <div style={{float: 'right', width: '70%'}}>
-                    <div style={{float: 'right', margin: '10px'}}>
-                        {author ? 
-                            <div>
+                <h1 id="authorHeader">Hey! Let's give it up for the one and only {author.author}!</h1>
+                <blockquote id="authorSlogan">
+                    "{author.authorSlogan}"
+                </blockquote>
+
+                <div style={{display: 'block', width: '100%', marginBottom: '.8em'}}>
+                    <div style={{float: 'left', width: '30%'}}>
+                        <List sx={{ float: 'left', width: '80%'}} aria-labelledby="nested-list-subheader">
+                            <ListItemButton key={'posbutton'} sx={{minWidth: '120px'}} disableRipple={true} focusRipple={false}
+                                    onClick={() => setPrimaryOpen(!primaryOpen)}>
+                                <ListItemText sx={{maxWidth: '120px'}} key={'ptun'}
+                                        primary="Author articles" />
+                                {primaryOpen ? <ExpandLess /> : <ExpandMore />}
+                            </ListItemButton>
+
+                            <Collapse in={primaryOpen} timeout="auto" unmountOnExit>
+                            {uniqueIssues? <span style={{paddingLeft: '2em', fontStyle: 'italic'}}>issues:</span>:null}
+                            {uniqueIssues? uniqueIssues.map((uniqueIssue, idx) => {
+                                return(<>
+                                    <ListItemButton key={idx} sx={{minWidth: '120px', paddingLeft: '2em'}} disableRipple={true} focusRipple={false}
+                                            onClick={() => setIssuesOpen(uniqueIssue)}>
+                                        <ListItemText sx={{maxWidth: '120px'}} key={idx} primary={uniqueIssue} />
+                                        {issuesMap[uniqueIssue] ? <ExpandLess /> : <ExpandMore />}
+                                    </ListItemButton>
+
+                                    <Collapse key={'howabouthere?'+idx} in={issuesMap[uniqueIssue]} timeout="auto" unmountOnExit>
+                                        {links? links.filter((link) => {
+                                            return link.issueTitle+' '+link.pubDate === uniqueIssue;
+                                        }).map((filteredlink, idx) => {
+                                            console.log('filteredlink', filteredlink);
+                                            return(
+                                                <ListItem key={idx} sx={{paddingLeft: '2em'}}>
+                                                    <Link href={`/articles/${filteredlink.articleId}`} underline='hover' color='inherit'>
+                                                        {filteredlink.articleTitle}
+                                                    </Link>
+                                                </ListItem>                                      
+                                            )
+                                        }):null}
+                                    </Collapse>
+                                </>)
+                            }):null}
+    
+                            </Collapse>
+                        </List>
+                    </div>
+
+                    <div style={{float: 'right', width: '70%'}}>
+                        <div style={{float: 'right', margin: '10px', marginTop: '16px'}}>
+                            <figure style={{margin: '7px'}}>
                                 <img src={`/icons/${author.icon}`} width={250} height={250} alt="author icon"/>
-                                <caption id="authorCaption">{`${author.author} aka ${author.authorHandle}`}</caption>
-                            </div>
-                        : null}
-                    </div>
-                    <div>
-                        <p>
-                            {author.authorBio}
-                        </p>
+                                <figcaption id="authorCaption">{`${author.author} aka ${author.authorHandle}`}</figcaption>
+                            </figure>
+                        </div>
+                        <div>
+                            <p>
+                                {author.authorBio}
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
             </>
         :null}</>
     );
