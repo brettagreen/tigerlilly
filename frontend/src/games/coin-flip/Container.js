@@ -19,7 +19,7 @@ const Container = () => {
 
     return (
         <div>
-            <h3>Who doesn't like flipping coins?</h3>
+            <h3 className="gameHeader">Who doesn't like flipping coins?</h3>
             <Coin side={headsTails}/>
             <button onClick={flipCoin}>fliiiipppp meeeee</button>
             <h5 data-testid="score">Out of {headsCount + tailsCount} flips, you have {headsCount} heads and {tailsCount} tails</h5>

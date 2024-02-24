@@ -71,7 +71,7 @@ router.get('/comments', ensureAdmin, async function (req, res, next) {
 
 /** GET /[id] => { article }
  *
- * Returns { articleTitle, authorFirst, authorLast, text, issueTitle }
+ * Returns { articleTitle, authorFirst, authorLast, authorHandle, text, issueTitle }
  *
  * Open to all!
  **/
@@ -105,7 +105,7 @@ router.get("/articleTitle/:articleTitle", async function (req, res, next) {
 /**
  * returns all articles written by specific author
  * 
- * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+ * returns [{ articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate }, ...]
  * 
  * Open to all!
  */
@@ -122,7 +122,7 @@ router.get('/authors/:handle', async function (req, res, next) {
 /**
  * returns all articles tagged with keyword
  * 
- * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+ * returns [{ articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId }, ...]
  * 
  * Open to all!
  */

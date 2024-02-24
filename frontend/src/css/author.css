@@ -16,6 +16,7 @@
     font-family: 'RainbowRegular';
     font-size: 3em;
     margin-bottom: 0;
+    font-variant: small-caps;
 }
 
 #authorSlogan {
@@ -23,10 +24,11 @@
     font-size: 4em;
     font-style: italic;
     margin: 0;
-    margin-bottom: .5em;
+    margin-bottom: .3em;
 }
 
 #authorCaption {
+    text-align: center;
     width: 250px; /* this is the width of the author image. */
     font-size: .7em;
 }

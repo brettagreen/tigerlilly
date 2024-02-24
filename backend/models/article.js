@@ -115,7 +115,7 @@ class Article {
 
     /** Given an article id, return article.
      *
-     * Returns { articleTitle, authorFirst, authorLast, text, issueTitle }
+     * Returns { articleTitle, authorFirst, authorLast, authorHandle, text, issueTitle }
      *
      **/
 
@@ -124,6 +124,7 @@ class Article {
                 `SELECT a.article_title AS "articleTitle",
                         w.author_first AS "authorFirst",
                         w.author_last AS "authorLast",
+                        w.author_handle AS "authorHandle",
                         a.text,
                         i.issue_title AS "issueTitle"
                 FROM articles a
@@ -193,7 +194,7 @@ class Article {
     /**
      * return all articles written by specific author
      * 
-     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate}, ...]
      */
 
     static async fetchByAuthor(handle) {
@@ -204,10 +205,14 @@ class Article {
                     au.author_last AS "authorLast",
                     au.author_handle AS "authorHandle",
                     a.text,
-                    a.issue_id AS "issueId"
+                    i.id AS "issueId",
+                    i.issue_title AS "issueTitle",
+                    i.pub_date AS "pubDate"
             FROM articles a
             LEFT JOIN authors au ON a.author_id = au.id
-            WHERE au.author_handle = $1`, [handle]);
+            LEFT JOIN issues i ON a.issue_id = i.id
+            WHERE au.author_handle = $1
+            ORDER BY i.pub_date desc`, [handle]);
 
         return result.rows;
     }

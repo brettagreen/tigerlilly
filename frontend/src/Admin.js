@@ -10,15 +10,13 @@ import UserContext from './userContext';
 
 
 /**
- * author page,
- * articles by keyword page,
- * search feature? --> later
+ * mui toolpad,
+ * search feature,
  * modularize,
  * comment on code,
  * write tests,
  * error handling,
  * mobile friendly --> later
- * mui toolpad,
  *** better understand chrome dev tools,
  *** better understand debugging,
  *** SEO
@@ -70,23 +68,13 @@ function Admin() {
 
     const isAdmin = useContext(UserContext).user.isAdmin;
 
-    useEffect(() => {
-        console.log('allowed() useEffect');
-        function allowed() {
-            if (!isAdmin) {
-                history('/unauthorized/notAdmin');
-            }
-        }
-        allowed();
-
-    }, [history, isAdmin]);
-
     //fetch table data up front on page load. reload if/when table has been updated (see submitAndClear function below)
     //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
     //so this is the best version of operational caching that I could come up with.
     useEffect(() => {
+        console.log('allowed() and loadTables() useEffect');
+
         async function loadTables() {
-            console.log('loadTables() useEffect');
             let resp;
 
             resp = await TigerlillyApi.get('articles');
@@ -103,11 +91,19 @@ function Admin() {
 
             resp = await TigerlillyApi.get('users');
             setUsers(resp.users);
-
+        }
+    
+        function allowed() {
+            if (!isAdmin) {
+                history('/unauthorized/notAdmin');
+            } else {
+                loadTables();
+            }
         }
 
-        loadTables();
-    }, []);
+        allowed();
+        
+    }, [history, isAdmin]);
 
     function fixCategory(event) {
         console.log('fixCategory()');
@@ -169,7 +165,9 @@ function Admin() {
         if (category !== 'keywords' && category !== 'updateKeywords') {
             const fields = Admin.defaultProps[category].fields;
 
+            console.log('event', event);
             const val = event.target.value;
+            console.log("jasdlkfjal;skdfjalksdfjalk;sdjfkl;asjdflk;asjdf;lkasjfa;lksdjf;alsdjfak;lsjf", val);
             const targetId = Number(val.id);
             setSelectedObject(val);
 
@@ -744,6 +742,7 @@ function Admin() {
                         </InputLabel>
                         <Select className="Select" component="select" labelId="finalboss" onChange={selectItem} value={selectedObject}>
                             {editValues ? editValues.map((val, idx) => {
+                                console.log('edit value val', val);
                                 return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
                                             <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
                                         </Tooltip>
