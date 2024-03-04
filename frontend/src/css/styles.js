@@ -101,20 +101,20 @@ const gridTheme =
 				styleOverrides: {
 					root: {
 						'@media (min-width: 600px)': {
-							width: 'auto',
-							marginLeft: 'auto',
+							width: '100%',
+							marginLeft: '0',
 							paddingLeft: '24px',
-							paddingRight: '24px',
+							paddingRight: '24px'
 						},
 						'@media (min-width: 900px)': {
-							width: 'auto',
-							marginLeft: 'auto',
+							width: '100%',
+							marginLeft: '0',
 							paddingLeft: '24px',
 							paddingRight: '24px'
 						},
 						'@media (min-width: 0px)': {
-							width: 'auto',
-							marginLeft: 'auto',
+							width: '100%',
+							marginLeft: '0',
 							paddingLeft: '24px',
 							paddingRight: '24px'
 						}

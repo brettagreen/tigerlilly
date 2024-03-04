@@ -123,6 +123,13 @@ class TigerlillyApi {
         return await this.request(`keywords/${articleId}`);
     }
 
+    //GENERAL SEARCH FOR AUTHORS/ARTICLES BASED ON KEYWORDS
+    static async search(kwdArray) {
+        const kwds = kwdArray.join(',');
+
+        return await this.request(`articles/search/${kwds}`);
+    }
+
     ////////////////////testing stuff
 
     static async testUpload(form, username) {

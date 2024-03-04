@@ -12,6 +12,11 @@ function App() {
 	const localUser = getLocalStorage();
 	const [user, setUser] = useState(localUser);
 
+	const [searchString, setSearchString] = useState(null);
+	const [searchArray, setSearchArray] = useState(null);
+	const [searchResults, setSearchResults] = useState(null);
+	const [searchVal, setSearchVal] = useState('');
+
 	function getLocalStorage() {
 		const token = localStorage.getItem('userToken');
 		let user = localStorage.getItem('user');
@@ -43,9 +48,10 @@ function App() {
 		<UserContext.Provider value={{user, setCurrentUser}}>
 			<div className="App">
 				<BrowserRouter>
-					<NavigationBar />
-					<Box className="IssueBox" component="main">
-						<TigerlillyRoutes updateUserToken={updateUserToken}/>
+					<NavigationBar setSearchString={setSearchString} setSearchArray={setSearchArray}
+					 		setSearchResults={setSearchResults} searchVal={searchVal} setSearchVal={setSearchVal}/>
+					<Box className="SiteBox" component="main">
+						<TigerlillyRoutes updateUserToken={updateUserToken} search={[searchString, searchArray, searchResults]}/>
 					</Box>
 				</BrowserRouter>
 			</div>

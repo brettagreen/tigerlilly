@@ -3,6 +3,7 @@
     src: url("../../public/fonts/LimeGloryCaps.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
+    letter-spacing: 0.00938em;
 }
 
 #commentText {
@@ -14,6 +15,7 @@
 }
 
 #articleTitle {
+    font-family: "Roboto","Helvetica","Arial",sans-serif;
     font-variant: small-caps;
 }
 
