@@ -115,18 +115,21 @@ class Article {
 
     /** Given an article id, return article.
      *
-     * Returns { articleTitle, authorFirst, authorLast, authorHandle, text, issueTitle }
+     * Returns { articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate }
      *
      **/
 
     static async get(id) {
         const result = await db.query(
-                `SELECT a.article_title AS "articleTitle",
+                `SELECT a.id AS "articleId",
+                        a.article_title AS "articleTitle",
                         w.author_first AS "authorFirst",
                         w.author_last AS "authorLast",
                         w.author_handle AS "authorHandle",
                         a.text,
-                        i.issue_title AS "issueTitle"
+                        i.id AS "issueId",
+                        i.issue_title AS "issueTitle",
+                        i.pub_date AS "pubDate"
                 FROM articles a
                 LEFT JOIN authors w ON a.author_id = w.id
                 LEFT JOIN issues i ON a.issue_id = i.id
@@ -168,30 +171,6 @@ class Article {
 
 
     /**
-     * return all articles that contain specified keyword
-     * 
-     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
-     */
-
-    static async fetchByKeyword(keyword) {
-        const result = await db.query(
-            `SELECT a.id AS "articleId",
-                    a.article_title AS "articleTitle",
-                    au.author_first AS "authorFirst",
-                    au.author_last AS "authorLast",
-                    au.author_handle AS "authorHandle",
-                    a.text,
-                    a.issue_id AS "issueId"
-            FROM articles a
-            LEFT JOIN article_keywords aw ON a.id = aw.article_id
-            LEFT JOIN authors au ON a.author_id = au.id
-            WHERE aw.keyword = $1`, [keyword]);
-        
-        return result.rows;
-    }
-
-
-    /**
      * return all articles written by specific author
      * 
      * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate}, ...]
@@ -217,6 +196,7 @@ class Article {
         return result.rows;
     }
 
+
     /**
      * return all articles that have one or more comments
      * 
@@ -240,7 +220,62 @@ class Article {
         );
 
         return result.rows;
-    }  
+    }
+
+
+    /**
+     * return all articles that contain specified keyword
+     * 
+     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+     */
+
+    static async fetchByKeyword(keyword) {
+        const result = await db.query(
+            `SELECT a.id AS "articleId",
+                    a.article_title AS "articleTitle",
+                    au.author_first AS "authorFirst",
+                    au.author_last AS "authorLast",
+                    au.author_handle AS "authorHandle",
+                    a.text,
+                    a.issue_id AS "issueId"
+            FROM articles a
+            LEFT JOIN article_keywords aw ON a.id = aw.article_id
+            LEFT JOIN authors au ON a.author_id = au.id
+            WHERE aw.keyword = $1`, [keyword]);
+        
+        return result.rows;
+    }
+
+    /**
+     * returns all articles containing search term(s) somewhere in its text or title.
+     * if search term is a match, article object will be returned
+     * to the controlling function
+     * 
+     * returns [{ articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId }, ...]
+     * 
+     */
+
+    static async search(keywords) {
+        let result;
+        const resultsSet = new Set();
+
+        for (let term of keywords) {
+            console.log('keywords term', term);
+            if (term.startsWith('"') || term.startsWith("'")) {
+                term = term.substring(1, term.length-1);
+            }
+            result = await db.query(
+                `SELECT id FROM articles WHERE text ILIKE $1 OR article_title ILIKE $1`, ['%'+term+'%']
+            );
+
+            for (let row of result.rows) {
+                resultsSet.add(row.id);
+            } 
+        }
+
+        console.log('keywords resultsSet', resultsSet);
+        return resultsSet;
+    }
 
     /** updates an article 
      * 
