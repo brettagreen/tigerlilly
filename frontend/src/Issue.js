@@ -78,8 +78,8 @@ function Issue() {
 
     function createGrid() {
         return(<>
-            <span id="borderTopLeft" className="gridFrame">&#111;</span>
-            <span id="borderTopRight" className="gridFrame">&#111;</span>
+            {/* <span id="borderTopLeft" className="gridFrame">&#111;</span>
+            <span id="borderTopRight" className="gridFrame">&#111;</span> */}
             <Grid id="daGrid" container rowSpacing={2} columnSpacing={{xs:2, sm:3, md:4}} columns={{xs:2, sm:3, md:4}}>
                 {issue.map((article, idx) => {
                     return( 
@@ -89,8 +89,8 @@ function Issue() {
                     )
                 })}
             </Grid>
-            <span id="borderBottomLeft" className="gridFrame">&#111;</span>
-            <span id="borderBottomRight" className="gridFrame">&#111;</span>
+            {/* <span id="borderBottomLeft" className="gridFrame">&#111;</span>
+            <span id="borderBottomRight" className="gridFrame">&#111;</span> */}
         </>)
     }
     
@@ -102,12 +102,12 @@ function Issue() {
                         <img id="masthead" src="/images/masthead.jpg" alt="masthead"/>
                     </header>
                     <h1 id="issueTitle">{issue[0].issueTitle}</h1>
-                    <div style={{display: 'block', width: '118%'}}>
+                    <div style={{display: 'block'}}>
                         {createGrid()}
                     </div>
-                    <footer>
+                    {/* <footer>
                         <img id="footer" src="/images/footer.jpg" alt="footer" />
-                    </footer>
+                    </footer> */}
                 </ThemeProvider>
             </>
         );

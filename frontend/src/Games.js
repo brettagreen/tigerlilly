@@ -22,7 +22,7 @@ function Games() {
         return () => {
             body.style.removeProperty('background');
             body.style.removeProperty('background-attachment');
-            body.style.setProperty('background-image', 'url(./images/extraextra.png)');
+            body.style.setProperty('background-image', 'url(/images/extraextra.png)');
             body.style.setProperty('background-repeat', 'repeat');
             body.style.setProperty('background-color', 'rgba(239, 230, 174, .75)');
         }

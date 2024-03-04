@@ -10,16 +10,10 @@ import UserContext from './userContext';
 
 
 /**
- * mui toolpad,
- * search feature,
  * modularize,
  * comment on code,
  * write tests,
- * error handling,
- * mobile friendly --> later
- *** better understand chrome dev tools,
- *** better understand debugging,
- *** SEO
+ * error handling
  *
  */
 

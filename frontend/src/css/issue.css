@@ -7,7 +7,7 @@
 
 #daGrid {
     box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);
-    background-color: rgb(239, 230, 174);
+    background-color: rgb(210, 205, 140);
     border-radius: 2.5px;
 }
 
@@ -22,7 +22,7 @@
     border-width: medium;
     width: 100%;
     box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);
-    background-color: rgb(239, 230, 174);
+    background-color: rgb(255, 127, 80);
     margin-bottom: 1.5em;
 
 }
@@ -40,7 +40,7 @@
 
 #masthead {
     width: 85vw;
-    height: 30vh;
+    height: 65vh;
     border-radius: 2.5px;
 }
 
@@ -53,29 +53,29 @@
 
 #borderTopLeft {
     float: left;
-    top: 34px;
-    left: 130px;
+    top: 48px;
+    left: 39px;
 }
 
 #borderTopRight {
     rotate: 90deg;
     float: right;
-    top: 34px;
-    right: 130px;
+    top: 48px;
+    right: 17px;
 }
 
 #borderBottomLeft {
     rotate: 270deg;
     float: left;
-    bottom: 47px;
-    left: 131px;
+    bottom: 48px;
+    left: 39px;
 }
 
 #borderBottomRight {
     rotate: 180deg;
     float: right;
-    bottom: 47px;
-    right: 131px;
+    bottom: 48px;
+    right: 17px;
 }
 
 .gridFrame {

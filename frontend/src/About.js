@@ -1,3 +1,8 @@
+/**
+ * 
+ * @returns 
+ */
+
 function About() {
 
     return ("We're 'about' excellence in journalism. Any other questions?");
