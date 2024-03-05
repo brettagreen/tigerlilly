@@ -6,6 +6,8 @@ const { ensureAdmin } = require("../middleware/auth");
 const newArticleSchema = require("../schemas/articleNew.json");
 const updateArticleSchema = require("../schemas/articleUpdate.json");
 const Article = require("../models/article");
+const Keyword = require("../models/keyword");
+const { text } = require("body-parser");
 const router = express.Router();
 
 /** POST / { article }  => { article }
@@ -131,6 +133,56 @@ router.get('/keywords/:keyword', async function (req, res, next) {
     try {
         const articles = await Article.fetchByKeyword(req.params.keyword);
         return res.json({ articles });
+    } catch (err) {
+        return next(err);
+    }
+});
+
+/**
+ * returns all articles containing keywords somewhere in its text or title
+ * AND
+ * returns all articles containing passed hashtag(s)
+ * AND
+ * duplicate article objects returned from the respective searches will be returned
+ * only once
+ * 
+ * returns [{ articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, pubDate }, ...]
+ * 
+ * Open to all!
+ */
+
+router.get('/search/:kwds', async function (req, res, next) {
+    try {
+        const kwds = Array.from(req.params.kwds.split(','));
+        console.log('kwds array', kwds);
+        const keywords = [];
+        const hashtags = [];
+
+        //console.log('kwds', req.params.kwds);
+        for (let item of kwds) {
+            if (item.startsWith('*')) {
+                hashtags.push(item);
+            } else {
+                keywords.push(item);
+            }
+        }
+
+        let keywordsSet; 
+        let hashtagsSet; 
+        if (keywords) {
+            keywordsSet = await Article.search(keywords);
+        }
+        if (hashtags) {
+            hashtagsSet = await Keyword.search(hashtags);
+        }
+
+        const combinedSet = new Set(Array.from(keywordsSet).concat(Array.from(hashtagsSet)));
+        let results = [];
+        for (let id of Array.from(combinedSet)) {
+            results.push(await Article.get(id));
+        }
+
+        return res.json({ results });
     } catch (err) {
         return next(err);
     }

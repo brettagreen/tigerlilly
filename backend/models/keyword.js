@@ -1,6 +1,5 @@
-"use strict";
-
 const db = require("../db");
+
 const {
         NotFoundError,
         BadRequestError
@@ -91,6 +90,34 @@ const {
         );
         
         return result.rows;
+    }
+
+    /**
+     * returns all articles containing passed hashtag(s).
+     * if search term is a match, article object will be returned to the controlling function
+     * 
+     * returns [{ articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId }, ...]
+     * 
+     */
+
+    static async search(hashtags) {
+        let result;
+        const resultsSet = new Set();
+
+        for (let term of hashtags) {
+            console.log('hashtags term', term);
+            result = await db.query(
+                `SELECT article_id FROM article_keywords WHERE keyword ILIKE $1`, 
+                    ['%'+term.substring(1,term.length)+'%']
+            );
+
+            for (let row of result.rows) {
+                resultsSet.add(row.article_id);
+            } 
+        }
+
+        console.log('hashtags resultsSet', resultsSet);
+        return resultsSet;
     }
 
     /**
