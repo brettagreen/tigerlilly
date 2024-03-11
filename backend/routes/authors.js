@@ -17,6 +17,8 @@ const { upload, setFile } = require("../helpers/icons");
  * This returns the newly created author:
  *  { id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
  * 
+ * admin only!
+ * 
  **/
 
 router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, next) {
@@ -61,10 +63,10 @@ router.get("/", async function (req, res, next) {
  *
  * Returns { authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
  *
- * any logged in user or admin
+ * any user
  **/
 
-router.get("/authorHandle/:authorHandle", ensureLoggedIn, async function (req, res, next) {
+router.get("/authorHandle/:authorHandle", async function (req, res, next) {
 
     try {
         const authors = await Author.get(req.params.authorHandle);

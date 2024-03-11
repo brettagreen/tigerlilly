@@ -1,6 +1,6 @@
 import { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router';
-import { FormControl, TextField, Button, Box, ThemeProvider, Alert, IconButton, InputAdornment, FormHelperText } from '@mui/material';
+import { FormControl, TextField, Button, ThemeProvider, Alert, IconButton, InputAdornment, FormHelperText } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import UserContext from "./userContext";
@@ -94,77 +94,76 @@ function SignUp({ updateUserToken }) {
                 Please choose a file 3MB or smaller.
             </Alert>:null}
 
-            <h2 style={{marginBottom: '0px'}} className="textInfo">Create your account</h2>
-            <h3 style={{marginTop: '0px'}} className="testInfo">All fields required unless marked *optional</h3>
-            
+            <div className="PageHeader">
+                <h2 style={{marginBottom: '0px'}} className="textInfo">Create your account</h2>
+                <h3 style={{marginTop: '0px'}} className="testInfo">All fields required unless marked *optional</h3>
+            </div>
             <ThemeProvider theme={formTheme}>
-                <div className="FormWrapper">
-                    <Box className="BackdropBox" component="section">
-                        <form autoComplete="off" noValidate encType="multipart/form-data" onSubmit={submitAndClear}> 
-                            <FormControl margin="normal" sx={{width: '100%'}}>
+                <div className="BackdropWrapper">
+                    <form autoComplete="off" noValidate encType="multipart/form-data" onSubmit={submitAndClear}> 
+                        <FormControl margin="normal" sx={{width: '100%'}}>
 
-                                <TextField type="text" label="username" name="username" value={form.username.value} onChange={handleChange}
-                                            error={form.username.error} 
+                            <TextField type="text" label="username" name="username" value={form.username.value} onChange={handleChange}
+                                        error={form.username.error} 
+                            />
+                            {form.username.errorMsg.map((val, idx) => {
+                                return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
+                            })}
+
+                            <TextField type={show1?"text":"password"} label="password" name="password" value={form.password.value}
+                                        onChange={handleChange} error={form.password.error} InputProps={pwIcon1}
                                 />
-                                {form.username.errorMsg.map((val, idx) => {
-                                    return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
-                                })}
+                            {form.password.errorMsg.map((val, idx) => {
+                                return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
+                            })}
 
-                                <TextField type={show1?"text":"password"} label="password" name="password" value={form.password.value}
-                                            onChange={handleChange} error={form.password.error} InputProps={pwIcon1}
-                                 />
-                                {form.password.errorMsg.map((val, idx) => {
-                                    return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
-                                })}
+                            <TextField type={show2?"text":"password"} label="confirm password" name="confirmPassword"
+                                        value={form.confirmPassword.value} onChange={handleChange} error={form.confirmPassword.error}
+                                        InputProps={pwIcon2}
+                            />
+                            {form.confirmPassword.errorMsg.map((val, idx) => {
+                                return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
+                            })}
 
-                                <TextField type={show2?"text":"password"} label="confirm password" name="confirmPassword"
-                                            value={form.confirmPassword.value} onChange={handleChange} error={form.confirmPassword.error}
-                                            InputProps={pwIcon2}
+                            <TextField type="text" label="first name" name="userFirst" value={form.userFirst.value} onChange={handleChange}
+                                        error={form.userFirst.error} 
+                            />
+                            {form.userFirst.errorMsg.map((val, idx) => {
+                                return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
+                            })}
+
+                            <TextField type="text" label="last name" name="userLast" value={form.userLast.value} onChange={handleChange}
+                                        error={form.userLast.error} 
                                 />
-                                {form.confirmPassword.errorMsg.map((val, idx) => {
-                                    return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
-                                })}
+                            {form.userLast.errorMsg.map((val, idx) => {
+                                return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
+                            })}
 
-                                <TextField type="text" label="first name" name="userFirst" value={form.userFirst.value} onChange={handleChange}
-                                            error={form.userFirst.error} 
+                            <TextField type="email" label="email" name="email" value={form.email.value} onChange={handleChange}
+                                        error={form.email.error}
+                            />
+                            {form.email.errorMsg.map((val, idx) => {
+                                return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
+                            })}
+
+                            {/* icon file selection stuff*/}
+                            <div style={{display: 'block'}}>
+                                <Button type="button" variant="outlined" onClick={handleFileClick}
+                                        sx={{ display: 'inline-block', maxWidth: '10em', backgroundColor: '#f3f2f2', fontSize: '.6em',
+                                        color: '#171515', borderColor: '#171515', marginTop: '1em', fontVariant: 'small-caps'}}
+                                >Select icon</Button>
+                                <span style={{display: 'inline-block', verticalAlign: 'bottom', marginLeft: '0.5em'}}>{form.icon?form.icon.name:"no file selected"}</span>
+
+                                <TextField className="HiddenField" type="file" name="icon" variant="standard" onChange={handleChange}
+                                            inputRef={hiddenFileInput} 
                                 />
-                                {form.userFirst.errorMsg.map((val, idx) => {
-                                    return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
-                                })}
+                            </div>
 
-                                <TextField type="text" label="last name" name="userLast" value={form.userLast.value} onChange={handleChange}
-                                            error={form.userLast.error} 
-                                 />
-                                {form.userLast.errorMsg.map((val, idx) => {
-                                    return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
-                                })}
-
-                                <TextField type="email" label="email" name="email" value={form.email.value} onChange={handleChange}
-                                            error={form.email.error}
-                                />
-                                {form.email.errorMsg.map((val, idx) => {
-                                    return <FormHelperText key={idx} error={true}>{val}</FormHelperText>
-                                })}
-
-                                {/* icon file selection stuff*/}
-                                <div style={{display: 'block'}}>
-                                    <Button type="button" variant="outlined" onClick={handleFileClick}
-                                            sx={{ display: 'inline-block', maxWidth: '10em', backgroundColor: '#f3f2f2', fontSize: '.6em',
-                                            color: '#171515', borderColor: '#171515', marginTop: '1em', fontVariant: 'small-caps'}}
-                                    >Select icon</Button>
-                                    <span style={{display: 'inline-block', verticalAlign: 'bottom', marginLeft: '0.5em'}}>{form.icon?form.icon.name:"no file selected"}</span>
-
-                                    <TextField className="HiddenField" type="file" name="icon" variant="standard" onChange={handleChange}
-                                                inputRef={hiddenFileInput} 
-                                    />
-                                </div>
-
-                                <FormHelperText sx={{marginLeft: '7px', marginTop: '2px'}}>*optional</FormHelperText>
-                                <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: '#f3f2f2', color: '#171515', fontSize: '.6em',
-                                        borderColor: '#171515', marginTop: '2em', fontVariant: 'small-caps'}}>Submit</Button>
-                            </FormControl>
-                        </form>
-                    </Box>
+                            <FormHelperText sx={{marginLeft: '7px', marginTop: '2px'}}>*optional</FormHelperText>
+                            <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: '#f3f2f2', color: '#171515', fontSize: '.6em',
+                                    borderColor: '#171515', marginTop: '2em', fontVariant: 'small-caps'}}>Submit</Button>
+                        </FormControl>
+                    </form>
                 </div>
             </ThemeProvider>
         </>

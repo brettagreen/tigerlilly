@@ -4,15 +4,15 @@
     border-radius: 3px;
 }
 
-#instructions {
-    background-color: rgba(0,0,0,.85);
+.PageHeader {
+    background: linear-gradient(90deg, rgba(0,0,0,.85) 40%, rgba(241, 146, 111, .85));
     border-radius: 3px;
     padding: .83em;
     margin-bottom: .5em;
     text-align: center;
 }
 
-.userEditAnnouncement {
+.PageHeader * {
     color: #f3f2f2;
     margin: 0;
 }

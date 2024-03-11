@@ -1,12 +1,14 @@
 const jsonschema = require("jsonschema");
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
+const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
 const userNewSchema = require("../schemas/userNew.json");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const userLoginSchema = require("../schemas/userLogin.json");
+const userFeedbackSchema = require("../schemas/feedbackNew.json");
+
 const { upload, setFile } = require("../helpers/icons");
 
 const router = express.Router();
@@ -105,12 +107,26 @@ router.post("/login", async function (req, res, next) {
     }
 });
 
-/**
- * wonderful logout hijinx go here. 
+/** post /feedback => {}
+ * 
+ * Register user feedback
+ * 
+ * open to any/all a**h*... on the internet!
  */
 
-router.post("/logout", async function (req, res, next) {
+router.post('/feedback', async function (req, res, next) {
+    try {
+        const validator = jsonschema.validate(req.body, userFeedbackSchema);
+        if (!validator.valid) {
+            const errs = validator.errors.map(e => e.stack);
+            throw new BadRequestError(errs);
+        }
 
+        const feedback = await User.feedback();
+        return res.json({ feedback });
+    } catch (err) {
+        return next(err);
+    }
 });
 
 /** GET / => { [{ id, username, firstName, lastName, email, icon }, ... ] }
@@ -134,10 +150,10 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  *
  * Returns { id, username, userFirst, userLast, email, isAdmin, icon }
  *
- * any logged in user
+ * admin or same-user-as-:username
  **/
 
-router.get("/username/:username", ensureLoggedIn, async function (req, res, next) {
+router.get("/username/:username", ensureCorrectUserOrAdmin, async function (req, res, next) {
     try {
         const users = await User.get(req.params.username);
         return res.json({ users });
@@ -146,22 +162,22 @@ router.get("/username/:username", ensureLoggedIn, async function (req, res, next
     }
 });
 
-/**
- * returns all users that have made one or more comments
- * 
- * returns [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
- * 
- * admin only
- */
+// /**
+//  * returns all users that have made one or more comments
+//  * 
+//  * returns [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
+//  * 
+//  * admin only
+//  */
 
-router.get('/comments', ensureAdmin, async function (req, res, next) {
-    try {
-        const users = await User.hasComments();
-        return res.json({ users });
-    } catch (err) {
-        return next(err);
-    }
-});
+// router.get('/comments', ensureAdmin, async function (req, res, next) {
+//     try {
+//         const users = await User.hasComments();
+//         return res.json({ users });
+//     } catch (err) {
+//         return next(err);
+//     }
+// });
 
 /** GET /[username] => password reset redirect
  * 

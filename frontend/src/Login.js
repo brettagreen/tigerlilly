@@ -2,7 +2,7 @@ import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TigerlillyApi from './api';
 import UserContext from './userContext';
-import { FormControl, TextField, Button, Box, ThemeProvider, InputAdornment, IconButton } from '@mui/material';
+import { FormControl, TextField, Button, ThemeProvider, InputAdornment, IconButton } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { formTheme } from './css/styles';
@@ -65,24 +65,24 @@ function Login({ updateUserToken }) {
 
     return (
         <>
-            <h2 className="textInfo">Log in to your account</h2>
+            <div className="PageHeader">
+                <h2 className="textInfo">Log in to your account</h2>
+            </div>
 
             <ThemeProvider theme={formTheme}>
-                <div className="FormWrapper">
-                    <Box className="BackdropBox" component="section">
-                        <form id="loginForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}> 
-                            <FormControl margin="normal">
-                                <TextField type="text" label="username" name="username" variant="outlined" onChange={handleChange }
-                                        value={form.username} sx={{marginBottom: '.5em'}} />
-                                <TextField type={show1?"text":"password"} label="password" name="password" value={form.password} onChange={handleChange}
-                                            InputProps={pwIcon1} />
-                                <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: '#f3f2f2',
-                                        color: '#171515', fontSize: '.6em', borderColor: '#171515', marginTop: '2em',
-                                        fontVariant: 'small-caps'}}
-                                >Submit</Button>
-                            </FormControl>
-                        </form>
-                    </Box>
+                <div className="BackdropWrapper">
+                    <form id="loginForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}> 
+                        <FormControl margin="normal">
+                            <TextField type="text" label="username" name="username" variant="outlined" onChange={handleChange }
+                                    value={form.username} sx={{marginBottom: '.5em'}} />
+                            <TextField type={show1?"text":"password"} label="password" name="password" value={form.password} onChange={handleChange}
+                                        InputProps={pwIcon1} />
+                            <Button type="submit" variant="outlined" sx={{ maxWidth: '10em', backgroundColor: '#f3f2f2',
+                                    color: '#171515', fontSize: '.6em', borderColor: '#171515', marginTop: '2em',
+                                    fontVariant: 'small-caps'}}
+                            >Submit</Button>
+                        </FormControl>
+                    </form>
                 </div>
             </ThemeProvider>
             {error ? <h1>{error} please try again.</h1> : null}

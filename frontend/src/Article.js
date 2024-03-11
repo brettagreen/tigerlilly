@@ -42,9 +42,7 @@ function Article({ passedArticle, issueArticle, searchArray=null }) {
         async function setUp() {
 
             if (passedArticle) {
-                console.log('passedArticle.articleId', passedArticle.articleId);
                 const resp = await TigerlillyApi.getArticleKeywords(passedArticle.articleId);
-                console.log('api keywords', resp.keywords);
                 setKeywords(resp.keywords);
                 setArticle(passedArticle);
             } else {

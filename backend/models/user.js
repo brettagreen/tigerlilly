@@ -110,6 +110,27 @@ class User {
 		return user;
 	}
 
+	/** Register user feedback
+	 *
+	 * Returns { name, email, feedback }
+	 *
+	 **/
+
+	static async feedback({ name, email, feedback }) {
+		const result = await db.query(
+			`INSERT INTO feedback
+				(name,
+				email,
+				feedback)
+			VALUES ($1, $2, $3)
+			RETURNING name, email, feedback`,
+			[name, email, feedback]
+		);
+
+		return result.rows[0];	
+	}
+
+
   /** Find all users.
    *
    * Returns [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]

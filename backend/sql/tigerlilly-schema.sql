@@ -1,6 +1,8 @@
 CREATE TABLE issues (
   id SERIAL PRIMARY KEY,
   issue_title TEXT NOT NULL,
+  volume INTEGER NOT NULL,
+  issue INTEGER NOT NULL,
   pub_date DATE NOT NULL DEFAULT CURRENT_DATE
 );
 
@@ -59,4 +61,11 @@ CREATE TABLE user_favorites (
   article_id INTEGER
     REFERENCES articles ON DELETE CASCADE,
   PRIMARY KEY (user_id, article_id)
+);
+
+CREATE TABLE feedback (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(30) NOT NULL,
+  email TEXT NOT NULL CHECK (position('@' IN email) > 1),
+  feedback TEXT NOT NULL CONSTRAINT feedback_length CHECK (char_length(feedback) <= 1000);
 );

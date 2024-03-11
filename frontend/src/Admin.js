@@ -8,15 +8,6 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material'
 import { formTheme, textareaTheme } from './css/styles';
 import UserContext from './userContext';
 
-
-/**
- * modularize,
- * comment on code,
- * write tests,
- * error handling
- *
- */
-
 function Admin() {
     const history = useNavigate();
 
@@ -688,7 +679,7 @@ function Admin() {
     return (
         <ThemeProvider theme={formTheme}>
             <main id="adminMain">
-                <Box className="BackdropBox" component="section">
+                <Box className="AdminBackdrop" component="section">
                     <FormControl margin="normal" className="FormControl">
                         <InputLabel id="cat">--Select one of the following--</InputLabel>
                         <Select className="Select" component="select" labelId="cat" name="type" onChange={fixCategory} 
@@ -748,7 +739,7 @@ function Admin() {
                 {form ?
                 <>
                 <hr id="adminHR" />
-                <Box className="BackdropBox" component="section">
+                <Box className="AdminBackdrop" component="section">
                     <div hidden ref={entryForm}>
                         <form id="adminForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}> 
                             {Admin.defaultProps[category].fields.map((field, idx) => {
@@ -767,7 +758,7 @@ function Admin() {
                                             <ThemeProvider theme={textareaTheme}>
                                                 <TextField key={-idx-1} type={field.field} name={field.field} value={form[field.field]}
                                                         multiline minRows={5} label={field.field} disabled={disabled} onChange={handleChange}
-                                                        sx={{height: 'inherit'}} />
+                                                />
                                             </ThemeProvider> :
                                         null}
 

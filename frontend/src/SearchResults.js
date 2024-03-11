@@ -9,12 +9,6 @@ function SearchResults({ search }) {
     const [searchString, searchArray, parsedResults] = search;
     const history = useNavigate();
 
-    function previousPage() {
-        setTimeout(() => {
-            history(-1);
-        }, 3000);
-    }
-
     if (parsedResults.length > 0) {
         return (
             <> 
@@ -40,7 +34,9 @@ function SearchResults({ search }) {
             </>
         )
     } else {
-        previousPage();
+        setTimeout(() => {
+            history(-1);
+        }, 3000);
         return <h1>nothing matching {searchString}. Try again!!!</h1>
     }
 }

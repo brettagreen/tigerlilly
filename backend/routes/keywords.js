@@ -2,7 +2,7 @@ const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 
 const express = require("express");
-const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
+const { ensureAdmin } = require("../middleware/auth");
 const newKeywordsSchema = require("../schemas/keywordsNew.json");
 const updateKeywordsSchema = require("../schemas/keywordsUpdate.json");
 const Keyword = require("../models/keyword");
@@ -55,10 +55,10 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  * 
  * returns [{keyword, articleId, articleTitle}, ...]
  * 
- * any logged in user
+ * admin only!
  */
 
-router.get("/", ensureLoggedIn, async function (req, res, next) {
+router.get("/", ensureAdmin, async function (req, res, next) {
     try {
         const keywords = await Keyword.getKeywords();
         return res.json({ keywords });

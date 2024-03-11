@@ -9,18 +9,18 @@ class Issue {
 
     /** create new issue
      *  
-     * Returns { id, issueTitle, pubDate }
+     * Returns { id, issueTitle, volume, issue, pubDate }
      * 
      **/
 
-	static async create(issueTitle) {
+	static async create({ issueTitle, volume, issue }) {
 		
 		const result = await db.query(
             `INSERT INTO issues
-                    (issue_title)
+                    (issue_title, volume, issue)
                     VALUES ($1)
                     RETURNING id, issue_title AS "issueTitle", pub_date AS "pubDate"`,
-                    [issueTitle]
+                    [issueTitle, volume, issue]
 		);
         
         return result.rows[0];
@@ -29,15 +29,13 @@ class Issue {
 
     /** return all issues.
      *
-     * Returns [{ id, issueTitle, pubDate }, ...]
+     * Returns [{ id, issueTitle, volume, issue, pubDate }, ...]
      *
      **/
 
     static async getAll() {
         const result = await db.query(
-            `SELECT id,
-                issue_title AS "issueTitle",
-                pub_date AS "pubDate"
+            `SELECT *
             FROM issues
             ORDER BY pub_date`);
 
@@ -46,13 +44,15 @@ class Issue {
 
     /** Given issue id, return issue.
      *
-     * Returns { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
+     * Returns { issueTitle, volue, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
      *
      **/
 
     static async get(id) {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
+                    i.volume,
+                    i.issue,
                     a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
@@ -69,13 +69,15 @@ class Issue {
 
     /** Given title of the issue, return issue.
      *
-     * Returns { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
+     * Returns { issueTitle, volume, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
      *
      **/
 
     static async getByTitle(issueTitle) {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
+                    i.volume,
+                    i.issue,
                     a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
@@ -94,13 +96,15 @@ class Issue {
 
     /** Return the current/latest issue.
      *
-     * Returns { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
+     * Returns { issueTitle, volue, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
      *
      **/
 
     static async getCurrent() {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
+                    i.volume,
+                    i.issue,
                     a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
@@ -120,7 +124,7 @@ class Issue {
      * 
      * all issue fields can be modified.
      * 
-     * Returns { issueTitle, pubDate }
+     * Returns { issueTitle, volume, issue, pubDate }
      * 
      **/
 
@@ -138,12 +142,18 @@ class Issue {
             `UPDATE issues
             SET 
             issue_title = $1,
-            pub_date = $2
-            WHERE id = $3
+            volume = $2,
+            issue = $3,
+            pub_date = $4,
+            WHERE id = $5
             RETURNING issue_title AS "issueTitle",
+                    volume,
+                    issue,
                     pub_date AS "pubDate"`,
             [
                 body.issueTitle || r.issue_title,
+                body.volume || r.volume,
+                body.issue || r.issue,
                 body.pubDate || r.pubDate,
                 id
             ]
@@ -154,7 +164,7 @@ class Issue {
 
     /** Deletes issue from database.
      * 
-     * returns { issueTitle, pubDate }
+     * returns { issueTitle, volume, issue, pubDate }
      */
 
     static async delete(id) {
@@ -162,7 +172,10 @@ class Issue {
             `DELETE
             FROM issues
             WHERE id = $1
-            RETURNING issue_title AS "issueTitle", pub_date AS "pubDate"`, [Number(id)]
+            RETURNING issue_title AS "issueTitle",
+            volume,
+            issue,
+            pub_date AS "pubDate"`, [Number(id)]
         );
 
         if (!result.rows[0]) throw new NotFoundError(`No issue found by id: ${id}`);

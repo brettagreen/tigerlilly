@@ -8,6 +8,16 @@
         "minLength": 2,
         "maxLength": 500
       },
+      "volume": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
+      "issue": {
+        "type": "integer",
+        "minimum": 1,
+        "maximum": 100
+      },
       "pubDate": {
           "type": "string",
           "minLength": 0,
