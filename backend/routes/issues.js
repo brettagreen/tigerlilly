@@ -2,7 +2,7 @@ const jsonschema = require("jsonschema");
 const { BadRequestError } = require("../expressError");
 
 const express = require("express");
-const { ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
+const { ensureAdmin } = require("../middleware/auth");
 const newIssueSchema = require("../schemas/issueNew.json");
 const updateIssueSchema = require("../schemas/issueUpdate.json")
 const Issue = require("../models/issue");
@@ -13,7 +13,7 @@ const router = express.Router();
  * Adds new issue to DB.
  *
  * Return value:
- *  { id, issueTitle, pubDate }
+ *  { id, issueTitle, volume, issue, pubDate }
  * 
  * admin only!
  *
@@ -29,7 +29,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
             throw new BadRequestError(errs);
         }
 
-        const issues = await Issue.create(req.body.issueTitle);
+        const issues = await Issue.create(req.body);
         return res.status(201).json({ issues });
 
     } catch (err) {
@@ -41,7 +41,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  * 
  * Return all issues from DB
  *
- * Returns [{id, issueTitle, pubDate }, ...]
+ * Returns [{id, issueTitle, volume, issue, pubDate }, ...]
  *
  * any user
  **/
@@ -60,7 +60,7 @@ router.get("/", async function (req, res, next) {
  * Return current issue info from DB
  *
  * Return value:
- *  { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
+ *  { issueTitle, volume, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
  *
  * any user
  **/
@@ -79,12 +79,12 @@ router.get("/currentIssue", async function (req, res, next) {
  * Return issue info from DB
  *
  * Return value:
- *  { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
+ *  { issueTitle, volume, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
  *
- * any logged in user
+ * any user!
  **/
 
-router.get("/:id", ensureLoggedIn, async function (req, res, next) {
+router.get("/:id", async function (req, res, next) {
     try {
         const issues = await Issue.get(req.params.id);
         return res.json({ issues });
@@ -98,12 +98,12 @@ router.get("/:id", ensureLoggedIn, async function (req, res, next) {
  * Return issue info from DB
  *
  * Return value:
- *  { issueTitle, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
+ *  { issueTitle, volume, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
  *
- * any logged in user
+ * any user!
  **/
 
-router.get("/issueTitle/:issueTitle", ensureLoggedIn, async function (req, res, next) {
+router.get("/issueTitle/:issueTitle", async function (req, res, next) {
     try {
         const issues = await Issue.getByTitle(req.params.issueTitle);
         return res.json({ issues });
@@ -117,9 +117,9 @@ router.get("/issueTitle/:issueTitle", ensureLoggedIn, async function (req, res, 
  * Udates issue info in DB.
  *
  * Return value:
- *  { issueTitle, pubDate }
+ *  { issueTitle, volume, issue, pubDate }
  *
- * Admin only!
+ * admin only!
  **/
 
 router.patch("/:id", ensureAdmin, async function (req, res, next) {
@@ -141,9 +141,9 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
 
 /** deletes comment from article and from database
  * 
- * returns { issueTitle, pubDate }
+ * returns { issueTitle, volume, issue, pubDate }
  *
- * Authorization required: admin
+ * admin only!
  **/
 
 router.delete("/:id", ensureAdmin, async function (req, res, next) {

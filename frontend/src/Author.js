@@ -62,12 +62,13 @@ function Author() {
     return (<>
         {author?
             <>
-                <h1 id="authorHeader">Hey! Let's give it up for the one and only {author.author}!</h1>
-                <blockquote id="authorSlogan">
-                    "{author.authorSlogan}"
-                </blockquote>
-
-                <div style={{display: 'block', width: '100%', marginBottom: '.8em'}}>
+                <div className="BackdropWrapper" style={{display: 'block', width: '100%', marginBottom: '.8em', textAlign:'center'}}>
+                    <div className="PageHeader">
+                        <h1 id="authorHeader">Hey! Let's give it up for the one and only {author.author}!</h1>
+                        <blockquote id="authorSlogan">
+                            "{author.authorSlogan}"
+                        </blockquote>
+                    </div>
                     <div style={{float: 'left', width: '30%'}}>
                         <List sx={{ float: 'left', width: '80%'}} aria-labelledby="nested-list-subheader">
                             <ListItemButton key={'posbutton'} sx={{minWidth: '120px'}} disableRipple={true} focusRipple={false}
@@ -116,7 +117,7 @@ function Author() {
                             </figure>
                         </div>
                         <div>
-                            <p>
+                            <p style={{textAlign: 'left'}}>
                                 {author.authorBio}
                             </p>
                         </div>

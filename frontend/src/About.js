@@ -1,6 +1,6 @@
 /**
  * 
- * @returns 
+ * @returns a very sassy reply
  */
 
 function About() {

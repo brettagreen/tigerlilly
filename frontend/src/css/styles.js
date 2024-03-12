@@ -130,7 +130,7 @@ const toolbarMenuTheme =
 			MuiPaper: {
 				styleOverrides: {
 					root: {
-						color: '#fff',
+						color: '#f3f2f2',
 						backgroundColor: 'rgba(0,0,0,.85)',
 						width: '22vw'
 					}

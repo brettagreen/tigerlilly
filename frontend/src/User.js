@@ -126,15 +126,15 @@ function User() {
                     Please choose a file 3MB or smaller.
             </Alert>:null}
         {update ? 
-            <div id="instructions">
-                <h2 className="userEditAnnouncement">Update your profile</h2>
-                <h3 className="userEditAnnouncement">Only fields you provide a value for will be updated</h3>
-                <h4 className="userEditAnnouncement">click on a field to see its current - unupdated - value</h4>
+            <div className="PageHeader">
+                <h2>Update your profile</h2>
+                <h3>Only fields you provide a value for will be updated</h3>
+                <h4>click on a field to see its current - unupdated - value</h4>
             </div>
         :null}
 
         {form?<ThemeProvider theme={formTheme}>
-                <div className="FormWrapper" style={{minWidth: '80vw', minHeight: '40vh'}}>
+                <div className="BackdropWrapper" style={{minWidth: '80vw', minHeight: '40vh'}}>
                     <Box component="section" sx={{marginLeft: '10vw', display: 'block', float: 'left', width: '50%'}}>
                         <form autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}>
                             <FormControl margin="normal" sx={{width: '90%'}}>

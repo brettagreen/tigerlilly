@@ -118,6 +118,11 @@ class TigerlillyApi {
         return await this.request(`${type}/comments`);
     }
 
+    //FEEDBACK
+    static async postFeedback(form) {
+        return await this.request('users/feedback', form, 'post');
+    }
+
     //ARTICLE_KEYWORDS
     static async getArticleKeywords(articleId) {
         return await this.request(`keywords/${articleId}`);

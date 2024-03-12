@@ -13,6 +13,7 @@ import Games from './Games';
 import Error from './401';
 import ArticlePreview from "./ArticlePreview";
 import SearchResults from "./SearchResults";
+import ContactUs from "./ContactUs";
 
 function TigerlillyRoutes({ updateUserToken, search }) {
 
@@ -30,6 +31,7 @@ function TigerlillyRoutes({ updateUserToken, search }) {
             <Route path="/games" element={<Games />}/>
             <Route path="/articleKeywords/:keyword" element={<ArticlePreview/>}/>
             <Route path="/searchResults" element={<SearchResults search={search} />}/>
+            <Route path="/contact" element={<ContactUs />}/>
             <Route path="/testFileUpload" element={<TestFileUpload/>}/>
             <Route path="/unauthorized/:type" element={<Error />}/>
             <Route path="/badrequest/:type" element={<Error />}/>

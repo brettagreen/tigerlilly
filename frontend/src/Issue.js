@@ -6,6 +6,7 @@ import { useParams } from 'react-router-dom';
 import TigerlillyApi from './api';
 import { ThemeProvider } from '@emotion/react';
 import { gridTheme } from './css/styles';
+import romans from 'romans';
 
 function Issue() {
     const [issue, setIssue] = useState(null);
@@ -101,13 +102,15 @@ function Issue() {
                     <header>
                         <img id="masthead" src="/images/masthead.jpg" alt="masthead"/>
                     </header>
-                    <h1 id="issueTitle">{issue[0].issueTitle}</h1>
+                    <h1 id="issueTitle" style={{display: 'block'}}>
+                        <span style={{float: 'left', marginLeft: '0.5em'}}>{issue[0].issueTitle}</span>
+                        <span style={{float: 'right', marginRight: '0.5em', marginTop: '1em', fontSize: 'x-large'}}>
+                            {"Volume "+romans.romanize(issue[0].volume)}{" Issue "+romans.romanize(issue[0].issue)}
+                        </span>
+                    </h1>
                     <div style={{display: 'block'}}>
                         {createGrid()}
                     </div>
-                    {/* <footer>
-                        <img id="footer" src="/images/footer.jpg" alt="footer" />
-                    </footer> */}
                 </ThemeProvider>
             </>
         );

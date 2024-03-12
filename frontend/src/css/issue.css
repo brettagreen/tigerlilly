@@ -9,6 +9,7 @@
     box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);
     background-color: rgb(210, 205, 140);
     border-radius: 2.5px;
+    margin-bottom: 1em;
 }
 
 #issueTitle {
@@ -22,7 +23,7 @@
     border-width: medium;
     width: 100%;
     box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);
-    background-color: rgb(255, 127, 80);
+    background-color: rgb(241, 146, 111);
     margin-bottom: 1.5em;
 
 }
@@ -42,13 +43,6 @@
     width: 85vw;
     height: 65vh;
     border-radius: 2.5px;
-}
-
-#footer {
-    width: 85vw;
-    border-radius: 2.5px;
-    margin-top: 3em;
-
 }
 
 #borderTopLeft {

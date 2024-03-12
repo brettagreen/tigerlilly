@@ -3,4 +3,5 @@ oldCode/*
 /backend/node_modules
 /frontend/public/icons
 recordings/*
+/frontend/src/Comments.js
 

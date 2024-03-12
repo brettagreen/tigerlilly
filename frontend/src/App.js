@@ -5,6 +5,7 @@ import UserContext from "./userContext";
 import NavigationBar from './NavigationBar';
 import TigerlillyRoutes from './TigerlillyRoutes';
 import Box from '@mui/material/Box';
+import Footer from './Footer';
 import './css/app.css';
 
 function App() {
@@ -46,12 +47,12 @@ function App() {
 
 	return (
 		<UserContext.Provider value={{user, setCurrentUser}}>
-			<div className="App">
+			<div className="App" style={{minHeight: '100vh'}}>
 				<BrowserRouter>
-					<NavigationBar setSearchString={setSearchString} setSearchArray={setSearchArray}
-					 		setSearchResults={setSearchResults} searchVal={searchVal} setSearchVal={setSearchVal}/>
+					<NavigationBar search={[setSearchString, setSearchArray, setSearchResults, searchVal, setSearchVal]}/>
 					<Box className="SiteBox" component="main">
 						<TigerlillyRoutes updateUserToken={updateUserToken} search={[searchString, searchArray, searchResults]}/>
+						<Footer />
 					</Box>
 				</BrowserRouter>
 			</div>
