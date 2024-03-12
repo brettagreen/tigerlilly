@@ -47,7 +47,7 @@ function App() {
 
 	return (
 		<UserContext.Provider value={{user, setCurrentUser}}>
-			<div className="App" style={{minHeight: '100vh'}}>
+			<div className="App" style={{minHeight: '100vh'}}> {/**porquoi? so as to appropriate position the footer! */}
 				<BrowserRouter>
 					<NavigationBar search={[setSearchString, setSearchArray, setSearchResults, searchVal, setSearchVal]}/>
 					<Box className="SiteBox" component="main">

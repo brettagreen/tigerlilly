@@ -56,7 +56,6 @@ function User() {
         const [error, errorForm] = validate({...form}, update);
 
         if (!error) {
-            console.log('no errors? let\'s continue!');
             const submitForm = {};
 
             //filter out non-updated fields
@@ -70,10 +69,8 @@ function User() {
     
             setUpdate(false);
             const updatedUser = await TigerlillyApi.updateProfile(user.id, submitForm);
-            console.log("updated user", updatedUser);
             setCurrentUser(updatedUser.users);
         } else {
-            console.log('error(s)!', errorForm);
             setForm(errorForm);
         }
 

@@ -66,7 +66,7 @@ function Login({ updateUserToken }) {
     return (
         <>
             <div className="PageHeader">
-                <h2 className="textInfo">Log in to your account</h2>
+                <h3>Log in to your account</h3>
             </div>
 
             <ThemeProvider theme={formTheme}>

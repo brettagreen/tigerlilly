@@ -13,7 +13,10 @@ function SearchResults({ search }) {
         return (
             <> 
                 <ThemeProvider theme={gridTheme}>
-                    <h2>Articles matching search '{searchString}'</h2>
+                    <div className="PageHeader">
+                        <h3>Articles matching search '{searchString}'</h3>
+                    </div>
+
                     <Grid id="daGrid" container rowSpacing={2} columnSpacing={{xs:2, sm:3, md:4}} columns={{xs:2, sm:3, md:4}}>
 
                         {parsedResults.map((article, idx) => {
@@ -37,7 +40,12 @@ function SearchResults({ search }) {
         setTimeout(() => {
             history(-1);
         }, 3000);
-        return <h1>nothing matching {searchString}. Try again!!!</h1>
+        
+        return(
+            <div className="PageHeader">
+                <h1>nothing matching {searchString}. Try again!!!</h1>
+            </div>
+        ) 
     }
 }
 

@@ -95,8 +95,8 @@ function SignUp({ updateUserToken }) {
             </Alert>:null}
 
             <div className="PageHeader">
-                <h2 style={{marginBottom: '0px'}} className="textInfo">Create your account</h2>
-                <h3 style={{marginTop: '0px'}} className="testInfo">All fields required unless marked *optional</h3>
+                <h2 style={{marginBottom: '0px'}}>Create your account</h2>
+                <h3 style={{marginTop: '0px'}}>All fields required unless marked *optional</h3>
             </div>
             <ThemeProvider theme={formTheme}>
                 <div className="BackdropWrapper">

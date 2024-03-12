@@ -32,7 +32,6 @@ function Author() {
             }
 
             setLinks(articleArray);
-            console.log('links', articleArray);
         
             const filter = new Set();
             for (let link of articleArray) {
@@ -62,18 +61,18 @@ function Author() {
     return (<>
         {author?
             <>
-                <div className="BackdropWrapper" style={{display: 'block', width: '100%', marginBottom: '.8em', textAlign:'center'}}>
-                    <div className="PageHeader">
-                        <h1 id="authorHeader">Hey! Let's give it up for the one and only {author.author}!</h1>
+                <div className="PageHeader">
+                    <h1 id="authorHeader">Hey! Let's give it up for the one and only {author.author}!</h1>
                         <blockquote id="authorSlogan">
                             "{author.authorSlogan}"
                         </blockquote>
-                    </div>
+                </div>
+                <div className="BackdropWrapper" style={{display: 'block', width: '100%', marginBottom: '.8em', textAlign:'center'}}>
                     <div style={{float: 'left', width: '30%'}}>
                         <List sx={{ float: 'left', width: '80%'}} aria-labelledby="nested-list-subheader">
                             <ListItemButton key={'posbutton'} sx={{minWidth: '120px'}} disableRipple={true} focusRipple={false}
                                     onClick={() => setPrimaryOpen(!primaryOpen)}>
-                                <ListItemText sx={{maxWidth: '120px'}} key={'ptun'}
+                                <ListItemText sx={{maxWidth: '120px', fontWeight: 'bold'}} key={'ptun'}
                                         primary="Author articles" />
                                 {primaryOpen ? <ExpandLess /> : <ExpandMore />}
                             </ListItemButton>

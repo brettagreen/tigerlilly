@@ -122,7 +122,7 @@ router.post('/feedback', async function (req, res, next) {
             throw new BadRequestError(errs);
         }
 
-        const feedback = await User.feedback();
+        const feedback = await User.feedback(req.body);
         return res.json({ feedback });
     } catch (err) {
         return next(err);
