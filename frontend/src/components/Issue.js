@@ -1,11 +1,11 @@
-import './css/issue.css';
-import Grid from '@mui/material/Grid';
-import Article from './Article';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import TigerlillyApi from './api';
 import { ThemeProvider } from '@emotion/react';
-import { gridTheme } from './css/styles';
+import Grid from '@mui/material/Grid';
+import Article from './Article';
+import TigerlillyApi from '../api';
+import { gridTheme } from '../css/styles';
+import '../css/issue.css';
 import romans from 'romans';
 
 function Issue() {

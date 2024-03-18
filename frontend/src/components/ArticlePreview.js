@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import TigerlillyApi from './api';
+import TigerlillyApi from '../api';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import Article from './Article';
-import { gridTheme } from './css/styles';
+import { gridTheme } from '../css/styles';
 import { ThemeProvider } from '@emotion/react';
 
 function ArticlePreview() {
@@ -24,7 +23,9 @@ function ArticlePreview() {
         <>
             {articles ?
                 <ThemeProvider theme={gridTheme}>
-                    <h2>Articles matching #{keyword}</h2>
+                    <div className="PageHeader">
+                        <h3>Articles matching #{keyword}</h3>
+                    </div>
                     <Grid id="daGrid" container rowSpacing={2} columnSpacing={{xs:2, sm:3, md:4}} columns={{xs:2, sm:3, md:4}}>
 
                         {articles.map((article, idx) => {

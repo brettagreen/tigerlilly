@@ -1,8 +1,7 @@
 import { useEffect, useState, useContext, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import UserContext from './userContext';
-import { styled, alpha } from '@mui/material/styles';
-import TigerlillyApi from "./api";
+import UserContext from '../userContext';
+import TigerlillyApi from "../api";
 
 import Box from '@mui/material/Box';
 import Drawer from '@mui/material/Drawer';
@@ -25,13 +24,15 @@ import Tooltip from '@mui/material/Tooltip';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { ThemeProvider } from '@mui/material/styles';
-import { toolbarMenuTheme, userMenuTheme } from './css/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import FormHelperText  from '@mui/material/FormHelperText';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Slide from '@mui/material/Slide';
+
+import { ThemeProvider } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
+import { toolbarMenuTheme, userMenuTheme } from '../css/styles';
 
 const drawerWidth = 225;
 
@@ -100,10 +101,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
         [theme.breakpoints.up('sm')]: {
-            width: '100%',
-            '&:focus': {
-                width: '20ch'
-            },
+            width: '100%'
         }
     }
 }));
@@ -263,6 +261,7 @@ function NavigationBar({ search }) {
 
             resp = await TigerlillyApi.get('issues');
             setMenuIssues(resp.issues);
+            console.log('menuIssues', resp.issues);
 
         }
 

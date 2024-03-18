@@ -10,6 +10,7 @@
     padding: .83em;
     margin-bottom: .5em;
     text-align: center;
+    min-width: 66vw;
 }
 
 .PageHeader * {

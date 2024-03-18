@@ -10,7 +10,7 @@ import Author from './Author';
 import TestFileUpload from "./TestFileUpload";
 import User from './User';
 import Games from './Games';
-import Error from './401';
+import Redirects from './Redirects';
 import ArticlePreview from "./ArticlePreview";
 import SearchResults from "./SearchResults";
 import ContactUs from "./ContactUs";
@@ -33,8 +33,9 @@ function TigerlillyRoutes({ updateUserToken, search }) {
             <Route path="/searchResults" element={<SearchResults search={search} />}/>
             <Route path="/contact" element={<ContactUs />}/>
             <Route path="/testFileUpload" element={<TestFileUpload/>}/>
-            <Route path="/unauthorized/:type" element={<Error />}/>
-            <Route path="/badrequest/:type" element={<Error />}/>
+            <Route path="/unauthorized/:type" element={<Redirects />}/>
+            <Route path="/badrequest/:type" element={<Redirects />}/>
+            <Route path="/formsubmitted/:type" element={<Redirects />}/>
             <Route path="/admin" element={<Admin />}/>
             <Route path="*" element={<Navigate to="/badrequest/noPage" replace/>}/>
         </Routes>

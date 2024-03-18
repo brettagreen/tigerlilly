@@ -4,10 +4,10 @@ import { FormControl, TextField, Button, ThemeProvider, Alert, IconButton, Input
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import UserContext from "./userContext";
-import TigerlillyApi from './api';
-import { formTheme } from './css/styles';
-import validate from './helpers/formValidation';
-import './css/signup.css';
+import TigerlillyApi from '../api';
+import { formTheme } from '../css/styles';
+import validate from '../helpers/formValidation';
+import '../css/signup.css';
 
 function SignUp({ updateUserToken }) {
 
@@ -90,13 +90,15 @@ function SignUp({ updateUserToken }) {
 
     return (
         <>
-            {fileAlertOpen?<Alert open={fileAlertOpen} variant="filled" severity="warning" onClose={() => setFileAlertOpen(false)}>
-                Please choose a file 3MB or smaller.
-            </Alert>:null}
+            {fileAlertOpen ?
+                <Alert open={fileAlertOpen} variant="filled" severity="warning" onClose={() => setFileAlertOpen(false)}>
+                    Please choose a file 3MB or smaller.
+                </Alert>
+            :null}
 
             <div className="PageHeader">
-                <h2 style={{marginBottom: '0px'}} className="textInfo">Create your account</h2>
-                <h3 style={{marginTop: '0px'}} className="testInfo">All fields required unless marked *optional</h3>
+                <h2 style={{marginBottom: '0px'}}>Create your account</h2>
+                <h3 style={{marginTop: '0px'}}>All fields required unless marked *optional</h3>
             </div>
             <ThemeProvider theme={formTheme}>
                 <div className="BackdropWrapper">

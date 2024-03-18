@@ -1,12 +1,12 @@
-import TigerlillyApi from './api';
+import TigerlillyApi from '../api';
 import { BrowserRouter } from 'react-router-dom';
 import { useState } from 'react';
-import UserContext from "./userContext";
+import UserContext from "../userContext";
 import NavigationBar from './NavigationBar';
 import TigerlillyRoutes from './TigerlillyRoutes';
 import Box from '@mui/material/Box';
 import Footer from './Footer';
-import './css/app.css';
+import '../css/app.css';
 
 function App() {
 	

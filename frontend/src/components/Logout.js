@@ -1,7 +1,7 @@
-import { useNavigate } from 'react-router-dom';
 import { useEffect, useContext } from 'react';
-import TigerlillyApi from './api';
-import UserContext from './userContext';
+import { useNavigate } from 'react-router-dom';
+import TigerlillyApi from '../api';
+import UserContext from '../userContext';
 
 function Logout({ updateUserToken }) {
 

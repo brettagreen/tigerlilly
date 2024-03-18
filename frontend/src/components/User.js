@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { FormControl, TextField, Button, Box, ThemeProvider, Alert, IconButton, InputAdornment, FormHelperText } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { formTheme } from './css/styles';
-import UserContext from './userContext';
-import TigerlillyApi from './api';
-import validate from './helpers/formValidation';
-import './css/user.css';
+import { formTheme } from '../css/styles';
+import UserContext from '../userContext';
+import TigerlillyApi from '../api';
+import validate from '../helpers/formValidation';
+import '../css/user.css';
 
 function User() {
     const history = useNavigate();
@@ -56,7 +56,6 @@ function User() {
         const [error, errorForm] = validate({...form}, update);
 
         if (!error) {
-            console.log('no errors? let\'s continue!');
             const submitForm = {};
 
             //filter out non-updated fields
@@ -70,10 +69,8 @@ function User() {
     
             setUpdate(false);
             const updatedUser = await TigerlillyApi.updateProfile(user.id, submitForm);
-            console.log("updated user", updatedUser);
             setCurrentUser(updatedUser.users);
         } else {
-            console.log('error(s)!', errorForm);
             setForm(errorForm);
         }
 
