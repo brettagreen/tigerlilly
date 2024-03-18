@@ -1,20 +1,63 @@
 "use strict";
+//typedefs
+/**
+ * @typedef {Object} user - returned user object 
+ * @property {number} id 
+ * @property {string} username
+ * @property {string} userFirst
+ * @property {string} userLast
+ * @property {string} email
+ * @property {boolean} isAdmin
+ * @property {string} icon
+ *
+*/
 
+/**
+ * db module
+ * @const
+ */
 const db = require("../db");
+/**
+ * bcrypt module
+ * @const
+ */
 const bcrypt = require("bcrypt");
 const { NotFoundError, BadRequestError, UnauthorizedError } = require("../expressError");
+/**
+ * complexity of bcrypt algorithm
+ * @const
+ */
 const { BCRYPT_WORK_FACTOR } = require("../config.js");
+/**
+ * rename user icon filename
+ * @function
+ */
 const { renameFile } = require("../helpers/icons");
 
-/** Related functions for users. */
-
+/**
+ * @module /backend/models/user
+ * @requires module:/backend/db
+ * @requires module:bcrypt
+ * @requires module:/backend/expressError.BadRequestError
+ * @requires module:/backend/expressError.NotFoundError
+ * @requires module:/backend/expressError.UnauthorizedError
+ * @requires module:/backend/config.BCRYPT_WORK_FACTOR
+ * @requires module:/backend/helpers/icons.renameFile
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * @class
+ * @classdesc  database CRUD operations related to users table
+ */
 class User {
-  /** authenticate user with username, password.
-   * 
-   * returns user sans password { id, userFirst, userLast, email, username, isAdmin, icon }
-   *  
-   **/
 
+	/**
+     * @description authenticate user based on passed username,password combo
+	 * 
+     * @param {string} username - username of user passing credentials
+     * @param {string} password - password of user passing credentials
+	 * @throws {UnauthorizedError}
+     * @returns {user} - { id, userFirst, userLast, email, username, isAdmin, icon }
+     */
 	static async authenticate({ username, password }) {
 
 		// first, try to find the user
@@ -35,7 +78,7 @@ class User {
 		const user = result.rows[0];
 
 		if (user) {
-			// compare hashed password to a new hash from password
+			/** does username/password match what's in the database?@const @type {boolean} */
 			const isValid = await bcrypt.compare(password, user.password);
 
 			if (isValid === true) {
@@ -48,12 +91,19 @@ class User {
 		throw new UnauthorizedError("Invalid username/password");
 	}
 
-	/** Register user with passed form data.
-	 *
-	 * Returns { id, username, userFirst, userLast, email, isAdmin, icon }
-	 *
-	 **/
-
+	/**
+     * @description register new user
+	 * 
+     * @param {string} username - username value
+     * @param {string} password - password value
+	 * @param {string} userFirst - first name value
+	 * @param {string} userLast - last name value
+	 * @param {string} email - user's email
+	 * @param {boolean=false} isAdmin - is user an admin?
+	 * @param {string=} icon - filename of user icon
+ 	 * @throws {BadRequestError}
+     * @returns {user} - { id, username, userFirst, userLast, email, isAdmin, icon }
+     */
 	static async register({ username, password, userFirst, userLast, email, isAdmin=false }, icon) {
 
 		const duplicateCheck = await db.query(
@@ -66,9 +116,16 @@ class User {
 			throw new BadRequestError(`Duplicate username: ${username}`);
 		}
 
+		//actual (hashed) value of the password that is stored in the database
 		const hashedPassword = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
-		let query;
+        /**
+		 * the sql query string
+		 * @type {string} */
+        let query;
+        /**
+		 * argument values passed to the sql query string
+		 * @type {string|number[]} */
 		let args;
 
 		if (!icon) {
@@ -110,12 +167,15 @@ class User {
 		return user;
 	}
 
-	/** Register user feedback
-	 *
-	 * Returns { name, email, feedback }
-	 *
-	 **/
+	/**
+     * @description register user feedback!
+	 * 
+     * @param {string} name - submitter's name
+     * @param {string} email - submitter's email
+	 * @param {string} feedback - submitter's feedback
 
+     * @returns {Object} - { name, email, feedback }
+     */
 	static async feedback({ name, email, feedback }) {
 		const result = await db.query(
 			`INSERT INTO feedback
@@ -130,13 +190,11 @@ class User {
 		return result.rows[0];	
 	}
 
-
-  /** Find all users.
-   *
-   * Returns [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
-   **/
-
-	static async findAll() {
+	/**
+     * @description return all users
+	 * @returns {Object[user]} - [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
+     */
+	 static async findAll() {
 		const result = await db.query(
 				`SELECT id,
 						username,
@@ -152,12 +210,14 @@ class User {
 		return result.rows;
 	}
 
-  /** Given a username, return data about user.
-   *
-   * Returns { id, username, userFirst, userLast, email, isAdmin, icon }
-   *
-   **/
-
+	/** 
+	 * @description Given a username, return data about user.
+	 *
+	 * @param {string} username - username of user to return info about
+	 * @throws {NotFoundError}
+	 * @returns {user} { id, username, userFirst, userLast, email, isAdmin, icon }
+	 *
+	 **/
 	static async get(username) {
 		const userRes = await db.query(
 				`SELECT id,
@@ -178,30 +238,32 @@ class User {
 		return user;
 	}
 
-  /** Return username based on user id
-   *
-   * Returns username
-   *
-   **/
+	/** 
+	 * @description return username based on passed user id
+	 *
+	 * @param {string} username - username of user to return info about
+	 * @throws {NotFoundError}
+	 * @returns {string} username
+	 *
+	 **/
+	static async getUsername(id) {
+		const user = await db.query(
+				`SELECT username
+				FROM users
+				WHERE id = $1`, [id]
+		);
 
-  static async getUsername(id) {
-	const user = await db.query(
-			`SELECT username
-			FROM users
-			WHERE id = $1`, [id]
-	);
+		if (!user) throw new NotFoundError(`No user with that id: ${id}`);
 
-	if (!user) throw new NotFoundError(`No user with that id: ${id}`);
+		return user.rows[0].username;
+	}
 
-	return user.rows[0].username;
-}
-
-    /**
-     * return all users that have made one or more comments
-     * 
-     * returns Returns [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
-     */
-
+	/** 
+	 * @description return all users who have submitted one or more comments
+	 *
+	 * @returns {Object[user]} [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
+	 *
+	 **/
     static async hasComments() {
         const result = await db.query(
 			`SELECT id,
@@ -219,14 +281,17 @@ class User {
         return result.rows;
     }
 
-  /** 
-   * Data can include:
-   *   { userFirst, userLast, email, username, password, icon }
-   *
-   * Returns { id, userFirst, userLast, email, username, isAdmin, icon }
-   *
-   */
-
+    /**
+     * @description update user values based on passed user id.
+     *
+     * @param {number} id - id user to be updated
+     * @param {Object} body - http request body object. this included all user fields to be updated.
+	 * if specific field isn't being updated, i.e. isn't included in the body object, then sql update statement
+	 * will fall back to existing value
+	 * @param {string} icon - filename value of user icon to be updated
+	 * @throws {NotFoundError}
+     * @returns {user} - { id, userFirst, userLast, email, username, isAdmin, icon }
+     */
 	static async update(id, body, icon) {
 
         let r = await db.query(
@@ -291,18 +356,21 @@ class User {
 		return user;
 	}
 
-  /** Delete user from database.
-   * 
-   * returns {username, userFirst, userLast}
-   */
-
+    /**
+     * @description delete user from database
+     *
+     * @param {number} id - id of user to delete
+	 * @throws {NotFoundError}
+     * @returns {user} - {id, username, userFirst, userLast, email, isAdmin, icon}
+     */
 	static async remove(id) {
 		let result = await db.query(
 				`DELETE
 				FROM users
 				WHERE id = $1
-				RETURNING username, user_first AS "userFirst", user_last AS "userLast"`,
-				[Number(id)]
+				RETURNING id, username, user_first AS "userFirst", user_last AS "userLast"
+							email, is_admin AS "isAdmin", icon`,
+				[Number(id)]//{ id, username, userFirst, userLast, email, isAdmin, icon }
 		);
 
 		if (!result.rows[0]) throw new NotFoundError(`No user by that id: ${id}`);

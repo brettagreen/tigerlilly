@@ -1,12 +1,12 @@
-import TigerlillyApi from './api';
+import TigerlillyApi from '../api';
 import { BrowserRouter } from 'react-router-dom';
 import { useState } from 'react';
-import UserContext from "./userContext";
+import UserContext from "../userContext";
 import NavigationBar from './NavigationBar';
 import TigerlillyRoutes from './TigerlillyRoutes';
 import Box from '@mui/material/Box';
 import Footer from './Footer';
-import './css/app.css';
+import '../css/app.css';
 
 function App() {
 	
@@ -47,7 +47,7 @@ function App() {
 
 	return (
 		<UserContext.Provider value={{user, setCurrentUser}}>
-			<div className="App" style={{minHeight: '100vh'}}> {/**porquoi? so as to appropriate position the footer! */}
+			<div className="App" style={{minHeight: '100vh'}}>
 				<BrowserRouter>
 					<NavigationBar search={[setSearchString, setSearchArray, setSearchResults, searchVal, setSearchVal]}/>
 					<Box className="SiteBox" component="main">

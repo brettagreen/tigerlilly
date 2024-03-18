@@ -1,24 +1,58 @@
 "use strict";
+//typedefs
+/**
+ * @typedef {Object} article - returned article object 
+ * @property {number=} articleId 
+ * @property {string} articleTitle
+ * @property {string} authorFirst
+ * @property {string} authorLast
+ * @property {string=} authorHandle
+ * @property {number=} authorId
+ * @property {string} text
+ * @property {string} issueTitle
+ * @property {number=} issueId
+ * @property {Date=} pubDate
+ *
+*/
 
+/**
+ * db module
+ * @const
+ */
 const db = require("../db");
 const { NotFoundError } = require("../expressError");
 
-
-/** Related functions for articles */
-
+/**
+ * @module /backend/models/article
+ * @requires module:/backend/db
+ * @requires module:/backend/expressError.NotFoundError
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * @class
+ * @classdesc database CRUD operations related to articles table
+ */
 class Article {
 
-    /** create new article
-     *  
-     * Returns { id, articleTitle, authorFirst, authorLast, authorHandle, authorId, text, issueTitle, issueId }
-     * 
-     **/
-
+    /**
+     * @description create new article and save to database
+     * @param {!string} articleTitle - article title
+     * @param {number=} authorId - id of article author
+     * @param {!string} text - article text/content
+     * @param {number=} issueId - id of issue article is associated with
+     * @returns {article} - { id, articleTitle, authorFirst, authorLast, authorHandle, authorId, text, issueTitle, issueId }
+     */
 	static async create({ articleTitle, authorId, text, issueId }) {
 
+        /**
+		 * the sql query string
+		 * @type {string} */
         let query;
+        /**
+		 * argument values passed to the sql query string
+		 * @type {string|number[]} */
 		let args;
 
+        //based on passed parms/args, write specific query for specific insert operation
         if (!authorId && !issueId) {
             query =
                 `INSERT INTO articles 
@@ -83,17 +117,16 @@ class Article {
         if (text.length > 200) {
             result.rows[0].text = text.substring(0, 200) + "...";
         }
-
+        /**@type {article} */
         return result.rows[0];
 
 	}
 
-    /** Returns all articles.
+    /**
+     * @description returns all articles.
      *
-     * Returns [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
-     *
-     **/
-
+     * @returns {Object[article]} - [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
+     */
     static async getAll() {
         const result = await db.query(
             `SELECT a.id,
@@ -113,12 +146,13 @@ class Article {
     
     }
 
-    /** Given an article id, return article.
+    /**
+     * @description given an article id, return article.
      *
-     * Returns { articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate }
-     *
-     **/
-
+     * @param {number} id - Article id
+     * @throws {notFoundError}
+     * @returns {article} - { articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate }
+     */
     static async get(id) {
         const result = await db.query(
                 `SELECT a.id AS "articleId",
@@ -135,6 +169,7 @@ class Article {
                 LEFT JOIN issues i ON a.issue_id = i.id
                 WHERE a.id = $1`, [id]);
 
+        /** @type {article} */
         const article = result.rows[0];
 
         if (!article) throw new NotFoundError(`No article found by that id: ${id}`);
@@ -142,12 +177,13 @@ class Article {
         return article;
     }
 
-    /** Given the article's title, return article.
+    /**
+     * @description given the article's title, return article.
      *
-     * Returns { articleTitle, authorFirst, authorLast, text, issueTitle }
-     *
-     **/
-
+     * @param {string} articleTitle - article title
+     * @throws {NotFoundError}
+     * @returns {article} - { articleTitle, authorFirst, authorLast, text, issueTitle }
+     */
     static async getByArticleTitle(articleTitle) {
         const result = await db.query(
             `SELECT a.article_title AS "articleTitle",
@@ -162,6 +198,7 @@ class Article {
             [articleTitle]
         );
 
+        /** @type {article} */
         const article = result.rows[0];
 
         if (!article) throw new NotFoundError(`No article found by that title: ${articleTitle}`);
@@ -169,13 +206,13 @@ class Article {
         return article;
     }
 
-
     /**
      * return all articles written by specific author
-     * 
-     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate}, ...]
+     *
+     * @param {string} handle - handle/nickname of Author
+     * @throws {NotFoundError}
+     * @returns {Object[article]} - [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate}, ...]
      */
-
     static async fetchByAuthor(handle) {
         const result = await db.query(
             `SELECT a.id AS "articleId",
@@ -193,16 +230,16 @@ class Article {
             WHERE au.author_handle = $1
             ORDER BY i.pub_date desc`, [handle]);
 
+        if (result.rows.length < 1) throw new NotFoundError(`No articles found by that author handle: ${handle}`);
+
         return result.rows;
     }
 
-
     /**
-     * return all articles that have one or more comments
-     * 
-     * returns [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
+     * @description return all articles that have one or more comments
+     *
+     * @returns {Object[article]} - [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
      */
-
     static async hasComments() {
         const result = await db.query(
             `SELECT a.id,
@@ -222,13 +259,13 @@ class Article {
         return result.rows;
     }
 
-
     /**
-     * return all articles that contain specified keyword
-     * 
-     * returns [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
+     * @description return all articles that contain specified keyword
+     *
+     * @param {string} keyword - article keyword
+     * @throws {NotFoundError}
+     * @returns {Object[article]} - [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
      */
-
     static async fetchByKeyword(keyword) {
         const result = await db.query(
             `SELECT a.id AS "articleId",
@@ -242,27 +279,37 @@ class Article {
             LEFT JOIN article_keywords aw ON a.id = aw.article_id
             LEFT JOIN authors au ON a.author_id = au.id
             WHERE aw.keyword = $1`, [keyword]);
+
+        if (result.rows.length < 1) throw new NotFoundError(`No articles found associated with that keyword: ${keyword}`);
         
         return result.rows;
     }
 
     /**
+     * @description
      * returns all articles containing search term(s) somewhere in its text or title.
-     * if search term is a match, article object will be returned
-     * to the controlling function
-     * 
-     * returns [{ articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId }, ...]
-     * 
+     * if search term is a match, article id will be returned to the controlling function under (/backend/routes/articles)
+     * if search yields no hits, return empty set
+     *
+     * @param {string[]} keywords -text and "text string" being matched in article text or title
+     * @returns {Set.<number>} - {...id}
      */
-
     static async search(keywords) {
+        /**
+         * holds result rows that match keyword search query
+         * @type {string} */
         let result;
-        const resultsSet = new Set();
 
+        /**
+         * unique article ids which contain one/more keywords in the text or the title
+         * @type {Set{number}}
+         * @const
+         */
+        const resultsSet = new Set();
+ 
         for (let term of keywords) {
-            console.log('keywords term', term);
             if (term.startsWith('"') || term.startsWith("'")) {
-                term = term.substring(1, term.length-1);
+                term = term.substring(1, term.length-1); //remove quotation marks from phrase/term being searched for
             }
             result = await db.query(
                 `SELECT id FROM articles WHERE text ILIKE $1 OR article_title ILIKE $1`, ['%'+term+'%']
@@ -273,23 +320,26 @@ class Article {
             } 
         }
 
-        console.log('keywords resultsSet', resultsSet);
         return resultsSet;
     }
 
-    /** updates an article 
-     * 
-     * all article fields can be modified.
-     * 
-     * Returns { articleTitle, author, authorHandle, text, issueTitle }
-     * 
-     * **/
-
+    /**
+     * @description updates an article. all article fields can be modified.
+     *
+     * @param {number} id - id of article to be updated
+     * @param {Object} body - http request body object. this included all article fields to be updated. 
+     * if specific field isn't being updated, i.e. isn't included in the body object, then sql update statement
+     * will fall back to existing value
+     * @throws {NotFoundError}
+     * @returns {article} - { articleTitle, author, authorHandle, text, issueTitle }
+     */
     static async update(id, body) {
+        //get the article in question
         let r = await db.query(
             `SELECT * FROM articles WHERE id=$1`, [id]
         );
         
+        //if article ain't found, throw an exception
 		if (!r.rows[0]) throw new NotFoundError(`No article found by that id: ${id}`);
 
         r = r.rows[0];
@@ -302,10 +352,10 @@ class Article {
             issue_id = $4
             WHERE a.id = $5
             RETURNING a.article_title AS "articleTitle",
-                    (SELECT CONCAT(author_first,' ', author_last) AS "author" FROM authors WHERE id = a.author_id),
-                    (SELECT author_handle AS "authorHandle" FROM authors WHERE id = a.author_id),
-                    a.text,
-                    (SELECT issue_title AS "issueTitle" FROM issues WHERE id = a.issue_id)`,
+                (SELECT CONCAT(author_first,' ', author_last) AS "author" FROM authors WHERE id = a.author_id),
+                (SELECT author_handle AS "authorHandle" FROM authors WHERE id = a.author_id),
+                a.text,
+                (SELECT issue_title AS "issueTitle" FROM issues WHERE id = a.issue_id)`,
             [
                 body.articleTitle || r.article_title,
                 body.authorId || r.author_id,
@@ -322,23 +372,24 @@ class Article {
         return result.rows[0];
 	}
 
-
-    /** Deletes article from database.
+    /**
+     * @description Deletes article from database.
      * 
-     * returns {articleTitle, author, authorHandle, text, issueTitle}
+     * @param {number} id - id of article to be deleted
+     * @throws {NotFoundError}
+     * @returns {article} - { articleTitle, author, authorHandle, text, issueTitle }
      */
-
     static async delete(id) {
 
         const result = await db.query(
-                `DELETE
-                FROM articles
-                WHERE id = $1
-                RETURNING article_title AS "articleTitle", 
-                          (SELECT CONCAT(a.author_first,' ', a.author_last) AS "author" FROM authors a WHERE a.id = author_id),
-                          (SELECT a.author_handle AS "authorHandle" FROM authors a WHERE a.id = author_id),
-                          text, (SELECT i.issue_title AS "issueTitle" FROM issues i WHERE i.id = issue_id)`, 
-                [Number(id)]
+            `DELETE
+            FROM articles
+            WHERE id = $1
+            RETURNING article_title AS "articleTitle", 
+                    (SELECT CONCAT(a.author_first,' ', a.author_last) AS "author" FROM authors a WHERE a.id = author_id),
+                    (SELECT a.author_handle AS "authorHandle" FROM authors a WHERE a.id = author_id),
+                    text, (SELECT i.issue_title AS "issueTitle" FROM issues i WHERE i.id = issue_id)`, 
+            [Number(id)]
         );
 
         if (!result.rows[0]) throw new NotFoundError(`No article found by id: ${id}`);

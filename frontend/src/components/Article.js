@@ -1,10 +1,10 @@
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Link } from '@mui/material';
-import TigerlillyApi from './api';
-import { linkTheme } from './css/styles';
 import { ThemeProvider } from '@emotion/react';
-import './css/article.css';
+import { Link } from '@mui/material';
+import TigerlillyApi from '../api';
+import { linkTheme } from '../css/styles';
+import '../css/article.css'
 
 function Article({ passedArticle, issueArticle, searchArray=null }) {
     const [article, setArticle] = useState(null);

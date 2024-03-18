@@ -1,13 +1,13 @@
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import FeedbackIcon from '@mui/icons-material/Feedback';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import Button from '@mui/material/Button';
 import FormHelperText from '@mui/material/FormHelperText';
 import { ThemeProvider } from '@mui/material';
-import TigerlillyApi from './api';
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { formTheme, textareaTheme } from './css/styles';
+import TigerlillyApi from '../api';
+import { formTheme, textareaTheme } from '../css/styles';
 
 
 function ContactUs() {
@@ -74,7 +74,7 @@ function ContactUs() {
             <div className="PageHeader">
                 <FeedbackIcon />
                 <h3>The Tigerlilly Online loooooves feedback!</h3> 
-                <h3>mad sad glad bad and allll those funky vibes in between!</h3> 
+                <h3>mad sad glad bad and allll those funky little vibes in between!</h3> 
                 <h3>Hey, you may (n)eve(n|r) hear back from us!</h3>
                 <FeedbackIcon />
             </div>

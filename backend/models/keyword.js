@@ -1,21 +1,36 @@
-const db = require("../db");
+//typedefs
+/**
+ * @typedef {Object} keyword - returned keyword object 
+ * @property {number=} articleId
+ * @property {string=} articleTitle
+ * @property {string|string[]} keyword 
+ *
+*/
 
-const {
-        NotFoundError,
-        BadRequestError
-    } = require("../expressError");    
+/**
+ * db module
+ * @const
+ */
+const db = require("../db");    
     
+/**
+ * @module /backend/models/keywords
+ * @requires module:/backend/db
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * @class
+ * @classdesc  database CRUD operations related to article_keywords table
+ */
+class Keyword {
     
-    /** Related functions for keyword associations */
-    
-    class Keyword {
-    
-    /**
-     * Associates keyword(s) with specified article.
-     * 
-     * returns {articleTitle, keywords}
+	/**
+     * @description associated keyword(s) with specified article
+	 * 
+     * @param {number} articleId - id of article that keyword(s) should be associated with
+     * @param {string[]} keywords - array of keywords to be assicated with designated article
+
+     * @returns {keyword} - {articleTitle, keywords}
      */
-
     static async addToArticle({articleId, keywords}) {
         let resp;
 
@@ -32,12 +47,12 @@ const {
         return {articleTitle: resp.rows[0].articleTitle, keywords: keywords};
     }
 
-    /**
-     * Associates keyword(s) with all articles.
-     * 
-     * returns {articleTitle, keywords}
+	/**
+     * @description associates passed keywords with ALL articles
+     *
+	 * @param {number} id - id of issue to be queried
+     * @returns {keyword} - {articleTitle, keywords}
      */
-
     static async addToAllArticles(keywords) {
         const articleIds = await db.query(
             `SELECT id FROM articles`
@@ -57,12 +72,11 @@ const {
         return {articleTitle: 'All Articles', keywords: keywords};
     }
 
-    /**
-     * returns all keyword/article associations
-     * 
-     * returns [{keyword, articleId, articleTitle}, ...]
+	/**
+     * @description returns all keyword/article associations vis-a-vis articleTitle
+     *
+     * @returns {Object[keyword]} - [{keyword, articleId, articleTitle}, ...]
      */
-
     static async getKeywords() {
         const result = await db.query(
             `SELECT ak.keyword, ak.article_id AS "articleId", a.article_title AS "articleTitle"
@@ -75,12 +89,12 @@ const {
         return result.rows;
     }
 
-    /**
-     * returns all keywords for article
-     * 
-     * returns [{keywords}, ...]
+	/**
+     * @description returns all keywords associated with passed articleId
+     *
+     * @param {number} articleId - id of article to return keyword associations from
+     * @returns {keyword} - [{keyword}, ...]
      */
-
     static async getArticleKeywords(articleId) {
         const result = await db.query(
             `SELECT keyword
@@ -93,19 +107,28 @@ const {
     }
 
     /**
-     * returns all articles containing passed hashtag(s).
-     * if search term is a match, article object will be returned to the controlling function
-     * 
-     * returns [{ articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId }, ...]
-     * 
+     * @description
+     * returns all articles containing passed hashtag(s)
+     * if search term is a match, article id will be returned to the controlling function under (/backend/routes/articles)
+     * if search yields no hits, return empty set
+     *
+     * @param {string[]} hashtags - keywords to be matched with an associated article
+     * @returns {Set.<number>} - {...id}
      */
-
     static async search(hashtags) {
+        /**
+         * holds result rows that match keyword search query
+         * @type {string} */
         let result;
+
+        /**
+         * unique article ids which contain one/more keywords in the text or the title
+         * @type {Set{number}}
+         * @const
+         */
         const resultsSet = new Set();
 
         for (let term of hashtags) {
-            console.log('hashtags term', term);
             result = await db.query(
                 `SELECT article_id FROM article_keywords WHERE keyword ILIKE $1`, 
                     ['%'+term.substring(1,term.length)+'%']
@@ -116,16 +139,18 @@ const {
             } 
         }
 
-        console.log('hashtags resultsSet', resultsSet);
         return resultsSet;
     }
 
     /**
-     * update keyword values from specified article(s)
-     * 
-     * returns {articleTitle, keyword}
+     * @description update keyword values from specified article(s). if articleId value
+     * is 0, then update the keyword across all articles it is associated with.
+     *
+     * @param {number} articleId - id of article whose keyword(s) to update
+     * @param {string} keyword - keyword to be updated
+     * @param {string} edit - value original keyword value should be changed to
+     * @returns {keyword} - {articleTitle, keyword}
      */
-
     static async updateKeywords(articleId, {keyword, edit}) {
 
         if (articleId == 0) {
@@ -162,11 +187,13 @@ const {
     }
 
     /**
-     * remove keywords from specified article(s)
-     * 
-     * returns {articleTitle, keyword}
+     * @description remove keywords from specified article(s)
+     *
+     * @param {number} articleId - id of article passed keyword is to be deleted from.
+     * if articleId === 0, then delete the keyword from all articles the keyword is associated
+     * @param {string} keyword - the keyword to delete
+     * @returns {keyword} - { articleTitle, keyword }
      */
-
     static async delete(articleId, keyword) {
         if (articleId == 0) {
 

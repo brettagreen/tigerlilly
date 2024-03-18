@@ -1,20 +1,58 @@
 "use strict";
+//typedefs
+/**
+ * @typedef {Object} author - returned article object 
+ * @property {number=} authorId
+ * @property {string=authorFirst+' '+authorLast} author
+ * @property {string} authorFirst
+ * @property {string} authorLast
+ * @property {string} authorHandle
+ * @property {string} authorBio
+ * @property {string} icon
+ * @property {string} authorSlogan
+ *
+*/
 
+/**
+ * db module
+ * @const
+ */
 const db = require("../db");
 const { NotFoundError, BadRequestError } = require("../expressError");
+/**
+ * renameFile
+ * @const
+ */
 const { renameFile } = require("../helpers/icons");
 
-/** Related functions for authors. */
-
+/**
+ * @module /backend/models/author
+ * @requires module:/backend/db
+ * @requires module:/backend/helpers/icons.renameFile
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * @class
+ * @classdesc  database CRUD operations related to authors table
+ */
 class Author {
 
-	/** create author with passed form data.
-	 *
-	 * returns { id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
-	 *
-	 **/
-
+	/**
+     * @description create new author and save to database
+	 * 
+     * @param {string} authorFirst - author's first name
+     * @param {string} authorLast - author's last name
+     * @param {string} authorHandle - author's alias/nickname
+     * @param {string} authorSlogan - author's catchphrase
+	 * @param {string=} authorBio - author's biography
+	 * @param {string=} icon - filename for author's icon/avatar
+	 * @throws {BadRequestError} if passed non-unique authorHandle
+     * @returns {author} - { id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
+     */
 	static async create({ authorFirst, authorLast, authorHandle, authorSlogan, authorBio }, icon) {
+		/**no non-unique author handles!!!
+		 * @type {Object[]}
+		 * @const
+		 */
 		const duplicateCheck = await db.query(
 			`SELECT author_handle
 			FROM authors
@@ -26,9 +64,16 @@ class Author {
 			throw new BadRequestError(`Duplicate author handle: ${authorHandle}`);
 		}
 
-		let query;
+        /**
+		 * the sql query string
+		 * @type {string} */
+        let query;
+        /**
+		 * argument values passed to the sql query string
+		 * @type {string|number[]} */
 		let args;
 
+		//based on passed parms/args, write specific query for specific insert operation
 		if (!authorBio && !icon) {
 			query = 			
 				`INSERT INTO authors
@@ -95,11 +140,11 @@ class Author {
 		return result.rows[0];
 	}
 
-  /** Find all authors.
-   *
-   * Returns [{ id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }, ...]
-   **/
-
+    /**
+     * @description Returns all authors
+     *
+     * @returns {Object[author]} - [{ id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }, ...]
+     */
 	static async findAll() {
 		const result = await db.query(
 				`SELECT id,
@@ -117,13 +162,13 @@ class Author {
 		return result.rows;
 	}
 
-  /** Given an author's handle, return data about that author.
-   *
-   * Returns { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
-   *
-   * Throws NotFoundError if author not found.
-   **/
-
+	/**
+     * @description Given an author's handle, return author object.
+     *
+	 * @param {string} authorHandle - handle of author object to be returned
+	 * @throws {NotFoundError}
+     * @returns {author} - { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
+     */
 	static async get(authorHandle) {
 		const userRes = await db.query(
 			`SELECT CONCAT(author_first, ' ', author_last) AS "author",
@@ -138,6 +183,7 @@ class Author {
 			[authorHandle]
 		);
 
+		/**@type {author} */
 		const author = userRes.rows[0];
 
 		if (!author) throw new NotFoundError(`No author by that handle: ${authorHandle}`);
@@ -145,37 +191,42 @@ class Author {
 		return author;
 	}
 
-  /** Given an author's id, return author_handle value.
-   *
-   * Returns authorHandle
-   *
-   * Throws NotFoundError if author not found.
-   **/
+	/**
+     * @description Given an author's id, return author_handle value.
+     *
+	 * @param {number} id - id of author
+	 * @throws {NotFoundError}
+     * @returns {string} - authorHandle
+     */
+	static async getHandle(id) {
+		const authorRes = await db.query(
+			`SELECT author_handle AS "authorHandle",
+			FROM authors
+			WHERE author_handle = $1`,
+			[id]
+		);
 
-  static async getHandle(id) {
-	const authorRes = await db.query(
-		`SELECT author_handle AS "authorHandle",
-		FROM authors
-		WHERE author_handle = $1`,
-		[id]
-	);
+		/**handle
+		 * @type {string}
+		 */
+		const authorHandle = authorRes.rows[0].authorHandle;
 
-	const authorHandle = authorRes.rows[0].authorHandle;
+		if (!authorHandle) throw new NotFoundError(`No author by that id: ${id}`);
 
-	if (!authorHandle) throw new NotFoundError(`No author by that id: ${id}`);
+		return authorHandle;
+	}
 
-	return authorHandle;
-}
-
-  /**
-   *
-   * Data can include:
-   *   { authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
-   *
-   * Returns { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
-   *
-   */
-
+	/**
+     * @description updates an author. all author fields can be modified.
+     *
+	 * @param {number} id - id of author
+     * @param {Object} body - http request body object. this included all author fields to be updated.
+	 * if specific field isn't being updated, i.e. isn't included in the body object, then sql update statement
+	 * will fall back to existing value
+	 * @param {string} icon - updated filename of author icon/avatar
+	 * @throws {NotFoundError}
+     * @returns {author} - { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
+     */
 	static async update(id, body, icon) {
 
 		let r = await db.query(
@@ -228,11 +279,13 @@ class Author {
 		return result.rows[0];
 	}
 
-  /** Delete author from database. 
-   * 
-   * returns { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
-   */
-
+	/**
+     * @description deletes author from database.
+     *
+	 * @param {number} id - id of author
+	 * @throws {NotFoundError}
+     * @returns {author} - { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
+     */
 	static async delete(id) {
 		const result = await db.query(
 			`DELETE

@@ -1,8 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import TigerlillyApi from './api';
-import './css/author.css';
 import Link from '@mui/material/Link';
+import TigerlillyApi from '../api';
+import '../css/author.css';
 
 import { List, ListItemButton, ListItemText, ListItem, Collapse } from '@mui/material';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';

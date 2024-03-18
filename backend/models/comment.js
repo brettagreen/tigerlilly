@@ -1,21 +1,43 @@
 "use strict";
 
+/**
+ * db module
+ * @const
+ */
 const db = require("../db");
-const { NotFoundError, BadRequestError } = require("../expressError");
+const { NotFoundError } = require("../expressError");
 
-/** Related functions for comments. */
-
+/**
+ * @module /backend/models/comment
+ * @requires module:/backend/db
+ * @requires module:/backend/helpers/icons.renameFile
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * @class
+ * @classdesc  database CRUD operations related to comments table
+ */
 class Comment {
 
-    /** create new comment
-     *  
-     * Returns { id, userId, username, text, postDate, articleTitle }
-     **/
+    /**
+     * @description create new comment and save to database
+	 * 
+     * @param {number=} userId - id of user posting the comment
+     * @param {string} text - comment text
+     * @param {number=} articleId - id of article that comment is associated with
+     * @param {Date=CURRENT_TIMESTAMP} postDate - timestamp of when comment was created
 
+     * @returns {Object} - { id, userId, username, text, postDate, articleTitle }
+     */
 	static async create({ userId, text, articleId, postDate }) {
 
+        /**
+		 * the sql query string
+		 * @type {string} */
         let query;
-        let args;
+        /**
+		 * argument values passed to the sql query string
+		 * @type {string|number[]} */
+		let args;
 
         if (!userId && !articleId && !postDate) {
             query = 
@@ -108,12 +130,13 @@ class Comment {
 
 	}
 
-    /** return all comments associated with userId
+    /**
+     * @description return all comments associated with passed userId
      *
-     * Returns [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
-     *
-     **/
-
+     * @param {number} userId - id of user whose comments to search for
+     * @throws {NotFoundError}
+     * @returns {Object[]} - [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
+     */
     static async getByUser(userId) {
         const result = await db.query(
             `SELECT c.id,
@@ -137,12 +160,13 @@ class Comment {
         return result.rows;
     }
 
-    /** return all comments associated with articleId
+    /**
+     * @description return all comments associated with passed articleId
      *
-     * Returns [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
-     *
-     **/
-
+     * @param {number} articleId - id of article whose comments we want
+     * @throws {NotFoundError}
+     * @returns {Object[]} - [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
+     */
     static async getByArticle(articleId) {
         const result = await db.query(
             `SELECT c.id,
@@ -161,20 +185,18 @@ class Comment {
             WHERE c.article_id = $1`,
             [articleId]);
         
-        //if (!result.rows[0]) throw new NotFoundError(`No comments associated with that article OR articleId doesn't exist: ${articleId}`);
-
-        console.log('result.rows', result.rows);
-        console.log('t/f', result.rows == false);
+        if (!result.rows[0]) throw new NotFoundError(`No comments associated with that article OR articleId doesn't exist: ${articleId}`);
     
         return result.rows;
     }
 
-    /** Given comment id, return comment.
+    /**
+     * @description Given comment id, return comment.
      *
-     * Returns { id, text, postDate, userFirst, userLast, username, icon }
-     *
-     **/
-
+     * @param {number} id - id of article whose comments we want
+     * @throws {NotFoundError}
+     * @returns {Object} - { id, text, postDate, userFirst, userLast, username, icon }
+     */
     static async get(id) {
         const result = await db.query(
                 `SELECT c.id,
@@ -195,12 +217,16 @@ class Comment {
         return comment;
     }
 
-    /* update comment.
-    *
-    * Returns { id, username, text, articleTitle, postDate }
-    *
-    */
-
+   	/**
+     * @description updates a comment. all comment fields can be modified.
+     *
+	 * @param {number} id - id of comment to be updated
+     * @param {Object} body - http request body object. this included all comment fields to be updated.
+	 * if specific field isn't being updated, i.e. isn't included in the body object, then sql update statement
+	 * will fall back to existing value
+	 * @throws {NotFoundError}
+     * @returns {Object} - { id, username, text, articleTitle, postDate }
+     */
 	static async edit(id, body) {
 
         let r = await db.query(
@@ -238,19 +264,21 @@ class Comment {
 		return comment;
 	}
 
-    /** Deletes comment from database.
-     * 
-     *  returns { id, username, text, articleTitle }
-     * 
-     * */
-
+    /**
+     * @description deletes comment from database.
+     *
+	 * @param {number} id - id of comment to be deleted
+	 * @throws {NotFoundError}
+     * @returns {Object} - { id, username, text, articleTitle, postDate }
+     */
     static async delete(id) {
         const result = await db.query(
                 `DELETE
                 FROM comments
                 WHERE id = $1
                 RETURNING id, (SELECT u.username FROM users u WHERE u.id = user_id), text,
-                        (SELECT a.article_title AS "articleTitle" FROM articles a WHERE a.id = article_id)`,
+                        (SELECT a.article_title AS "articleTitle" FROM articles a WHERE a.id = article_id),
+                        post_date AS "postDate"`,
             [Number(id)]
         );
 

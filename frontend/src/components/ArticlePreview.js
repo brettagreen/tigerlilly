@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import TigerlillyApi from './api';
+import TigerlillyApi from '../api';
 import Grid from '@mui/material/Grid';
 import Article from './Article';
-import { gridTheme } from './css/styles';
+import { gridTheme } from '../css/styles';
 import { ThemeProvider } from '@emotion/react';
 
 function ArticlePreview() {

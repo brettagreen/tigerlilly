@@ -1,8 +1,24 @@
+/**
+ * @module /backend/helpers/tokens
+ * @requires module:jsonwebtoken
+ * @requires module:/backend/config.SECRET_KEY
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * @description creates a new JsonWebToken and returns it to the requesting process
+ */
+
+/**
+ * jsonwebstoken module
+ * @const
+ */
 const jwt = require("jsonwebtoken");
 const { SECRET_KEY } = require("../config");
 
-/** return signed JWT from user data. */
-
+/**
+ * @description return signed JsonWebToken from user data.
+ * @param {Object} user - the user in question
+ * @returns {Object} jwt token that will be stored in user's local storage
+ */
 function createToken(user) {
     console.assert(user.isAdmin !== undefined, "createToken passed user without isAdmin property");
 

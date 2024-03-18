@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { FormControl, TextField, Button, Box, ThemeProvider, Alert, IconButton, InputAdornment, FormHelperText } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { formTheme } from './css/styles';
-import UserContext from './userContext';
-import TigerlillyApi from './api';
-import validate from './helpers/formValidation';
-import './css/user.css';
+import { formTheme } from '../css/styles';
+import UserContext from '../userContext';
+import TigerlillyApi from '../api';
+import validate from '../helpers/formValidation';
+import '../css/user.css';
 
 function User() {
     const history = useNavigate();

@@ -1,24 +1,53 @@
 "use strict";
-
+//typedefs
+/**
+ * @typedef {Object} issue - returned issue object 
+ * @property {number=} issueId
+ * @property {string} issueTitle
+ * @property {Date} pubDate
+ * @property {number=} volume
+ * @property {number=} issue
+ * @property {number=} articleId
+ * @property {string=} articleTitle
+ * @property {string=} text
+ * @property {string=} authorFirst
+ * @property {string=} authorLast
+ * @property {string=} authorHandle 
+ *
+*/
+/**
+ * db module
+ * @const
+ */
 const db = require("../db");
 const { NotFoundError } = require("../expressError");
 
-/** Related functions for issues */
+/**
+ * @module /backend/models/issue
+ * @requires module:/backend/db
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * @class
+ * @classdesc  database CRUD operations related to issues table
+ */
 
 class Issue {
 
-    /** create new issue
-     *  
-     * Returns { id, issueTitle, volume, issue, pubDate }
-     * 
-     **/
+	/**
+     * @description create new issue and save to database
+	 * 
+     * @param {string} issueTitle - title of issue
+     * @param {number} volume - volume number issue is a part of
+     * @param {number} issue - issue number of issue w/in volume
 
+     * @returns {issue} - { id, issueTitle, pubDate }
+     */
 	static async create({ issueTitle, volume, issue }) {
 		
 		const result = await db.query(
             `INSERT INTO issues
                     (issue_title, volume, issue)
-                    VALUES ($1)
+                    VALUES ($1, $2, $3)
                     RETURNING id, issue_title AS "issueTitle", pub_date AS "pubDate"`,
                     [issueTitle, volume, issue]
 		);
@@ -27,32 +56,33 @@ class Issue {
 
 	}
 
-    /** return all issues.
+    /**
+     * @description return all issues
      *
-     * Returns [{ id, issueTitle, volume, issue, pubDate }, ...]
-     *
-     **/
-
+     * @returns {Object[issue]} - [{ id, issueTitle, volume, issue, pubDate }, ...]
+     */
     static async getAll() {
         const result = await db.query(
-            `SELECT *
+            `SELECT id, issue_title AS "issueTitle", volume, issue, pub_date AS "pubDate"
             FROM issues
-            ORDER BY pub_date`);
+            ORDER BY pub_date`
+        );
 
         return result.rows;
     }
 
-    /** Given issue id, return issue.
+	/**
+     * @description given issue id, return issue and all associated articles
      *
-     * Returns { issueTitle, volue, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
-     *
-     **/
-
+	 * @param {number} id - id of issue to be queried
+     * @returns {Object[issue]} - [ { issueTitle, volue, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }...]
+     */
     static async get(id) {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
                     i.volume,
                     i.issue,
+                    i.pub_date AS "pubDate",
                     a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
@@ -67,17 +97,18 @@ class Issue {
         return result.rows;
     }
 
-    /** Given title of the issue, return issue.
+    /**
+     * @description given title of the issue, return issue and all associated articles
      *
-     * Returns { issueTitle, volume, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
-     *
-     **/
-
+	 * @param {string} issueTitle - title of issue to be queried
+     * @returns {Object[issue]} - [ { issueTitle, volue, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }...]
+     */
     static async getByTitle(issueTitle) {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
                     i.volume,
                     i.issue,
+                    i.pub_date AS "pubDate",
                     a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
@@ -94,17 +125,18 @@ class Issue {
         return result.rows;
     }
 
-    /** Return the current/latest issue.
+    /**
+     * @description return the current/latest issue.
      *
-     * Returns { issueTitle, volue, issue, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }
-     *
-     **/
-
+	 * @param {string} issueTitle - title of issue to be queried
+     * @returns {Object[issue]} - [ { issueTitle, volue, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }...]
+     */
     static async getCurrent() {
         const result = await db.query(
             `SELECT i.issue_title AS "issueTitle",
                     i.volume,
                     i.issue,
+                    i.pub_date AS "pubDate",
                     a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     a.text,
@@ -120,14 +152,16 @@ class Issue {
         return result.rows;
     }
 
-    /** updates an issue
-     * 
-     * all issue fields can be modified.
-     * 
-     * Returns { issueTitle, volume, issue, pubDate }
-     * 
-     **/
-
+	/**
+     * @description updates an issue. all issue fields can be modified.
+     *
+	 * @param {number} id - id of issue to be updated
+     * @param {Object} body - http request body object. this included all issue fields to be updated.
+	 * if specific field isn't being updated, i.e. isn't included in the body object, then sql update statement
+	 * will fall back to existing value
+	 * @throws {NotFoundError}
+     * @returns {issue} - { issueTitle, volume, issue, pubDate }
+     */
     static async update(id, body) {
 
         let r = await db.query(
@@ -162,11 +196,13 @@ class Issue {
         return result.rows[0];
     }
 
-    /** Deletes issue from database.
-     * 
-     * returns { issueTitle, volume, issue, pubDate }
+	/**
+     * @description deletes issue from database.
+     *
+	 * @param {number} id - id of issue to be deleted
+	 * @throws {NotFoundError}
+     * @returns {issue} - { issueTitle, volume, issue, pubDate }
      */
-
     static async delete(id) {
         const result = await db.query(
             `DELETE

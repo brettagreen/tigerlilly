@@ -1,15 +1,20 @@
-import MadLibs from './games/madlibs/Madlibs';
-import LightsOut from './games/lights-out/Board';
-import CoinFlip from './games/coin-flip/Container';
-import MemeGenerator from './games/meme-generator/MemeGenerator';
-import Connect4Game from './games/connect-four/Connect4Game';
-import Jeopardy from './games/jeopardy/jeopardy';
 import { useEffect } from 'react';
-import './games/css/games.css'
+import MadLibs from '../games/madlibs/Madlibs';
+import LightsOut from '../games/lights-out/Board';
+import CoinFlip from '../games/coin-flip/Container';
+import MemeGenerator from '../games/meme-generator/MemeGenerator';
+import Connect4Game from '../games/connect-four/Connect4Game';
+import Jeopardy from '../games/jeopardy/jeopardy';
+import '../games/css/games.css'
 
+/**
+ * 
+ * @returns fun and games for the whole family!
+ */
 function Games() {
 
     //games page gets a special background. huzzah!
+    //on page exit, return to default site background
     useEffect(() => {
         const body = document.querySelector('body');
 
@@ -29,6 +34,9 @@ function Games() {
 
     }, []);
 
+    //this isn't meant to look 'pretty'. well, maybe...'pretty' awful? ;)
+    //the games page is meant to capture the worldview on a four year old playing with their toys
+    //lots of fun, colorful, and just a little messy!
     return (
         <div id="gamesContainer">
             <div style={{float:'left'}}>

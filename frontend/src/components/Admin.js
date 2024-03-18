@@ -1,12 +1,12 @@
 import './css/admin.css';
-import TigerlillyApi from "./api";
+import TigerlillyApi from "../api";
 import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText,
             InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Tooltip } from '@mui/material';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { formTheme, textareaTheme } from './css/styles';
-import UserContext from './userContext';
+import { formTheme, textareaTheme } from '../css/styles';
+import UserContext from '../userContext';
 
 function Admin() {
     const history = useNavigate();

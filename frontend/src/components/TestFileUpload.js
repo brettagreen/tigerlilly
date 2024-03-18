@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import TigerlillyApi from './api';
+import TigerlillyApi from '../api';
 
 function TestFileUpload() {
 

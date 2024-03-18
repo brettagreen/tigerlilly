@@ -1,7 +1,7 @@
-import { gridTheme } from './css/styles';
+import { useNavigate } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
 import Grid from '@mui/material/Grid';
-import { useNavigate } from 'react-router-dom';
+import { gridTheme } from '../css/styles';
 import Article from './Article';
 
 function SearchResults({ search }) {

@@ -1,11 +1,11 @@
 import { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TigerlillyApi from './api';
-import UserContext from './userContext';
 import { FormControl, TextField, Button, ThemeProvider, InputAdornment, IconButton } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { formTheme } from './css/styles';
+import TigerlillyApi from '../api';
+import UserContext from '../userContext';
+import { formTheme } from '../css/styles';
 
 function Login({ updateUserToken }) {
 
