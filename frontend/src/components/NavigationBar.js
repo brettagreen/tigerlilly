@@ -1,3 +1,65 @@
+//typedefs
+/**
+ * @typedef {Object} author - Author object
+ * @property {number} authorId
+ * @property {string} authorFirst
+ * @property {string} authorLast
+ * @property {string} authorLast
+ * @property {string} authorHandle
+ * @property {string} authorBio
+ * @property {string} icon
+ * @property {string} authorSlogan
+ *
+*/
+/**
+ * @typedef {Object} issue - Issue object
+ * @property {number=} issueId
+ * @property {string} issueTitle
+ * @property {Date} pubDate
+ * @property {number=} volume
+ * @property {number=} issue
+ * @property {number=} articleId
+ * @property {string=} articleTitle
+ * @property {string=} text
+ * @property {string=} authorFirst
+ * @property {string=} authorLast
+ * @property {string=} authorHandle 
+ *
+*/
+/**
+ * @typedef {Object} article - Article object
+ * @property {number=} articleId 
+ * @property {string} articleTitle
+ * @property {string} authorFirst
+ * @property {string} authorLast
+ * @property {string=} authorHandle
+ * @property {number=} authorId
+ * @property {string} text
+ * @property {string} issueTitle
+ * @property {number=} issueId
+ * @property {Date=} pubDate
+ *
+*/
+/**
+ * @typedef {Object} user - returned User object 
+ * @property {number} id 
+ * @property {string} username
+ * @property {string} userFirst
+ * @property {string} userLast
+ * @property {string} email
+ * @property {boolean} isAdmin
+ * @property {string} icon
+ *
+*/
+/**
+ * @typedef {Object} search - passed [search] values from App component.
+ * @property {function} setSearchString - sets the (final) val the user submitted for the search query
+ * @property {function} setSearchArray - sets value of final vals to search for
+ * @property {function} setSearchResults - sets returned article(s) that matched search query
+ * @property {string} searchVal - literal string as presented in the input field
+ * @property {function} setSearchVal - sets literal string as presented in the input field
+ */
+
 import { useEffect, useState, useContext, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import UserContext from '../userContext';
@@ -34,8 +96,16 @@ import { ThemeProvider } from '@mui/material/styles';
 import { styled, alpha } from '@mui/material/styles';
 import { toolbarMenuTheme, userMenuTheme } from '../css/styles';
 
+/**
+ * width in pixels of Drawer components
+ * @type {number}
+ */
 const drawerWidth = 225;
 
+/**
+ * MUI styled AppBar component
+ * @type {JSX.Element}
+ */
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
   })  (({ theme, menuOpen }) => ({
@@ -56,6 +126,10 @@ const AppBar = styled(MuiAppBar, {
     }),
 }));
 
+/**
+ * css style assets for Drawer components
+ * @type {Object}
+ */
 const drawerStyle = {
     width: drawerWidth,
     flexShrink: 0,
@@ -66,6 +140,10 @@ const drawerStyle = {
     }
 };
 
+/**
+ * css styled div element. for search field
+ * @type {JSX.Element}
+ */
 const Search = styled('div')(({ theme }) => ({
     position: 'relative',
     borderRadius: theme.shape.borderRadius,
@@ -81,7 +159,11 @@ const Search = styled('div')(({ theme }) => ({
         width: '17em'
     },
 }));
-  
+
+/**
+ * css styled div element. for magnifying glass icon in search field
+ * @type {JSX.Element}
+ */
 const SearchIconWrapper = styled('div')(({ theme }) => ({
     padding: theme.spacing(0, 2),
     height: '100%',
@@ -91,7 +173,11 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
     alignItems: 'center',
     justifyContent: 'center'
 }));
-  
+
+/**
+ * styled MUI InputBase for search field
+ * @type {JSX.Element}
+ */
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     width: '100%',
@@ -106,30 +192,192 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     }
 }));
 
+/**
+ * @component /frontend/src/components/NavigationBar
+ * @requires module:react.useEffect
+ * @requires module:react.useState
+ * @requires moduel:react.useContext
+ * @requires module:react.useRef
+ * @requires module:react-router-dom.useNavigate
+ * @requires module:react-router-dom.useLocation
+ * @requires module:/frontend/src/userContext
+ * @requires module:/frontend/src/api
+ * @requires module:mui/material/Box
+ * @requires module:mui/material/Drawer
+ * @requires module:mui/material/AppBar
+ * @requires module:mui/material/Toolbar
+ * @requires module:mui/material/List
+ * @requires module:mui/material/Typography
+ * @requires module:mui/material/IconButton
+ * @requires module:mui/icons-material/Menu
+ * @requires module:mui/icons-material/Home
+ * @requires module:mui/icons-material/ChevronLeft
+ * @requires module:mui/icons-material/ChevronRight
+ * @requires module:mui/material/ListItem
+ * @requires module:mui/material/ListItemIcon
+ * @requires module:mui/material/ListItemText
+ * @requires module:mui/material/Link
+ * @requires module:mui/material/ListSubheader
+ * @requires module:mui/icons-material/Cancel
+ * @requires module:mui/material/Tooltip
+ * @requires module:mui/material/Avatar
+ * @requires module:mui/material/Menu
+ * @requires module:mui/material/MenuItem
+ * @requires module:mui/material/InputBase
+ * @requires module:mui/icons-material/Search
+ * @requires module:mui/material/FormHelperText
+ * @requires module:mui/material.useScrollTrigger
+ * @requires module:mui/material/Slide
+ * @requires module:mui/material/styles/ThemeProvider
+ * @requires module:mui/material/styles.styled
+ * @requires module:mui/material/styles.alpha
+ * @requires module:/frontend/src/css/styles.toolbarMenuTheme
+ * @requires module:/frontend/src/css/styles.userMenuTheme
+ * 
+ * @description NavigationBar component. hugs top of page at all times except on home page. on home page it is activated
+ * on scrolling down. if user is not logged in, it has links to sign up or log in. if logged in, there will be user 
+ * avatar with options to view profile or to log out. regarldess of whether user is logged in, navbar will have a search
+ * field for article keyword/phrase searches or #hashtag searches. Also, hamburger menu will trigger opening of side
+ * panel that has links to various parts of the site.
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * 
+ * @param {Object} search - { setSearchString, setSearchArray, setSerachResults, searchVal, setSearchVal }
+ * @returns {JSX.Element} Box (component) containing the AppBar containing the ToolBar...containing a number of Drawer components
+ *
+ */
 function NavigationBar({ search }) {
 
+    /**@type {search} */
     const [setSearchString, setSearchArray, setSearchResults, searchVal, setSearchVal] = search;
-    
+
+    /**
+     * @typedef {Object} controlUserMenu - useState hook. right facing avatar menu open/close functionality
+     * @property {boolean} userMenuOpen - menu is open or closed
+     * @property {function} setUserMenuOpen - toggles menu open state
+     */
+    /**
+     * @type {controlUserMenu}
+     */
     const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+    /**
+     * @typedef {Object} controlNavEl - useState hook. helps set position of user menu component relative AppBar
+     * @property {number} navEl - position offset
+     * @property {function} setNavEl - set position offset
+     */
+    /**
+     * @type {controlNavEl}
+     */
     const [navEl, setNavEl] = useState(null);
 
+    /**
+     * @typedef {Object} controlMenuOpen - useState hook. left facing hamburger menu functionality. opens/closes top Drawer component
+     * @property {boolean} menuOpen - Drawer is open/closed 
+     * @property {function} setMenuOpen - toggle Drawer open/closed
+     */
+    /**
+     * @type {controlMenuOpen}
+     */
     const [menuOpen, setMenuOpen] = useState(false);
+
+    /**
+     * @typedef {Object} controlAuthorsOpen - useState hook. opens/closes Authors menu item subdrawer Drawer component
+     * @property {boolean} authorsOpen - Drawer is open/closed 
+     * @property {function} setAuthorsOpen - toggle Drawer open/closed
+     */
+    /**
+     * @type {controlAuthorsOpen}
+     */
     const [authorsOpen, setAuthorsOpen] = useState(false);
+
+    /**
+     * @typedef {Object} controlIssuesOpen - useState hook. opens/closes Issues menu item subdrawer Drawer component
+     * @property {boolean} issuesOpen - Drawer is open/closed 
+     * @property {function} setIssuesOpen - toggle Drawer open/closed
+     */
+    /**
+     * @type {controlIssuesOpen}
+     */
     const [issuesOpen, setIssuesOpen] = useState(false);
+
+    /**
+     * @typedef {Object} controlArticlesOpen - useState hook. opens/closes Articles menu item subdrawer Drawer component
+     * @property {boolean} articlesOpen - Drawer is open/closed 
+     * @property {function} setArticlesOpen - toggle Drawer open/closed
+     */
+    /**
+     * @type {controlArticlesOpen}
+     */
     const [articlesOpen, setArticlesOpen] = useState(false);
 
+    /**
+     * @typedef {Object} controlMenuIssues - useState hook. populates individual Issue nav items (which is a subdrawer of the Issues subdrawer)
+     * @property {[issue]} menuIssues - array of Issue objects
+     * @property {function} setMenuIssues - set menuIssues object value
+     */
+    /**
+     * @type {controlMenuIssues}
+     */
     const [menuIssues, setMenuIssues] = useState(null);
+
+    /**
+     * @typedef {Object} controlMenuAuthors - useState hook. populates individual Author nav items (which is a subdrawer of the Authors subdrawer)
+     * @property {[author]} menuAuthors - array of Author objects
+     * @property {function} setMenuAuthors - set menuAuthors object value
+     */
+    /**
+     * @type {controlMenuAuthors}
+     */
     const [menuAuthors, setMenuAuthors] = useState(null);
+
+    /**
+     * @typedef {Object} controlMenuArticles - useState hook. populates individual Article nav items (which is a subdrawer of the Articles subdrawer)
+     * @property {[article]} menuArticles - array of Article objects
+     * @property {function} setMenuArticles - set menuArticles object value
+     */
+    /**
+     * @type {controlMenuArticles}
+     */
     const [menuArticles, setMenuArticles] = useState(null);
 
+    /**
+     * get user context object/info
+     * @type {user}
+     */
     const user = useContext(UserContext).user;
+
+    /**
+     * the useNavigate object allows for programmatic site navigation.
+     * @see https://reactrouter.com/en/6.22.3/hooks/use-navigate
+     * @type {Object}
+     */
     const history = useNavigate();
+
+    /**
+     * the useRef is a hook "that lets you reference a value that’s not needed for rendering"
+     * @see https://react.dev/reference/react/useRef
+     * in this case it's used in the function handleOutsideClick() function to determine if user
+     * click event falls w/in returned JSX.Element tree or not
+     * @type {Object}
+     */
     const menuRef = useRef();
 
+    /**
+     * @typedef {Object} controlSearchError - useState hook. Controlls display of text that appears if user's search is invalid
+     * @property {boolean} searchError - is there a search error?
+     * @property {function} setMenuAuthors - sets value for searchError. default is false.
+     */
+    /**
+     * @type {controlSearchError}
+     */
     const [searchError, setSearchError] = useState(false);
 
-    //naughty search words. will be removed from any keyword search
-    //won't be removed from hashtag or "phrase" searches
+    /**
+     * naughty search words. will be removed from any keyword search. 
+     * won't be removed from hashtag or "phrase" searches
+     * @type {string[]}
+     */
     const stopwords = [
         'a',    'an',    'and',   'are',
         'as',   'at',    'be',    'but',
@@ -142,17 +390,29 @@ function NavigationBar({ search }) {
         'with'
     ];
 
-    //used for controlling AppBar behavior
+    /**
+     * used for controlling AppBar behavior. i.e. when appbar shows/hides
+     * @name trigger
+     * @type {function}
+     */
     const trigger = useScrollTrigger({
         disableHysteresis: true
     });
 
-    //useLocation hook returns current page ('/','/login', etc.) in app
-    //AppBar behavior is slightly different for homepage vs other pages
+    /**
+     * the useLocation object returns current page in app ('/','/login', etc.).
+     * @see https://reactrouter.com/en/6.22.3/hooks/use-location
+     * we want AppBar behavior to be slightly different for the homepage vs other pages,
+     * hence useLocation
+     * @type {Object}
+     */
     const location = useLocation();
 
-    //right facing avatar options, for logged in users
-    function toggleOpenUserMenu(event) {
+    /**
+     * opens right-aligned user menu
+     * @returns {undefined}
+    */
+    function handleOpenUserMenu(event) {
         setUserMenuOpen(!userMenuOpen);
 
         if (userMenuOpen) {
@@ -161,23 +421,48 @@ function NavigationBar({ search }) {
             setNavEl(null);
         }
     };
-  
+
+    /**
+     * closes right-aligned user menu
+     * @returns {undefined}
+    */
     function handleCloseUserMenu() {
         setUserMenuOpen(false);
         setNavEl(null);
     };  
 
-    //for left-aligned, hamburger menu
+    /**
+     * opens left-aliged menu drawer
+     * @returns {undefined}
+     */
+    function handleMenuOpen() {
+        setMenuOpen(true);
+    }
+    /**
+     * closes initial menu drawer and opens authors drawer
+     * @returns {undefined}
+     */
     function handleAuthorsOpen() {
         setMenuOpen(false);
         setAuthorsOpen(true);
     }
 
+    /**
+     * closes initial menu drawer and opens issues drawer
+     * @returns {undefined}
+     */
     function handleIssuesOpen() {
         setMenuOpen(false);
         setIssuesOpen(true);
     }
 
+    /**
+     * retrieves all articles that are associated with the issue object that has the id param.
+     * then closes the issues drawer and opens the articles drawer
+     * @async
+     * @param {number} id
+     * @returns {undefined}
+     */
     async function handleArticlesOpen(id) {
         setArticlesOpen(true);
         setIssuesOpen(false);
@@ -186,29 +471,54 @@ function NavigationBar({ search }) {
         setMenuArticles(resp.issues);
     }
 
+    /**
+     * closes author drawer and opens initial menu drawer
+     * @returns {undefined}
+     */
     function handleAuthorsClose() {
         setMenuOpen(true);
         setAuthorsOpen(false);
     }
 
+    /**
+     * closes the articles drawer and opens the issues drawer
+     * @returns {undefined}
+     */
     function handleArticlesClose() {
         setIssuesOpen(true);
         setArticlesOpen(false);
     }
 
+    /**
+     * closes issues drawer and opens initial menu drawer
+     * @returns {undefined}
+     */
     function handleIssuesClose() {
         setIssuesOpen(false);
         setMenuOpen(true);
     }
 
-    function handleMenuOpen() {
-        setMenuOpen(true);
-    }
-
+    /**
+     * controlled input for search field string value
+     * @param {Object} event 
+     * @returns {undefined}
+     */
     function handleSearchInput(event) {
         setSearchVal(event.target.value);
     }
 
+    /**
+     * massage search input before submitting to the backend to perform actual search
+     * repace '#' hashes with neutral '*'.
+     * replace all ',' w/ ' '
+     * /"[^"]+"|[^\s]+/g regEx captures all individual words/hashtags AND phrases per " ".
+     * these values are then filtered to ensure they don't contain any of the 'stopwords'
+     * yippeeee yay, now we can trim() what we've got and submitted to the backed. godspeed!
+     * user then sent to the /searchResults page to view results of their search.
+     * @async
+     * @param {Object} event
+     * @return {undefined}
+     */
     async function performSearch(event) {
         event.preventDefault();
         if (searchVal.length > 3) {
@@ -233,6 +543,7 @@ function NavigationBar({ search }) {
             setSearchArray(finalSearchVal);
             setSearchResults(res.results);
             
+
             history('/searchResults');
             setSearchVal('');
         } else {
@@ -241,6 +552,14 @@ function NavigationBar({ search }) {
         }
     }
 
+    /**
+     * global 'click' event handler
+     * if click event falls anywhere within the NavigationBar component, then nothing happens.
+     * otherwise, any open menu drawers are closed === same as closing menu drawers voluntarily
+     * @global
+     * @param {Object} event
+     * @returns {undefined}
+     */
     function handleOutsideClick(event) {
         if (menuRef.current && !menuRef.current.contains(event.target)) {
             setMenuOpen(false);
@@ -251,8 +570,17 @@ function NavigationBar({ search }) {
     }
 
     useEffect(() => {
+
+        /**
+         * ties handleOutsideClick() function to global document object
+         */
         document.addEventListener('click', handleOutsideClick);
 
+        /**
+         * upon initial page render, load menu Drawer components with (all) Author and Issue objects
+         * @async
+         * @returns {undefined}
+         */
         async function loadTables() {
             let resp;
 
@@ -261,7 +589,6 @@ function NavigationBar({ search }) {
 
             resp = await TigerlillyApi.get('issues');
             setMenuIssues(resp.issues);
-            console.log('menuIssues', resp.issues);
 
         }
 
@@ -303,7 +630,7 @@ function NavigationBar({ search }) {
                             {user ?
                             <>
                                 <Tooltip disableFocusListener title={user.username}>
-                                    <IconButton name="aviClick" p={0} onClick={toggleOpenUserMenu} disableRipple={true}>
+                                    <IconButton name="aviClick" p={0} onClick={handleOpenUserMenu} disableRipple={true}>
                                         <Avatar alt="avatar" src={`/icons/${user.icon}`}/>
                                     </IconButton>
                                 </Tooltip>

@@ -1,7 +1,7 @@
 "use strict";
 //typedefs
 /**
- * @typedef {Object} author - returned article object 
+ * @typedef {Object} author - returned author object 
  * @property {number=} authorId
  * @property {string=authorFirst+' '+authorLast} author
  * @property {string} authorFirst

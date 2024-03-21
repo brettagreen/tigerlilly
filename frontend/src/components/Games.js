@@ -8,13 +8,27 @@ import Jeopardy from '../games/jeopardy/jeopardy';
 import '../games/css/games.css'
 
 /**
+ * @component /frontend/src/components/Games
+ * @requires module:react.useEffect
+ * @requires module:/frontend/src/games/madlibs/Madlibs
+ * @requires module:/frontend/src/games/lights-out/Board
+ * @requires module:/frontend/src/games/coin-flip/Container
+ * @requires module:/frontend/src/games/meme-generator/MemeGenerator
+ * @requires module:/frontend/src/games/connect-four/Connect4Game
+ * @requires module:/frontend/src/games/jeopardy/jeopardy
  * 
- * @returns fun and games for the whole family!
+ * @description Games component. Extensible by design. Right now this page features games written while enrolled at Springboard. More to come!
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * 
+ * @returns {JSX.Element} - Various html games loosely structured on the page. looks messy and chaotic and is meant to.
+ *
  */
 function Games() {
 
-    //games page gets a special background. huzzah!
-    //on page exit, return to default site background
+    /**
+     * games page gets a special background. huzzah! on page exit, return to default site background
+    */
     useEffect(() => {
         const body = document.querySelector('body');
 
@@ -34,9 +48,11 @@ function Games() {
 
     }, []);
 
-    //this isn't meant to look 'pretty'. well, maybe...'pretty' awful? ;)
-    //the games page is meant to capture the worldview on a four year old playing with their toys
-    //lots of fun, colorful, and just a little messy!
+    /**
+     * this isn't meant to look 'pretty'. well, maybe...'pretty' awful? ;)
+     * the games page is meant to capture the worldview on a four year old playing with their toys
+     * lots of fun, colorful, and just a little messy!
+     */
     return (
         <div id="gamesContainer">
             <div style={{float:'left'}}>
