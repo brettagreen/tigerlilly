@@ -1,6 +1,18 @@
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 
+/**
+ * @component /frontend/src/components/Footer
+ * @requires module:mui/material/Link
+ * @requires module:mui/material/Grid
+ * 
+ * @description Footer component. used at the bottom of all pages. holds some relevant links and looks pretty
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * 
+ * @returns {JSX.Element} - footer containing an image and some links organized with mui Grid
+ *
+ */
 function Footer() {
 
 return (

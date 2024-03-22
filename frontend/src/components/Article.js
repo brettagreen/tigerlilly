@@ -1,3 +1,17 @@
+/**
+ * @typedef {Object} article - Article object
+ * @property {number=} articleId 
+ * @property {string} articleTitle
+ * @property {string} authorFirst
+ * @property {string} authorLast
+ * @property {string=} authorHandle
+ * @property {number=} authorId
+ * @property {string} text
+ * @property {string} issueTitle
+ * @property {number=} issueId
+ * @property {Date=} pubDate
+ *
+*/
 import { useEffect, useState, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { ThemeProvider } from '@emotion/react';
@@ -6,14 +20,91 @@ import TigerlillyApi from '../api';
 import { linkTheme } from '../css/styles';
 import '../css/article.css'
 
+/**
+ * @component /frontend/src/components/Article
+ * @requires module:react.useEffect
+ * @requires module:react.useState
+ * @requires module:react.useRef
+ * @requires module:react-router-dom.useParams
+ * @requires module:emotion/react/ThemeProvider
+ * @requires module:mui/material/Link
+ * @requires module:/frontend/src/api
+ * @requires module:/frontend/src/css/styles.linkTheme
+ * 
+ * @description Article component. presents typical article info reglardless. if article is being generated as result of a keyword or 
+ * hashtag search, then article keyword/hashtag matches will be highlighted. Also, articles tied to Issue presentation will be formatted
+ * differently than articles that aren't. Last, article can also be requested vi url params eg. /article/:id. 
+ * @author Brett A. Green <brettalangreen@proton.me>
+ * @version 1.0
+ * 
+ * @param {article=} passedArticle - Article object that is passed to Component as a prop
+ * @param {boolean=false} issueArticle - true if this is an article that belongs to an Issue component
+ * @param {[article]=null} searchArray - array of article(s) that matched search criteria as initiated in the NavigationBar component
+ * @returns {JSX.Element} - contains article and related keywords
+ *
+ */
 function Article({ passedArticle, issueArticle, searchArray=null }) {
+
+    /**
+     * @typedef {Object} controlArticle - useState hook. related to article in question
+     * @property {article} article - the article object
+     * @property {function} setArticle - sets value of the article object
+     */
+    /**
+     * @type {controlArticle}
+     */
     const [article, setArticle] = useState(null);
+
+     /**
+     * @typedef {Object} controlKeywords - useState hook. related to keywords that are associated with the article object
+     * @property {[string]} keywords - keywords associated with the article
+     * @property {function} setKeywords - sets value of the keywords object
+     */
+    /**
+     * @type {controlKeywords}
+     */
     const [keywords, setKeywords] = useState(null);
+
+    /**
+     * @typedef {Object} controlHidden - useState hook. toggles whether 'read more' button is hidden. doesn't pertain to all articles.
+     * @property {boolean} hidden - is the button hidden?
+     * @property {function} setHidden - toggles whether the button is hidden or not
+     */
+    /**
+     * @type {controlHidden}
+     */
     const [hidden, setHidden] = useState(true);
+
+    /**
+     * @typedef {Object} controlParam - key:val object containing any all url passed params. url passed param of id of article to be shown
+     * @property {number} id - url passed param of id of article to be shown
+     */
+    /**
+     * @type {controlParam}
+     */
     const { id } = useParams();
+
+    /**
+     * the useRef is a hook "that lets you reference a value that’s not needed for rendering"
+     * @see https://react.dev/reference/react/useRef
+     * used to help with article markup w/r/t articles that are being requested because of a search
+     * @type {Object}
+     */
     const articleRef = useRef();
+
+    /**
+     * the useRef is a hook "that lets you reference a value that’s not needed for rendering"
+     * @see https://react.dev/reference/react/useRef
+     * used to help with keywords markup w/r/t articles that are being requested because of a search
+     * @type {Object}
+     */
     const keywordsRef = useRef();
 
+    /**
+     * displays article differently based on 1) whether the text of the article is longer than 50 words
+     * 2) whether the article is part of an Issue or not
+     * @returns {JSX.Element} <p /> containing article text
+     */
     function formatArticleText() {
         if (article.expand) {
             if (hidden) {
@@ -39,6 +130,13 @@ function Article({ passedArticle, issueArticle, searchArray=null }) {
     }
 
     useEffect(() => {
+        /**
+         * gathers associated article keywords for article.
+         * if article has been requested vi url/params, then article object is first accessed
+         * before gathering its associated keywords
+         * @async
+         * @returns {undefined}
+         */
         async function setUp() {
 
             if (passedArticle) {
@@ -59,6 +157,10 @@ function Article({ passedArticle, issueArticle, searchArray=null }) {
 
     useEffect(() => {
 
+        /**
+         * <mark> article words and/or phrases that match those in article keyword/phrase search value
+         * @returns {undefined}
+         */
         function markupArticle() {
             const filterKeywords = searchArray.filter((val) => {
                 return !val.startsWith('*');
@@ -68,15 +170,15 @@ function Article({ passedArticle, issueArticle, searchArray=null }) {
                 if (kwd.startsWith("'") || kwd.startsWith('"')) {
                     kwd = kwd.substring(1, kwd.length-1);
                 }
-                console.log('kwd', kwd);
                 const element = articleRef.current;
-                console.log('article/element', element);
-                console.log('innerHTML before', element.innerHTML);
                 element.innerHTML = element.innerHTML.replaceAll(kwd, `<mark>${kwd}</mark>`);
-                console.log('innerHTML after', element.innerHTML);
             }
         }
 
+        /**
+         * <mark> article hashtags that match those in article hashtag search value
+         * @returns {undefined}
+         */
         function markupKeywords() {
             const filterKeywords = searchArray.filter((val) => {
                 return val.startsWith('*');
@@ -84,21 +186,15 @@ function Article({ passedArticle, issueArticle, searchArray=null }) {
 
             for (let kwd of filterKeywords) {
                 kwd = kwd.substring(1,kwd.length);
-                console.log('kwd', kwd);
                 const element = keywordsRef.current;
-                console.log('article/element', element);
-                console.log('innerHTML before', element.innerHTML);
                 element.innerHTML = element.innerHTML.replaceAll(kwd, `<mark>${kwd}</mark>`);
-                console.log('innerHTML after', element.innerHTML);
             }
         }
 
         if (article && searchArray) {
-            console.log('searchArray',searchArray)
             markupArticle();
         }
         if (keywords && searchArray) {
-            console.log('searchArray',searchArray)
             markupKeywords();
         }
         

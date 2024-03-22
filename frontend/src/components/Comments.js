@@ -1,3 +1,7 @@
+/**
+ * if/when the site allows for people to leave comments, then this component will see the glorious light of day.
+ * until then, bone-chilling darkness.
+ */
 function Comments() {
     //const [comments, setComments] = useState(null);
     //const [showComments, setShowComments] = useState('show comments');

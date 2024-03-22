@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import TigerlillyApi from '../api';
 
+/**
+ * 
+ * This is not a production component and will be taken down sooner than later.
+ * anyhoo, no jsdoc
+ */
 function TestFileUpload() {
 
     const INIT = {
