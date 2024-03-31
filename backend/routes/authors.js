@@ -82,7 +82,7 @@ const { upload, setFile } = require("../helpers/icons");
  */
 router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
-        
+
         /**
          * result of jsonschema validation of req.body object
          * @type {Object}
@@ -97,7 +97,7 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
         /**icon filename
          * @type {string}
          */
-        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300]);
+        const icon = !req.file ? undefined : await setFile(req, 'author', [300, 300], req.body.authorHandle);
 
         /**
          * @type {author}
@@ -118,7 +118,7 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
  * @function
  * @param {string} path - /authors
  * @param {callback} middleware - Express middleware.
- * @returns {Object[author]} - {authors: [{ id, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }, ...] }
+ * @returns {Object[author]} - {authors: [{ id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }, ...] }
  */
 router.get("/", async function (req, res, next) {
     try {
@@ -137,7 +137,7 @@ router.get("/", async function (req, res, next) {
  * @param {string} path - logical path
  * @param {string} authorHandle - path/:authorHandle
  * @param {callback} middleware - Express middleware.
- * @returns {Object[author]} - {authors: { authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon } }
+ * @returns {Object[author]} - {authors: { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon } }
  */
 router.get("/authorHandle/:authorHandle", async function (req, res, next) {
 
@@ -159,7 +159,7 @@ router.get("/authorHandle/:authorHandle", async function (req, res, next) {
  * @param {function} ensureAdmin - only admins can edit author info
  * @param {function} multer - upload passed file
  * @param {callback} middleware - Express middleware.
- * @returns {author} - {authors: { authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon } }
+ * @returns {author} - {authors: { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon } }
  */
 router.patch("/:id", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {

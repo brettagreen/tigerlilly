@@ -9,7 +9,6 @@
  * @requires module:/backend/helpers/tokens.createToken
  * @requires module:/backend/schemas/userNew
  * @requires module:/backend/schemas/userUpdate
- * @requires module:/backend/schemas/userLogin
  * @requires module:/backend/schemas/feedbackNew
  * @requires module:/backend/helpers/icons.upload
  * @requires module:/backend/helpers/icons.setFile
@@ -66,11 +65,6 @@ const userNewSchema = require("../schemas/userNew.json");
  */
 const userUpdateSchema = require("../schemas/userUpdate.json");
 /**
- * schema def for users attempting to log in to site
- * @const
- */
-const userLoginSchema = require("../schemas/userLogin.json");
-/**
  * schema def for website visitors leaving feedback
  * @const
  */
@@ -86,12 +80,12 @@ const { upload, setFile } = require("../helpers/icons");
 const router = express.Router();
 
 
-/*router.post("/testFileUpload", upload.single('icon'), async function (req, res, next) {
+router.post("/testFileUpload", upload.single('icon'), async function (req, res, next) {
     const filename = !req.file ? null : await setFile(req, 'user', [100, 100]);
     console.log('filename', filename);
 
     return res.status(201).json({file: filename});
-});*/
+});
 
 
 /**
@@ -104,7 +98,7 @@ const router = express.Router();
  * @param {function} multer - upload passed file
  * @param {callback} middleware - Express middleware.
  * @throws {BadRequestError}
- * @returns {user, token} - { user: {id, username, firstName, lastName, email, icon, isAdmin }, token }
+ * @returns {user, token} - { user: {id, username, userFirst, userLast, email, icon, isAdmin }, token }
  */
 router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, next) {
     try {
@@ -115,7 +109,7 @@ router.post("/", ensureAdmin, upload.single('icon'), async function (req, res, n
             throw new BadRequestError(errs);
         }
 
-        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
+        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100], req.body.username);
 
         const user = await User.register(req.body, icon);
         const token = createToken(user);
@@ -146,7 +140,7 @@ router.post("/register", upload.single('icon'), async function (req, res, next) 
             throw new BadRequestError(errs);
         }
   
-        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100]);
+        const icon = !req.file ? undefined : await setFile(req, 'user', [100, 100], req.body.username);
 
         const user = await User.register(req.body, icon);
         const token = createToken(user);
@@ -166,16 +160,10 @@ router.post("/register", upload.single('icon'), async function (req, res, next) 
  * @param {string} path - /users/login
  * @param {callback} middleware - Express middleware.
  * @throws {BadRequestError}
- * @returns {user, token} - { user: { id, username, firstName, lastName, email, isAdmin }, token }
+ * @returns {user, token} - { user: { id, userFirst, userLast, email, username, isAdmin, icon }, token }
  */
 router.post("/login", async function (req, res, next) {
     try {
-        const validator = jsonschema.validate(req.body, userLoginSchema);
-        if (!validator.valid) {
-            const errs = validator.errors.map(e => e.stack);
-            throw new BadRequestError(errs);
-        }
-
         const user = await User.authenticate(req.body);
         const token = createToken(user);
         return res.status(201).json({ user, token });
@@ -204,7 +192,7 @@ router.post('/feedback', async function (req, res, next) {
         }
 
         const feedback = await User.feedback(req.body);
-        return res.json({ feedback });
+        return res.status(201).json({ feedback });
     } catch (err) {
         return next(err);
     }
@@ -218,7 +206,7 @@ router.post('/feedback', async function (req, res, next) {
  * @param {string} path - /users
  * @param {function} ensureAdmin - only admins can retrieve all users at once
  * @param {callback} middleware - Express middleware.
- * @returns {Object[user]} - { users: [{ id, username, firstName, lastName, email, icon }, ... ] }
+ * @returns {Object[user]} - { users: [{ id, username, userFirst, userLast, email, isAdmin, icon }, ... ] }
  */
 router.get("/", ensureAdmin, async function (req, res, next) {
     try {
@@ -283,7 +271,7 @@ router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function
 /**
  * @description handles request to update an article as determined by passed url param :id. fields of req.body object
  * validate will be updated. sends req to User class to handle request, returns new article (or error).
- * @name patch/articles/:id
+ * @name patch/users/:id
  * @function
  * @param {string} path - logical path
  * @param {number} id - user id
@@ -291,10 +279,9 @@ router.get("/:username/forgotPassword", ensureCorrectUserOrAdmin, async function
  * @param {function} multer - upload passed file
  * @param {callback} middleware - Express middleware.
  * @throws {BadRequestError}
- * @returns {user} - { users: { userFirst, userLast, email, username, isAdmin, icon }}
+ * @returns {user, token} - { user: { userFirst, userLast, email, username, isAdmin, icon }, token}
  */
 router.patch("/:id", ensureCorrectUserOrAdmin, upload.single('icon'), async function (req, res, next) {
-    console.log('req.body', req.body);
     try {
         const validator = jsonschema.validate(req.body, userUpdateSchema);
 
@@ -314,8 +301,9 @@ router.patch("/:id", ensureCorrectUserOrAdmin, upload.single('icon'), async func
             icon = await setFile(req, 'user', [100, 100], req.body.username);
         }
 
-        const users = await User.update(req.params.id, req.body, icon);
-        return res.json({ users });
+        const user = await User.update(req.params.id, req.body, icon);
+        const token = createToken(user);
+        return res.json({ user, token });
     } catch (err) {
         return next(err);
     }
@@ -325,7 +313,7 @@ router.patch("/:id", ensureCorrectUserOrAdmin, upload.single('icon'), async func
 /**
  * @description handles request to update a user as determined by passed url param :id, sends req to
  * User class to remove from DB, returns deleted user's data (or error).
- * @name delete/articles/:id
+ * @name delete/users/:id
  * @function
  * @param {string} path - logical path
  * @param {number} id - user id 

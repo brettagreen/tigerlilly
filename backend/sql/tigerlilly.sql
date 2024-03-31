@@ -1,19 +1,27 @@
-\echo 'Delete and recreate tigerlilly db?'
-\prompt 'Return for yes or control-C to cancel > ' foo
+-- \echo 'Delete and recreate tigerlilly db?'
+-- \prompt 'Return for yes or control-C to cancel > ' foo
 
-DROP DATABASE tigerlilly;
-CREATE DATABASE tigerlilly;
-\connect tigerlilly
+-- DROP DATABASE tigerlilly;
+-- CREATE DATABASE tigerlilly;
+-- \connect tigerlilly
+
+-- \i tigerlilly-schema.sql
+-- --\i tigerlilly-seed.sql
+
+-- \echo 'Delete and recreate tigerlilly_test db?'
+-- \prompt 'Return for yes or control-C to cancel > ' foo
+
+-- DROP DATABASE tigerlilly_test;
+-- CREATE DATABASE tigerlilly_test;
+-- \connect tigerlilly_test
+
+-- \i tigerlilly-schema.sql
+-- \i tigerlilly-seed.sql
+
+\echo 'Delete and recreate tigerlilly_testing db?'
+\prompt 'Return for yes or control-C to cancel > ' foo
+DROP DATABASE tigerlilly_testing
+CREATE DATABASE tigerlilly_testing
+\connect tigerlilly_testing
 
 \i tigerlilly-schema.sql
---\i tigerlilly-seed.sql
-
-\echo 'Delete and recreate tigerlilly_test db?'
-\prompt 'Return for yes or control-C to cancel > ' foo
-
-DROP DATABASE tigerlilly_test;
-CREATE DATABASE tigerlilly_test;
-\connect tigerlilly_test
-
-\i tigerlilly-schema.sql
-\i tigerlilly-seed.sql

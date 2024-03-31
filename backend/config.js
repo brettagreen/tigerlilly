@@ -15,6 +15,7 @@
  * @const
  */
 require("dotenv").config();
+
 /**
  * apparently this module allows the application to create colored console logs
  * however it's not referenced here or anywhere else so I have no idea how this import actually functions
@@ -26,16 +27,27 @@ require("colors");
  * @const
  * @type {number}
  */
-const PORT = +process.env.PORT || 3001;
+const PORT = +process.env.PORT;
+
+/**
+ * session key
+ * @type {string}
+ */
+const SECRET_KEY=process.env.SECRET_KEY
 
 /**
  * returns appropriate database 
  * @returns database uri
  */
 function getDatabaseUri() {
-  return (process.env.NODE_ENV === "test")
-      ? "tigerlilly_test"
-      : process.env.DATABASE_URL || "tigerlilly";
+	const env = process.env.NODE_ENV;
+	if (env === "test") {
+		return "tigerlilly_test"
+	} else if (env === "testing") {
+		return "tigerlilly_testing"
+	} else {
+		return "tigerlilly"
+	}
 }
 
 /**
@@ -56,7 +68,8 @@ console.log("Database:".yellow, getDatabaseUri());
 console.log("---");
 
 module.exports = {
-  PORT,
-  BCRYPT_WORK_FACTOR,
-  getDatabaseUri
+	PORT,
+	BCRYPT_WORK_FACTOR,
+	SECRET_KEY,
+	getDatabaseUri
 };
