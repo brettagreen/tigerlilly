@@ -29,7 +29,6 @@
  * @property {string=} authorHandle 
  *
 */
-//articleTitle, text, authorFirst, authorLast, authorHandle
 /**
  * jsonschema module
  * @const
@@ -89,6 +88,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
 
         if (!validator.valid) {
             const errs = validator.errors.map(e => e.stack);
+            console.log("ERROR", errs)
             throw new BadRequestError(errs);
         }
 
@@ -148,7 +148,7 @@ router.get("/currentIssue", async function (req, res, next) {
  * @param {string} path - /issues
  * @param {number} id - path/:id
  * @param {callback} middleware - Express middleware.
- * @returns {issue} - {issues: { issueTitle, volume, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle } }
+ * @returns {issue} - {issues: [{ issueTitle, volume, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle}...] }
  */
 router.get("/:id", async function (req, res, next) {
     try {
@@ -168,7 +168,7 @@ router.get("/:id", async function (req, res, next) {
  * @param {string} path - /issues/issueTitle
  * @param {string} issueTitle - path/:issueTitle
  * @param {callback} middleware - Express middleware.
- * @returns {issue} - {issues: { issueTitle, volume, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle } }
+ * @returns {issue} - {issues: [{ issueTitle, volume, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle },...] }
  */
 router.get("/issueTitle/:issueTitle", async function (req, res, next) {
     try {

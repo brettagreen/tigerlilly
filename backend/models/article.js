@@ -20,7 +20,7 @@
  * @const
  */
 const db = require("../db");
-const { NotFoundError } = require("../expressError");
+const { NotFoundError, BadRequestError } = require("../expressError");
 
 /**
  * @module /backend/models/article
@@ -110,9 +110,13 @@ class Article {
             args = [articleTitle, authorId, text, issueId];
         }
         
-		const result = await db.query(
-            query, args
-		);
+        let result;
+        try {
+            result = await db.query(query, args);
+        } catch (error) {
+            throw new BadRequestError('duplicate entry: this article already exists');
+        }
+		
         
         if (text.length > 200) {
             result.rows[0].text = text.substring(0, 200) + "...";
@@ -392,7 +396,7 @@ class Article {
             [Number(id)]
         );
 
-        if (!result.rows[0]) throw new NotFoundError(`No article found by id: ${id}`);
+        if (!result.rows[0]) throw new NotFoundError(`No article found by that id: ${id}`);
 
         return result.rows[0];
     }

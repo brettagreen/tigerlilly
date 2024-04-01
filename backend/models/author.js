@@ -46,7 +46,7 @@ class Author {
 	 * @param {string=} authorBio - author's biography
 	 * @param {string=} icon - filename for author's icon/avatar
 	 * @throws {BadRequestError} if passed non-unique authorHandle
-     * @returns {author} - { id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
+     * @returns {author} - { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
      */
 	static async create({ authorFirst, authorLast, authorHandle, authorSlogan, authorBio }, icon) {
 		/**no non-unique author handles!!!
@@ -133,10 +133,6 @@ class Author {
 			query, args
 		);
 
-		if (authorBio && authorBio.length > 200) {
-			result.rows[0].authorBio = authorBio.substring(0, 200) + "...";
-		}
-
 		return result.rows[0];
 	}
 
@@ -186,7 +182,7 @@ class Author {
 		/**@type {author} */
 		const author = userRes.rows[0];
 
-		if (!author) throw new NotFoundError(`No author by that handle: ${authorHandle}`);
+		if (!author) throw new NotFoundError(`No author found by that handle: ${authorHandle}`);
 
 		return author;
 	}
@@ -200,19 +196,22 @@ class Author {
      */
 	static async getHandle(id) {
 		const authorRes = await db.query(
-			`SELECT author_handle AS "authorHandle",
+			`SELECT author_handle AS "authorHandle"
 			FROM authors
-			WHERE author_handle = $1`,
+			WHERE id = $1`,
 			[id]
 		);
 
 		/**handle
 		 * @type {string}
 		 */
-		const authorHandle = authorRes.rows[0].authorHandle;
-
-		if (!authorHandle) throw new NotFoundError(`No author by that id: ${id}`);
-
+		let authorHandle;
+		try {
+			authorHandle = authorRes.rows[0].authorHandle;
+		} catch {
+			throw new NotFoundError(`No author found by that id: ${id}`)
+		}
+		
 		return authorHandle;
 	}
 
@@ -233,13 +232,13 @@ class Author {
             `SELECT * FROM authors WHERE id=$1`, [id]
         );
 
-		if (!r.rows[0]) throw new NotFoundError(`No author by that id: ${id}`);
+		if (!r.rows[0]) throw new NotFoundError(`No author found by that id: ${id}`);
 
 		r = r.rows[0];
 
 		if (!icon && r.icon) {
-			if (req.body.authorHandle) {
-				icon = await renameFile(r.authorHandle, req.body.authorHandle, 'author');
+			if (body.authorHandle) {
+				icon = await renameFile(r.authorHandle, body.authorHandle, 'author');
 			}
 		}
 
@@ -248,7 +247,7 @@ class Author {
 			SET author_first = $1,
 			author_last = $2,
 			author_handle = $3,
-			author_slogan = $4
+			author_slogan = $4,
 			author_bio = $5,
 			icon = $6
 			WHERE id = $7

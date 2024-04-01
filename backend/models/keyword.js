@@ -12,10 +12,12 @@
  * @const
  */
 const db = require("../db");    
+const { NotFoundError, BadRequestError } = require("../expressError");
     
 /**
  * @module /backend/models/keywords
  * @requires module:/backend/db
+ * @requires module:/backend/expressError.NotFoundError
  * @author Brett A. Green <brettalangreen@proton.me>
  * @version 1.0
  * @class
@@ -24,7 +26,7 @@ const db = require("../db");
 class Keyword {
     
 	/**
-     * @description associated keyword(s) with specified article
+     * @description associate keyword(s) with specified article
 	 * 
      * @param {number} articleId - id of article that keyword(s) should be associated with
      * @param {string[]} keywords - array of keywords to be assicated with designated article
@@ -33,22 +35,31 @@ class Keyword {
      */
     static async addToArticle({articleId, keywords}) {
         let resp;
+        let kwd;
+		try {
+            for (kwd of keywords) {
+                resp = await db.query(
+                    `INSERT INTO article_keywords
+                    (article_id, keyword)
+                    VALUES
+                    ($1, $2)
+                    RETURNING (SELECT article_title AS "articleTitle" FROM articles WHERE id = $1)`,
+                    [articleId, kwd]
+                );
+            }
+		} catch (error) {
+			if (error.message.includes('duplicate key value')) {
+                throw new BadRequestError(`article-keyword association already exists: ${kwd+'-'+articleId}`)
+            } else {
+                throw new NotFoundError(`no article found by that id: ${articleId}`);
+            }
+		}
 
-        for (let kwd of keywords) {
-            resp = await db.query(
-                `INSERT INTO article_keywords
-                (article_id, keyword)
-                VALUES
-                ($1, $2)
-                RETURNING (SELECT article_title AS "articleTitle" FROM articles WHERE id = $1)`,
-                [articleId, kwd]
-            );
-        }
         return {articleTitle: resp.rows[0].articleTitle, keywords: keywords};
     }
 
 	/**
-     * @description associates passed keywords with ALL articles
+     * @description associates passed keywords with ALL articles. ignores duplicate key error
      *
 	 * @param {number} id - id of issue to be queried
      * @returns {keyword} - {articleTitle, keywords}
@@ -63,7 +74,8 @@ class Keyword {
                 await db.query(
                     `INSERT INTO article_keywords
                     (article_id, keyword)
-                    VALUES ($1, $2)`,
+                    VALUES ($1, $2)
+                    ON CONFLICT DO NOTHING`,
                     [row.id, kwd]
                 );
             }
@@ -73,7 +85,7 @@ class Keyword {
     }
 
 	/**
-     * @description returns all keyword/article associations vis-a-vis articleTitle
+     * @description returns all (distinct) keywords across all articles, along with articleId and articleTitle
      *
      * @returns {Object[keyword]} - [{keyword, articleId, articleTitle}, ...]
      */
@@ -96,13 +108,22 @@ class Keyword {
      * @returns {keyword} - [{keyword}, ...]
      */
     static async getArticleKeywords(articleId) {
+        let r = await db.query(
+            `SELECT * FROM articles WHERE id=$1`, [articleId]
+        );
+        if (!r.rows[0]) throw new NotFoundError(`no article found by that id: ${articleId}`);
+
         const result = await db.query(
-            `SELECT keyword
-            FROM article_keywords
-            WHERE article_id = $1
-            ORDER BY LOWER(keyword) asc`, [articleId]
+                `SELECT keyword
+                FROM article_keywords
+                WHERE article_id = $1
+                ORDER BY LOWER(keyword) asc`, [articleId]
         );
         
+        if (result.rows.length === 0) {
+            throw new NotFoundError(`no keywords are associated with that article id: ${articleId}`)
+        }
+
         return result.rows;
     }
 
@@ -153,18 +174,32 @@ class Keyword {
      */
     static async updateKeywords(articleId, {keyword, edit}) {
 
+        const count = await db.query(
+            `SELECT COUNT(*) FROM article_keywords WHERE keyword = $1`,
+            [keyword]
+        );
+
+        if (count.rows[0].count == 0) {
+            throw new NotFoundError(`that keyword doesn't exist: ${keyword}`);
+        }
+
         if (articleId == 0) {
 
             await db.query(
                 `UPDATE article_keywords
                 SET keyword = $1
-                WHERE keyword = $2"`,
+                WHERE keyword = $2`,
                 [edit, keyword]
             );
 
             return {articleTitle: 'All Articles', keyword: edit}
 
         } else {
+
+            let r = await db.query(
+                `SELECT * FROM articles WHERE id=$1`, [articleId]
+            );
+            if (!r.rows[0]) throw new NotFoundError(`no article found by that id: ${articleId}`);
 
             await db.query(
                 `UPDATE article_keywords
@@ -195,6 +230,15 @@ class Keyword {
      * @returns {keyword} - { articleTitle, keyword }
      */
     static async delete(articleId, keyword) {
+        const count = await db.query(
+            `SELECT COUNT(*) FROM article_keywords WHERE keyword = $1`,
+            [keyword]
+        );
+
+        if (count.rows[0].count == 0) {
+            throw new NotFoundError(`that keyword doesn't exist: ${keyword}`);
+        }
+
         if (articleId == 0) {
 
             await db.query(
@@ -206,6 +250,12 @@ class Keyword {
             return {articleTitle: 'All Articles', keyword: keyword}
 
         } else {
+
+            let r = await db.query(
+                `SELECT * FROM articles WHERE id=$1`, [articleId]
+            );
+            if (!r.rows[0]) throw new NotFoundError(`no article found by that id: ${articleId}`);
+            
             const result = await db.query(
                 `DELETE FROM article_keywords
                 WHERE article_id = $1

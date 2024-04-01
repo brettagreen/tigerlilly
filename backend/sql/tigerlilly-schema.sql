@@ -3,7 +3,8 @@ CREATE TABLE issues (
   issue_title TEXT NOT NULL,
   volume INTEGER NOT NULL,
   issue INTEGER NOT NULL,
-  pub_date DATE NOT NULL DEFAULT CURRENT_DATE
+  pub_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  CONSTRAINT UC_Issue UNIQUE (volume, issue)
 );
 
 CREATE TABLE authors (
@@ -12,19 +13,20 @@ CREATE TABLE authors (
   author_last TEXT NOT NULL,
   author_handle TEXT NOT NULL UNIQUE,
   author_slogan TEXT NOT NULL,
-  author_bio TEXT CONSTRAINT bio_length CHECK (char_length(author_bio) <= 1000);
+  author_bio TEXT CONSTRAINT bio_length CHECK (char_length(author_bio) <= 1000)
     DEFAULT 'this author prefers to keep an air of mystery about them',
   icon TEXT DEFAULT 'defaultUserIcon.jpg'
 );
 
 CREATE TABLE articles (
   id SERIAL PRIMARY KEY,
-  article_title TEXT NOT NULL UNIQUE,
+  article_title TEXT NOT NULL,
   author_id INTEGER 
     REFERENCES authors ON DELETE SET NULL,
   text TEXT NOT NULL,
   issue_id INTEGER
-    REFERENCES issues ON DELETE SET NULL
+    REFERENCES issues ON DELETE SET NULL,
+  CONSTRAINT UC_Article UNIQUE (article_title, text)
 );
 
 CREATE TABLE article_keywords (
@@ -49,7 +51,7 @@ CREATE TABLE comments (
   id SERIAL PRIMARY KEY,
   user_id INTEGER
     REFERENCES users ON DELETE SET NULL,
-  text TEXT CONSTRAINT comment_length CHECK (char_length(text) <= 1000);
+  text TEXT CONSTRAINT comment_length CHECK (char_length(text) <= 1000),
   article_id INTEGER
     REFERENCES articles ON DELETE CASCADE,
   post_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -67,5 +69,5 @@ CREATE TABLE feedback (
   id SERIAL PRIMARY KEY,
   name VARCHAR(30) NOT NULL,
   email TEXT NOT NULL CHECK (position('@' IN email) > 1),
-  feedback TEXT NOT NULL CONSTRAINT feedback_length CHECK (char_length(feedback) <= 1000);
+  feedback TEXT NOT NULL CONSTRAINT feedback_length CHECK (char_length(feedback) <= 1000)
 );

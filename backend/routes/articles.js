@@ -147,7 +147,7 @@ router.get("/", ensureAdmin, async function (req, res, next) {
  * @param {string} path - /articles
  * @param {number} id - path/:id
  * @param {callback} middleware - Express middleware.
- * @returns {article} - {articles: { articleTitle, authorFirst, authorLast, authorHandle, text, issueTitle } }
+ * @returns {article} - {articles: { articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate } }
  */
 router.get("/:id", async function (req, res, next) {
     try {
@@ -170,6 +170,7 @@ router.get("/:id", async function (req, res, next) {
  */
 router.get("/articleTitle/:articleTitle", async function (req, res, next) {
     try {
+        console.log('articleTitle', req.params.articleTitle);
         const articles = await Article.getByArticleTitle(req.params.articleTitle);
         return res.json({ articles });
     } catch (err) {
@@ -315,6 +316,7 @@ router.patch("/:id", ensureAdmin, async function (req, res, next) {
          * result of jsonschema validation of req.body object
          * @type {Object}
          */
+
         const validator = jsonschema.validate(req.body, updateArticleSchema);
 
         if (!validator.valid) {

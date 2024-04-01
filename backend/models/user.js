@@ -51,47 +51,6 @@ const { renameFile } = require("../helpers/icons");
 class User {
 
 	/**
-     * @description authenticate user based on passed username,password combo
-	 * 
-     * @param {string} username - username of user passing credentials
-     * @param {string} password - password of user passing credentials
-	 * @throws {UnauthorizedError}
-     * @returns {user} - { id, userFirst, userLast, email, username, isAdmin, icon }
-     */
-	static async authenticate({ username, password }) {
-
-		// first, try to find the user
-		const result = await db.query(
-				`SELECT id,
-						user_first AS "userFirst",
-						user_last AS "userLast",
-						email,
-						username,
-						password,
-						is_admin AS "isAdmin",
-						icon
-				FROM users
-				WHERE username = $1`,
-			[username]
-		);
-
-		const user = result.rows[0];
-
-		if (user) {
-			/** does username/password match what's in the database?@const @type {boolean} */
-			const isValid = await bcrypt.compare(password, user.password);
-
-			if (isValid === true) {
-				delete user.password;
-				return user;
-			}
-		}
-
-		//if auth fails
-		throw new UnauthorizedError("Invalid username/password");
-	}
-
-	/**
      * @description register new user
 	 * 
      * @param {string} username - username value
@@ -107,13 +66,14 @@ class User {
 	static async register({ username, password, userFirst, userLast, email, isAdmin=false }, icon) {
 
 		const duplicateCheck = await db.query(
-			`SELECT username
+			`SELECT COUNT(*)
 			FROM users
-			WHERE username = $1`,[username]
+			WHERE username = $1 OR email = $2`,
+			[username, email]
 		);
 
-		if (duplicateCheck.rows[0]) {
-			throw new BadRequestError(`Duplicate username: ${username}`);
+		if (duplicateCheck.rows[0].count > 0) {
+			throw new BadRequestError(`Duplicate username and/or email value. try again`);
 		}
 
 		//actual (hashed) value of the password that is stored in the database
@@ -165,6 +125,51 @@ class User {
 		const user = result.rows[0];
 
 		return user;
+	}
+
+	/**
+     * @description authenticate user based on passed username,password combo
+	 * 
+     * @param {string} username - username of user passing credentials
+     * @param {string} password - password of user passing credentials
+	 * @throws {UnauthorizedError}
+     * @returns {user} - { id, userFirst, userLast, email, username, isAdmin, icon }
+     */
+	static async authenticate({ username, password }) {
+		// first, try to find the user
+		const result = await db.query(
+				`SELECT id,
+						user_first AS "userFirst",
+						user_last AS "userLast",
+						email,
+						username,
+						password,
+						is_admin AS "isAdmin",
+						icon
+				FROM users
+				WHERE username = $1`,
+			[username]
+		);
+
+		const user = result.rows[0];
+
+		if (user) {
+			/** does username/password match what's in the database?
+			 * @type {boolean} 
+			 */
+			const isValid = await bcrypt.compare(password, user.password);
+
+			if (isValid === true) {
+				delete user.password;
+				return user;
+			} else {
+				//bad password
+				throw new UnauthorizedError('bad password');
+			}
+		}
+
+		//bad username
+		throw new BadRequestError(`that username does not exist: ${username}`);
 	}
 
 	/**
@@ -233,7 +238,7 @@ class User {
 
 		const user = userRes.rows[0];
 
-		if (!user) throw new NotFoundError(`No user: ${username}`);
+		if (!user) throw new NotFoundError(`no user found by that username: ${username}`);
 
 		return user;
 	}
@@ -253,7 +258,7 @@ class User {
 				WHERE id = $1`, [id]
 		);
 
-		if (!user) throw new NotFoundError(`No user with that id: ${id}`);
+		if (!user.rows[0]) throw new NotFoundError(`no user found by that id: ${id}`);
 
 		return user.rows[0].username;
 	}
@@ -285,7 +290,7 @@ class User {
      * @description update user values based on passed user id.
      *
      * @param {number} id - id user to be updated
-     * @param {Object} body - http request body object. this included all user fields to be updated.
+     * @param {Object} body - http request body object. this includes all user fields to be updated.
 	 * if specific field isn't being updated, i.e. isn't included in the body object, then sql update statement
 	 * will fall back to existing value
 	 * @param {string} icon - filename value of user icon to be updated
@@ -298,7 +303,7 @@ class User {
             `SELECT * FROM users WHERE id=$1`, [id]
         );
 
-		if (!r.rows[0]) throw new NotFoundError(`No user found by that id: ${id}`);
+		if (!r.rows[0]) throw new NotFoundError(`no user found by that id: ${id}`);
 
 		let hashedPW;
 
@@ -313,8 +318,8 @@ class User {
 		r = r.rows[0];
 
 		if (!icon && r.icon) {
-			if (req.body.username) {
-				icon = await renameFile(r.username, req.body.username, 'user');
+			if (body.username) {
+				icon = await renameFile(r.username, body.username, 'user');
 			}
 		}
 
@@ -351,8 +356,6 @@ class User {
 
 		const user = result.rows[0];
 
-		if (!user) throw new NotFoundError(`No user found by that id: ${id}`);
-
 		return user;
 	}
 
@@ -368,12 +371,12 @@ class User {
 				`DELETE
 				FROM users
 				WHERE id = $1
-				RETURNING id, username, user_first AS "userFirst", user_last AS "userLast"
+				RETURNING id, username, user_first AS "userFirst", user_last AS "userLast",
 							email, is_admin AS "isAdmin", icon`,
-				[Number(id)]//{ id, username, userFirst, userLast, email, isAdmin, icon }
+				[Number(id)]
 		);
 
-		if (!result.rows[0]) throw new NotFoundError(`No user by that id: ${id}`);
+		if (!result.rows[0]) throw new NotFoundError(`no user found by that id: ${id}`);
 
 		return result.rows[0];
 	}

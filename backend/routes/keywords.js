@@ -104,7 +104,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
             throw new BadRequestError("form/body contains incorrect number of arguments");
         }
 
-        return res.json({ keywords });
+        return res.status(201).json({ keywords });
 
     } catch (err) {
         return next(err);
@@ -202,9 +202,9 @@ router.patch("/:articleId", ensureAdmin, async function (req, res, next) {
 router.delete("/:articleId/:keyword", ensureAdmin, async function (req, res, next) {
     try {
 
-        const updateKeywords = await Keyword.delete(req.params.articleId, req.params.keyword);
+        const deleteKeywords = await Keyword.delete(req.params.articleId, req.params.keyword);
 
-        return res.json({ updateKeywords });
+        return res.json({ deleteKeywords });
 
     } catch (err) {
         return next(err);

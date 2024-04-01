@@ -98,7 +98,12 @@ function ensureCorrectUserOrAdmin(req, res, next) {
 	try {
 		const user = res.locals.user;
 
-		if (!(user && (user.isAdmin || user.username === req.params.username || user.id === Number(req.params.id)))) {
+		//make sure non-admins can't change account to be admin
+		if (req.body && (req.body.isAdmin && !user.isAdmin)) {
+			delete req.body.isAdmin
+		}
+
+		if (!(user && (user.isAdmin || user.username === req.params.username || user.id == req.params.id))) {
 			throw new UnauthorizedError();
 		}
 		return next();
