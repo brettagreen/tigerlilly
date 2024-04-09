@@ -1,4 +1,4 @@
-import './css/admin.css';
+import '../css/admin.css';
 import TigerlillyApi from "../api";
 import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
@@ -52,7 +52,7 @@ function Admin() {
     const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle'];
 
     const isAdmin = useContext(UserContext).user.isAdmin;
-
+    console.log("ADMIN user?", useContext(UserContext).user);
     //fetch table data up front on page load. reload if/when table has been updated (see submitAndClear function below)
     //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
     //so this is the best version of operational caching that I could come up with.

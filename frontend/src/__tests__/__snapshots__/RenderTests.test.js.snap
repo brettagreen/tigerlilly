@@ -1,0 +1,410 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`About 1`] = `
+<DocumentFragment>
+  We're 'about' excellence in journalism. Any other questions?
+</DocumentFragment>
+`;
+
+exports[`Article, w/ props and long text 1`] = `
+<DocumentFragment>
+  <article>
+    <div>
+      <h2
+        class="articleTitle"
+      >
+        boy howdy what a day
+      </h2>
+      <h4
+        style="color: rgba(0, 0, 0, 0.87);"
+      >
+        by 
+        <a
+          class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-1g40t6m-MuiTypography-root-MuiLink-root"
+          href="/author/go fly a kite!"
+        >
+          Bo Brand
+        </a>
+      </h4>
+      <p
+        data-testid="postExpansion"
+      >
+        one two three four five six seven eight nine ten one two three four five six seven eight nine ten one two three four five six seven eight nine ten one two three four five six seven eight nine ten one two three four five six seven eight nine ten one two three four five six seven eight nine ten one two three four five six seven eight nine ten
+      </p>
+    </div>
+  </article>
+  <br />
+  <div>
+    <a
+      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-11od7q1-MuiTypography-root-MuiLink-root"
+      href="/articleKeywords/excellent"
+    >
+      #excellent 
+    </a>
+    <a
+      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-11od7q1-MuiTypography-root-MuiLink-root"
+      href="/articleKeywords/funny"
+    >
+      #funny 
+    </a>
+    <a
+      class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-11od7q1-MuiTypography-root-MuiLink-root"
+      href="/articleKeywords/groaner"
+    >
+      #groaner 
+    </a>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`ArticlePreview 1`] = `
+<DocumentFragment>
+  <div
+    class="PageHeader"
+  >
+    <h3>
+      Articles matching #funny
+    </h3>
+  </div>
+  <div
+    class="MuiGrid-root MuiGrid-container css-jvssa7-MuiGrid-root"
+    id="daGrid"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-1 MuiGrid-grid-sm-1 MuiGrid-grid-md-1 css-unzqlu-MuiGrid-root"
+    >
+      <article>
+        <div>
+          <h2
+            class="articleTitle"
+          >
+            First test article
+          </h2>
+          <h4
+            style="color: rgba(0, 0, 0, 0.87);"
+          >
+            by 
+            <a
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-1g40t6m-MuiTypography-root-MuiLink-root"
+              href="/author/thejohnsonator"
+            >
+              Jon Johnson
+            </a>
+          </h4>
+          <p
+            data-testid="testArticle"
+          >
+            gobble gobble!
+          </p>
+        </div>
+      </article>
+      <br />
+      <div>
+        <a
+          class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-11od7q1-MuiTypography-root-MuiLink-root"
+          href="/articleKeywords/excellent"
+        >
+          #excellent 
+        </a>
+        <a
+          class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-11od7q1-MuiTypography-root-MuiLink-root"
+          href="/articleKeywords/funny"
+        >
+          #funny 
+        </a>
+        <a
+          class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineHover css-11od7q1-MuiTypography-root-MuiLink-root"
+          href="/articleKeywords/groaner"
+        >
+          #groaner 
+        </a>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-1 MuiGrid-grid-sm-1 MuiGrid-grid-md-1 css-unzqlu-MuiGrid-root"
+    >
+      <br />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`renders Author component 1`] = `<DocumentFragment />`;
+
+exports[`renders ContactUs component 1`] = `
+<DocumentFragment>
+  <div
+    class="PageHeader"
+  >
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+      data-testid="FeedbackIcon"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"
+      />
+    </svg>
+    <h3>
+      The Tigerlilly Online loooooves feedback!
+    </h3>
+    <h3>
+      mad sad glad bad and allll those funky little vibes in between!
+    </h3>
+    <h3>
+      Hey, you may (n)eve(n|r) hear back from us!
+    </h3>
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+      data-testid="FeedbackIcon"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-7 12h-2v-2h2v2zm0-4h-2V6h2v4z"
+      />
+    </svg>
+  </div>
+  <div
+    class="BackdropWrapper"
+    style="min-width: 66vw; min-height: 50vh;"
+  >
+    <form
+      autocomplete="off"
+      enctype="multipart/form-data"
+      novalidate=""
+      style="margin: 1em;"
+    >
+      <div
+        class="MuiFormControl-root MuiFormControl-marginNormal css-1iledgx-MuiFormControl-root"
+      >
+        <div
+          class="MuiFormControl-root MuiTextField-root css-1u3bzj6-MuiFormControl-root-MuiTextField-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined css-1qa8xn1-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="false"
+            for=":r0:"
+            id=":r0:-label"
+          >
+            name
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-wgai2y-MuiFormLabel-asterisk"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-1t7dcjg-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <input
+              aria-invalid="false"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1lkr5rz-MuiInputBase-input-MuiOutlinedInput-input"
+              id=":r0:"
+              name="name"
+              required=""
+              type="text"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-yjsfm1"
+              >
+                <span>
+                  name *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          class="MuiFormControl-root MuiTextField-root css-1u3bzj6-MuiFormControl-root-MuiTextField-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined css-1qa8xn1-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="false"
+            for=":r1:"
+            id=":r1:-label"
+          >
+            email
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-wgai2y-MuiFormLabel-asterisk"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl css-1t7dcjg-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <input
+              aria-invalid="false"
+              class="MuiInputBase-input MuiOutlinedInput-input css-1lkr5rz-MuiInputBase-input-MuiOutlinedInput-input"
+              id=":r1:"
+              name="email"
+              required=""
+              type="email"
+              value=""
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-yjsfm1"
+              >
+                <span>
+                  email *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+        <div
+          class="MuiFormControl-root MuiTextField-root css-1u3bzj6-MuiFormControl-root-MuiTextField-root"
+        >
+          <label
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined MuiFormLabel-colorPrimary Mui-required MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-sizeMedium MuiInputLabel-outlined css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root"
+            data-shrink="false"
+            for=":r2:"
+            id=":r2:-label"
+          >
+            what's on your mind?
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk css-wgai2y-MuiFormLabel-asterisk"
+            >
+               *
+            </span>
+          </label>
+          <div
+            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-colorPrimary MuiInputBase-formControl MuiInputBase-multiline css-mj6wqb-MuiInputBase-root-MuiOutlinedInput-root"
+          >
+            <textarea
+              aria-invalid="false"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1i66myl-MuiInputBase-input-MuiOutlinedInput-input"
+              id=":r2:"
+              name="feedback"
+              required=""
+              style="height: 0px; overflow: hidden;"
+            />
+            <textarea
+              aria-hidden="true"
+              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline css-1i66myl-MuiInputBase-input-MuiOutlinedInput-input"
+              readonly=""
+              style="visibility: hidden; position: absolute; overflow: hidden; height: 0px; top: 0px; left: 0px; transform: translateZ(0); padding-top: 0px; padding-bottom: 0px; width: 100%;"
+              tabindex="-1"
+            />
+            <fieldset
+              aria-hidden="true"
+              class="MuiOutlinedInput-notchedOutline css-1d3z3hw-MuiOutlinedInput-notchedOutline"
+            >
+              <legend
+                class="css-yjsfm1"
+              >
+                <span>
+                  what's on your mind? *
+                </span>
+              </legend>
+            </fieldset>
+          </div>
+        </div>
+        <p
+          class="MuiFormHelperText-root MuiFormHelperText-sizeMedium MuiFormHelperText-contained HiddenField css-4yhek5-MuiFormHelperText-root"
+        >
+          1000 characters left
+        </p>
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-sizeMedium MuiButton-outlinedSizeMedium css-1u8y31a-MuiButtonBase-root-MuiButton-root"
+          tabindex="0"
+          type="submit"
+        >
+          Submit
+          <span
+            class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </form>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`renders Footer component 1`] = `
+<DocumentFragment>
+  <footer
+    id="footer"
+    style="display: block; margin-top: auto;"
+  >
+    <div
+      style="float: left; margin-right: 4em;"
+    >
+      <img
+        alt="TLO logo"
+        src="/images/TLO_footer.jpg"
+        width="100"
+      />
+    </div>
+    <div
+      style="float: left; position: relative; bottom: -7em;"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container css-19sicoy-MuiGrid-root"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-md-2 MuiGrid-grid-lg-2 MuiGrid-grid-xl-2 css-1b4xmg0-MuiGrid-root"
+        >
+          <a
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineAlways css-1p29rwh-MuiTypography-root-MuiLink-root"
+            href="/about"
+          >
+            About
+          </a>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-md-2 MuiGrid-grid-lg-2 MuiGrid-grid-xl-2 css-1b4xmg0-MuiGrid-root"
+        >
+          <img
+            alt="tik tok social"
+            src="/images/tiktok_icon.png"
+            width="20"
+          />
+           TikTok
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-md-2 MuiGrid-grid-lg-2 MuiGrid-grid-xl-2 css-1b4xmg0-MuiGrid-root"
+        >
+          <a
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineAlways css-1p29rwh-MuiTypography-root-MuiLink-root"
+            href="/contact"
+          >
+            Contact Us
+          </a>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-md-2 MuiGrid-grid-lg-2 MuiGrid-grid-xl-2 css-1b4xmg0-MuiGrid-root"
+        >
+          <img
+            alt="medium social"
+            src="/images/medium_icon.png"
+            width="20"
+          />
+           Medium.com
+        </div>
+      </div>
+    </div>
+    <div
+      style="float: left; position: relative; bottom: -10.4em;"
+    >
+      Copyright 2024 The Tigerlilly Online
+    </div>
+  </footer>
+</DocumentFragment>
+`;

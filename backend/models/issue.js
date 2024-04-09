@@ -85,7 +85,7 @@ class Issue {
     /**
      * @description return the current/latest issue and associated articles
      *
-     * @returns {Object[issue]} - [ { issueTitle, volue, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }...]
+     * @returns {Object[issue]} - [ { issueTitle, volume, issue, pubDate, articleId, articleTitle, text, authorFirst, authorLast, authorHandle }...]
      */
     static async getCurrent() {
 

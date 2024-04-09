@@ -4,7 +4,7 @@ import axios from "axios";
  * site url
  * @type {string}
  */
-const BASE_URL = process.env.TIGERLILLY_BASE_URL;
+const BASE_URL = "http://localhost:3001";
 
 /**
  * @module /frontend/src/api
@@ -51,7 +51,6 @@ class TigerlillyApi {
      * @returns {Object} data returned from backend
      */
     static async request(endpoint, data = {}, method = "get") {
-
         /**
          * base_url value + endpoint
          * @type {string}
@@ -291,6 +290,6 @@ class TigerlillyApi {
  * default token val
  * @const
  */
-TigerlillyApi.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImJhZ3JlZW4xIiwiaXNBZG1pbiI6dHJ1ZSwiaWF0IjoxNjkzOTQ5NzY0fQ.NF5BFtpMbpqJWrrDcLcHWhgxWvqdMPIrnU0V4Gsl0WQ";
+TigerlillyApi.token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbl90ZXN0IiwiaXNBZG1pbiI6dHJ1ZSwiaWF0IjoxNzEyMjUzOTkxfQ.sZrd5AvjQxcSHu1i6H-tMSlP6eo2Pa6g7bRNAvEt5QA";
 
 export default TigerlillyApi;
