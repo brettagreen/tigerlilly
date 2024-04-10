@@ -10,3 +10,5 @@ recordings/*
 /backend/routes/comments.js
 /backend/sql/*
 TL-backend.pem
+/backend/.env
+
