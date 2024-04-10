@@ -111,20 +111,20 @@ function Article({ passedArticle, issueArticle, searchArray=null }) {
                 const fiftiethWord = article.text.split(' ')[50];
                 const substr = article.text.substring(0, article.text.indexOf(` ${fiftiethWord} `));
                 return(
-                    <p>
+                    <p data-testid="preExpansion">
                         <span>{substr}...</span>
                         <button type="button" onClick={() => setHidden(!hidden)}>read more</button>
                     </p>
                 )
             } else {
-                return <p>{article.text}</p>
+                return <p data-testid="postExpansion">{article.text}</p>
             }
 
         } else {
             if (issueArticle) {
                 return <p className="articleText">{article.text}</p>
             } else {
-                return <p>{article.text}</p>
+                return <p data-testid="testArticle">{article.text}</p>
             }
         }
     }

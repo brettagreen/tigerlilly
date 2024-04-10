@@ -2,6 +2,10 @@ oldCode/*
 /frontend/node_modules
 /backend/node_modules
 /frontend/public/icons
+/frontend/public/images/archive
+/frontend/public/images/articles
 recordings/*
-/frontend/src/Comments.js
-
+/frontend/src/components/Comments.js
+/backend/models/comment.js
+/backend/routes/comments.js
+/backend/sql/*

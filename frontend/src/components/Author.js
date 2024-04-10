@@ -194,8 +194,9 @@ function Author() {
                             <Collapse in={primaryOpen} timeout="auto" unmountOnExit>
                             {uniqueIssues? <span style={{paddingLeft: '2em', fontStyle: 'italic'}}>issues:</span>:null}
                             {uniqueIssues? uniqueIssues.map((uniqueIssue, idx) => {
+                                console.log("UNIQUe ISSUE:", uniqueIssue);
                                 return(<>
-                                    <ListItemButton key={idx} sx={{minWidth: '120px', paddingLeft: '2em'}} disableRipple={true} focusRipple={false}
+                                    <ListItemButton data-testid="issuesOpen" key={idx} sx={{minWidth: '120px', paddingLeft: '2em'}} disableRipple={true} focusRipple={false}
                                             onClick={() => setIssuesOpen(uniqueIssue)}>
                                         <ListItemText sx={{maxWidth: '120px'}} key={idx} primary={uniqueIssue} />
                                         {issuesMap[uniqueIssue] ? <ExpandLess /> : <ExpandMore />}

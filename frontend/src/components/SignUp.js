@@ -16,7 +16,7 @@ import { useNavigate } from 'react-router';
 import { FormControl, TextField, Button, ThemeProvider, Alert, IconButton, InputAdornment, FormHelperText } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import UserContext from "./userContext";
+import UserContext from "../userContext";
 import TigerlillyApi from '../api';
 import { formTheme } from '../css/styles';
 import validate from '../helpers/formValidation';
