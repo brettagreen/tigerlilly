@@ -23,19 +23,6 @@ require("dotenv").config();
 require("colors");
 
 /**
- * port app listens on
- * @const
- * @type {number}
- */
-const PORT = +process.env.PORT;
-
-/**
- * session key
- * @type {string}
- */
-const SECRET_KEY=process.env.SECRET_KEY
-
-/**
  * returns appropriate database 
  * @returns database uri
  */
@@ -61,15 +48,12 @@ const BCRYPT_WORK_FACTOR = process.env.NODE_ENV === "test" ? 1 : 12;
  * we be logging our configs around here!
  */
 console.log("Tigerlilly Config:".green);
-console.log("SECRET_KEY:".yellow, SECRET_KEY);
-console.log("PORT:".yellow, PORT.toString());
+console.log("PORT:".yellow, process.env.PORT.toString());
 console.log("BCRYPT_WORK_FACTOR".yellow, BCRYPT_WORK_FACTOR);
 console.log("Database:".yellow, getDatabaseUri());
 console.log("---");
 
 module.exports = {
-	PORT,
 	BCRYPT_WORK_FACTOR,
-	SECRET_KEY,
 	getDatabaseUri
 };

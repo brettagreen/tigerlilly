@@ -28,22 +28,26 @@ const { getDatabaseUri } = require("./config");
  */
 let db;
 
-if (process.env.NODE_ENV === "production") {
-    db = new Client(
-		{
-        	connectionString: getDatabaseUri(),
-			ssl: {
-				rejectUnauthorized: false
-			}
-    	}
-	);
-} else {
-    db = new Client(
-		{
-    		connectionString: getDatabaseUri()
-    	}
-	);
+let connectionObject = {
+	database: getDatabaseUri()
+};
+
+if (process.env.DB_HOST !== "null") { //if DB_HOST has a value, then so do all the other process.env.DB... values
+	connectionObject.host = process.env.DB_HOST;
+	connectionObject.port = process.env.DB_PORT;
+	connectionObject.user = process.env.DB_USER;
+	connectionObject.passsword = process.env.DB_PASSWORD;
 }
+
+if (process.env.NODE_ENV === "production") {
+	connectionObject.ssl = {
+		rejectUnauthorized: false
+	}
+}
+
+db = new Client(
+	connectionObject
+);
 
 db.connect();
 
