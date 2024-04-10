@@ -9,3 +9,4 @@ recordings/*
 /backend/models/comment.js
 /backend/routes/comments.js
 /backend/sql/*
+TL-backend.pem
