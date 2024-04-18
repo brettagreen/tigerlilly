@@ -1,7 +1,6 @@
 /**
  * @module /backend/helpers/tokens
  * @requires module:jsonwebtoken
- * @requires module:/backend/config.SECRET_KEY
  * @author Brett A. Green <brettalangreen@proton.me>
  * @version 1.0
  * @description creates a new JsonWebToken and returns it to the requesting process
@@ -12,7 +11,7 @@
  * @const
  */
 const jwt = require("jsonwebtoken");
-const { SECRET_KEY } = require("../config");
+const SECRET_KEY = process.env.SECRET_KEY
 
 /**
  * @description return signed JsonWebToken from user data.

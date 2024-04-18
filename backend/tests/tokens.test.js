@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 const { createToken } = require("../helpers/tokens");
-const { SECRET_KEY } = require("../config");
+const SECRET_KEY = process.env.SECRET_KEY
 
 describe("createToken", function () {
 	test("works: not admin", function () {

@@ -2,7 +2,6 @@
 
 /**
  * @module /backend/middleware/auth
- * @requires module:/backend/config.SECRET_KEY
  * @requires module:jsonwebtoken
  * @requires modulde:/backend/expressError.UnauthorizedError
  * @author Brett A. Green <brettalangreen@proton.me>
@@ -17,7 +16,7 @@
  */
 const jwt = require("jsonwebtoken");
 
-const { SECRET_KEY } = require("../config");
+const SECRET_KEY = process.env.SECRET_KEY
 const { UnauthorizedError } = require("../expressError");
 
 /**

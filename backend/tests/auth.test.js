@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const { UnauthorizedError } = require("../expressError");
 const { authenticateJWT, ensureLoggedIn, ensureAdmin, ensureCorrectUserOrAdmin } = require("../middleware/auth");
 
-const { SECRET_KEY } = require("../config");
+const SECRET_KEY = process.env.SECRET_KEY
 const testJwt = jwt.sign({id:1, username: "test", isAdmin: false }, SECRET_KEY);
 const badJwt = jwt.sign({id:99, username: "test", isAdmin: false }, "wrong");
 
