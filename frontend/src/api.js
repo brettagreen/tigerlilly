@@ -4,7 +4,8 @@ import axios from "axios";
  * site url
  * @type {string}
  */
-const BASE_URL = "http://localhost:3001";
+require('dotenv').config()
+const BASE_URL = process.env.TIGERLILLY_BASE_URL
 
 /**
  * @module /frontend/src/api
