@@ -11,4 +11,5 @@ recordings/*
 /backend/sql/*
 TL-backend.pem
 /backend/.env
+/frontend/.env
 
