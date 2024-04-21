@@ -121,7 +121,7 @@ class Keyword {
         );
         
         if (result.rows.length === 0) {
-            throw new NotFoundError(`no keywords are associated with that article id: ${articleId}`)
+            return null;
         }
 
         return result.rows;
