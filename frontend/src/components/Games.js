@@ -30,6 +30,7 @@ function Games() {
      * games page gets a special background. huzzah! on page exit, return to default site background
     */
     useEffect(() => {
+	document.getElementById("footer").remove();
         const body = document.querySelector('body');
 
         body.style.removeProperty('background-image');

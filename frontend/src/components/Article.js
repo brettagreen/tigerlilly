@@ -204,7 +204,7 @@ function Article({ passedArticle, issueArticle, searchArray=null }) {
         <>
             <ThemeProvider theme={linkTheme}>
                 {article ?
-                    <article>
+                    <article style={{marginTop:'10vh'}}>
                         <div ref={articleRef}>
                             <h2 className="articleTitle">{article.articleTitle}</h2>
                             {!article.authorHandle ? 

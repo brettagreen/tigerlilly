@@ -1,8 +1,9 @@
 .BackdropWrapper {
-    min-height: 75vh;
-    min-width: 86vw;
-    margin-left: 7vw;
-    margin-right: 7vw;
+    min-height: 25vh;
+    margin-bottom: 1em;
+    min-width: 66vw;
+    margin-left: 50%;
+    margin-right: 50%;
     border-color: rgba(0, 0, 0, 0.87);
     border-radius: 3px;
     box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);

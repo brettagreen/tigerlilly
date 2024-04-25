@@ -11,7 +11,7 @@
  *
 */
 
-import { useState, useContext, useRef, useEffect } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { useNavigate } from 'react-router';
 import { FormControl, TextField, Button, ThemeProvider, Alert, IconButton, InputAdornment, FormHelperText } from '@mui/material';
 import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
@@ -215,7 +215,7 @@ function SignUp({ updateUserToken }) {
             const user = await TigerlillyApi.registerUser(submitForm);
             updateUserToken(user.token);
             setCurrentUser(user.user);
-            history('/profile');
+            history(0);
         } else {
             setForm(errorForm);
         }
@@ -236,7 +236,7 @@ function SignUp({ updateUserToken }) {
             </div>
             <ThemeProvider theme={formTheme}>
                 <div className="BackdropWrapper">
-                    <form autoComplete="off" noValidate encType="multipart/form-data" onSubmit={submitAndClear}> 
+                    <form autoComplete="off" noValidate encType="multipart/form-data" onSubmit={submitAndClear} style={{padding:'1em'}}> 
                         <FormControl margin="normal" sx={{width: '100%'}}>
 
                             <TextField type="text" label="username" name="username" value={form.username.value} onChange={handleChange}

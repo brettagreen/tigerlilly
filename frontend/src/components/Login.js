@@ -172,12 +172,12 @@ function Login({ updateUserToken }) {
     return (
         <>
             <div className="PageHeader">
-                <h3>Log in to your account</h3>
+                <h3>Login to your account</h3>
             </div>
 
             <ThemeProvider theme={formTheme}>
-                <div className="BackdropWrapper">
-                    <form id="loginForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}> 
+                <div className="BackdropWrapper" style={{marginBottom:'3vh'}}>
+                    <form id="loginForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear} style={{marginLeft:'33%'}}> 
                         <FormControl margin="normal">
                             <TextField type="text" label="username" name="username" variant="outlined" onChange={handleChange }
                                     value={form.username} sx={{marginBottom: '.5em'}} />

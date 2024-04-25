@@ -293,7 +293,7 @@ function User() {
         :null}
 
         {form?<ThemeProvider theme={formTheme}>
-                <div className="BackdropWrapper" style={{minWidth: '80vw', minHeight: '40vh'}}>
+                <div className="BackdropWrapper" style={{marginTop:'10vh', minWidth: '80vw', minHeight: '40vh'}}>
                     <Box component="section" sx={{marginLeft: '10vw', display: 'block', float: 'left', width: '50%'}}>
                         <form autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear}>
                             <FormControl margin="normal" sx={{width: '90%'}}>

@@ -4,9 +4,9 @@ import axios from "axios";
  * site url
  * @type {string}
  */
-require('dotenv').config()
-const BASE_URL = process.env.TIGERLILLY_BASE_URL
-
+const BASE_URL = "http://ec2-54-236-6-16.compute-1.amazonaws.com:3001";
+//console.log('process...', process.env.TIGERLILLY_BASE_URL);
+//console.log('BASE...', BASE_URL);
 /**
  * @module /frontend/src/api
  * @requires module:axios

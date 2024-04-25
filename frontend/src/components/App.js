@@ -137,7 +137,7 @@ function App() {
 					<NavigationBar search={[setSearchString, setSearchArray, setSearchResults, searchVal, setSearchVal]}/>
 					<Box className="SiteBox" component="main">
 						<TigerlillyRoutes updateUserToken={updateUserToken} search={[searchString, searchArray, searchResults]}/>
-						<Footer />
+					        <Footer />	
 					</Box>
 				</BrowserRouter>
 			</div>

@@ -69,6 +69,8 @@ function SearchResults({ search }) {
                     <Grid id="daGrid" container rowSpacing={2} columnSpacing={{xs:2, sm:3, md:4}} columns={{xs:2, sm:3, md:4}}>
 
                         {parsedResults.map((article, idx) => {
+			    console.log("this is refreshing");
+			    console.log('title', article.articleTitle);
                             if ((article.text).split(' ').length >= 50) {
                                 article.expand = true;
                             } else {

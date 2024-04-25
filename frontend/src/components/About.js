@@ -12,7 +12,7 @@
 
 function About() {
 
-    return ("We're 'about' excellence in journalism. Any other questions?");
+	return (<p style={{marginTop:'10vh'}}>"We're 'about' excellence in journalism. Any other questions?"</p>);
 }
 
 export default About;
