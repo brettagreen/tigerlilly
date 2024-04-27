@@ -14,6 +14,9 @@
  */
 const app = require("./app");
 
-app.listen(process.env.PORT, function () {
+const server = app.listen(process.env.PORT, function () {
   console.log(`Started on ${process.env.TIGERLILLY_BASE_URL}`);
 });
+
+server.keepAliveTimeout = 30 * 1000;
+server.headersTimeout = 35 * 1000;
