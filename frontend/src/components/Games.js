@@ -55,7 +55,7 @@ function Games() {
      * lots of fun, colorful, and just a little messy!
      */
     return (
-        <div id="gamesContainer">
+        <div id="gamesContainer" style={{marginTop:'10vh'}}>
             <div style={{float:'left'}}>
                 <MadLibs />
                 <br />
@@ -71,7 +71,7 @@ function Games() {
                 <hr />
                 <Connect4Game />
             </div>
-            <div style={{clear:'left', marginTop: '5em'}}>
+            <div style={{clear:'left', float:'right', marginTop: '1em'}}>
                 <Jeopardy />
             </div>
         </div>

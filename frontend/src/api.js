@@ -4,7 +4,7 @@ import axios from "axios";
  * site url
  * @type {string}
  */
-const BASE_URL = "http://ec2-54-236-6-16.compute-1.amazonaws.com:3001";
+const BASE_URL = "http://ec2-35-175-195-228.compute-1.amazonaws.com:3001";
 //console.log('process...', process.env.TIGERLILLY_BASE_URL);
 //console.log('BASE...', BASE_URL);
 /**

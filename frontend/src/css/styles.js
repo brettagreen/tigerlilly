@@ -149,9 +149,18 @@ const gridTheme =
 const toolbarMenuTheme =
 	createTheme({
 		components: {
-			MuiPaper: {
+			MuiAppBar: {
 				styleOverrides: {
 					root: {
+						color: '#f3f2f2',
+						background: 'linear-gradient(90deg, rgba(241, 146, 111, .85) 40%, rgba(0, 0, 0, .85))',
+						width: '22vw'
+					}
+				}
+			},
+			MuiDrawer: {
+				styleOverrides: {
+					paper: {
 						color: '#f3f2f2',
 						backgroundColor: 'rgba(0,0,0,.85)',
 						width: '22vw'
@@ -161,7 +170,7 @@ const toolbarMenuTheme =
 			MuiListSubheader: {
 				styleOverrides: {
 					root: {
-						backgroundColor: 'rgba(239, 230, 174, .75)',
+						backgroundColor: 'rgba(189, 183, 107, .85)',
 						paddingLeft: '10px',
 						paddingRight: '10px',
 						height: '64px',

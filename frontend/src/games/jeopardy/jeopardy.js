@@ -121,7 +121,7 @@ function Jeopardy() {
         $('#jeopardyFrame').append(table);
 
         $('.jeopCategory, .jeopAnswer').css('width', '80px').css('height', '80px').css('border', 'solid 1px #666').css('text-align', 'center').css(
-            'color', 'white').css('background-color', '#060ce9').css('cursor', 'pointer');
+            'color', 'white').css('background-color', 'rgba(6,12,233,.7)').css('cursor', 'pointer');
         $('#jeopardyFrame').append('<button id="jeopardyButton">New Game</button>');
         $('#jeopardyFrame').css('background-color', '#115ff4');
         $('#jeopardyTable').css({"position": "absolute", "margin-top":"5%", "left": "0", "right": "0", "margin-left": "17%",

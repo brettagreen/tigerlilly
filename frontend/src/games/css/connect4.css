@@ -20,7 +20,7 @@
 #connect4board td {
   width: 80px;
   height: 80px;
-  border: solid 1px #666;
+  border: solid 1px black;
 }
 
 /* pieces are div within game table cells: draw as colored circles */
@@ -53,8 +53,8 @@
 }
 
 #column-top td {
-    border-left: dashed 1px slategray;
-    border-right: dashed 1px slategray;
+    border-left: dashed 1px black;
+    border-right: dashed 1px black;
     border-top:none;
     border-bottom:none;
 }
