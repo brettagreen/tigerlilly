@@ -14,3 +14,4 @@ TL-backend.pem
 /frontend/.env
 /frontend/certs
 /backend/certs
+README.md
