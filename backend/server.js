@@ -13,8 +13,16 @@
  * @const
  */
 const app = require("./app");
+const https = require('node:https');
+const fs = require('node:fs');
 
-const server = app.listen(process.env.PORT, function () {
+const privateKey = fs.readFileSync( './certs/privkey.pem' );
+const certificate = fs.readFileSync( './certs/fullchain.pem' );
+
+const server = https.createServer({
+    key: privateKey,
+    cert: certificate
+}, app).listen(process.env.PORT, function () {
   console.log(`Started on ${process.env.TIGERLILLY_BASE_URL}`);
 });
 

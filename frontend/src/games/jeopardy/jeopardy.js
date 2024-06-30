@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import axios from  'axios';
+import axios from 'axios';
 import { useEffect } from 'react';
 
 function Jeopardy() {
@@ -9,11 +9,17 @@ function Jeopardy() {
     const NUM_QUESTIONS = 5;
     const gameCategories = [];
     const spinnerURL = 'https://gifimage.net/wp-content/uploads/2018/05/spinner-gif-transparent-background-5.gif';
-
-    useEffect(() => {
-        //on load
-        showLoadingView();
-    }, [])
+	
+    useEffect(
+        () => {
+            async function loading() {
+	        await showLoadingView();	
+	    }
+	loading();
+    	},
+        // eslint-disable-next-line	   
+        []
+    );
 
     /** Get NUM_CATEGORIES random category from API.
      *

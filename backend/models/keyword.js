@@ -11,7 +11,8 @@
  * db module
  * @const
  */
-const db = require("../db");    
+const db = require("../db");
+
 const { NotFoundError, BadRequestError } = require("../expressError");
     
 /**
@@ -38,7 +39,7 @@ class Keyword {
         let kwd;
 		try {
             for (kwd of keywords) {
-                resp = await db.query(
+                resp = await db.getClient().query(
                     `INSERT INTO article_keywords
                     (article_id, keyword)
                     VALUES
@@ -65,13 +66,13 @@ class Keyword {
      * @returns {keyword} - {articleTitle, keywords}
      */
     static async addToAllArticles(keywords) {
-        const articleIds = await db.query(
+        const articleIds = await db.getClient().query(
             `SELECT id FROM articles`
         );
 
         for (let kwd of keywords) {
             for (let row of articleIds.rows) {
-                await db.query(
+                await db.getClient().query(
                     `INSERT INTO article_keywords
                     (article_id, keyword)
                     VALUES ($1, $2)
@@ -90,7 +91,7 @@ class Keyword {
      * @returns {Object[keyword]} - [{keyword, articleId, articleTitle}, ...]
      */
     static async getKeywords() {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT ak.keyword, ak.article_id AS "articleId", a.article_title AS "articleTitle"
             FROM article_keywords ak
             LEFT JOIN articles a ON ak.article_id = a.id
@@ -108,12 +109,12 @@ class Keyword {
      * @returns {keyword} - [{keyword}, ...]
      */
     static async getArticleKeywords(articleId) {
-        let r = await db.query(
+        let r = await db.getClient().query(
             `SELECT * FROM articles WHERE id=$1`, [articleId]
         );
         if (!r.rows[0]) throw new NotFoundError(`no article found by that id: ${articleId}`);
 
-        const result = await db.query(
+        const result = await db.getClient().query(
                 `SELECT keyword
                 FROM article_keywords
                 WHERE article_id = $1
@@ -150,7 +151,7 @@ class Keyword {
         const resultsSet = new Set();
 
         for (let term of hashtags) {
-            result = await db.query(
+            result = await db.getClient().query(
                 `SELECT article_id FROM article_keywords WHERE keyword ILIKE $1`, 
                     ['%'+term.substring(1,term.length)+'%']
             );
@@ -174,7 +175,7 @@ class Keyword {
      */
     static async updateKeywords(articleId, {keyword, edit}) {
 
-        const count = await db.query(
+        const count = await db.getClient().query(
             `SELECT COUNT(*) FROM article_keywords WHERE keyword = $1`,
             [keyword]
         );
@@ -185,7 +186,7 @@ class Keyword {
 
         if (articleId == 0) {
 
-            await db.query(
+            await db.getClient().query(
                 `UPDATE article_keywords
                 SET keyword = $1
                 WHERE keyword = $2`,
@@ -196,12 +197,12 @@ class Keyword {
 
         } else {
 
-            let r = await db.query(
+            let r = await db.getClient().query(
                 `SELECT * FROM articles WHERE id=$1`, [articleId]
             );
             if (!r.rows[0]) throw new NotFoundError(`no article found by that id: ${articleId}`);
 
-            await db.query(
+            await db.getClient().query(
                 `UPDATE article_keywords
                 SET keyword = $1
                 WHERE keyword = $2
@@ -209,7 +210,7 @@ class Keyword {
                 [edit, keyword, articleId]
             );
 
-            const subResult = await db.query(
+            const subResult = await db.getClient().query(
                 `SELECT article_title AS "articleTitle"
                 FROM articles
                 WHERE id = $1`,
@@ -230,7 +231,7 @@ class Keyword {
      * @returns {keyword} - { articleTitle, keyword }
      */
     static async delete(articleId, keyword) {
-        const count = await db.query(
+        const count = await db.getClient().query(
             `SELECT COUNT(*) FROM article_keywords WHERE keyword = $1`,
             [keyword]
         );
@@ -241,7 +242,7 @@ class Keyword {
 
         if (articleId == 0) {
 
-            await db.query(
+            await db.getClient().query(
                 `DELETE FROM article_keywords
                 WHERE keyword = $1`,
                 [keyword]
@@ -251,12 +252,12 @@ class Keyword {
 
         } else {
 
-            let r = await db.query(
+            let r = await db.getClient().query(
                 `SELECT * FROM articles WHERE id=$1`, [articleId]
             );
             if (!r.rows[0]) throw new NotFoundError(`no article found by that id: ${articleId}`);
             
-            const result = await db.query(
+            const result = await db.getClient().query(
                 `DELETE FROM article_keywords
                 WHERE article_id = $1
                 AND keyword = $2

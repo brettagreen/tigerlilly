@@ -20,6 +20,7 @@
  * @const
  */
 const db = require("../db");
+
 const { NotFoundError, BadRequestError } = require("../expressError");
 
 /**
@@ -44,13 +45,17 @@ class Article {
 	static async create({ articleTitle, authorId, text, issueId }) {
 
         /**
-		 * the sql query string
-		 * @type {string} */
+	 * the sql query string
+	 * @type {string}
+	 *
+	 */
         let query;
+
         /**
-		 * argument values passed to the sql query string
-		 * @type {string|number[]} */
-		let args;
+	 * argument values passed to the sql query string
+	 * @type {string|number[]}
+	 */
+	let args;
 
         //based on passed parms/args, write specific query for specific insert operation
         if (!authorId && !issueId) {
@@ -101,8 +106,6 @@ class Article {
                     issue_id)
                     VALUES ($1, $2, $3, $4)
                     RETURNING id, article_title AS "articleTitle", 
-                    (SELECT author_first AS "authorFirst" FROM authors WHERE id = $2), 
-                    (SELECT author_last AS "authorLast" FROM authors WHERE id = $2),
                     (SELECT author_handle AS "authorHandle" FROM authors WHERE id = $2),
                     author_id AS "authorId", text, (SELECT issue_title AS "issueTitle" FROM issues WHERE id = $4),
                     issue_id AS "issueId"`;
@@ -112,7 +115,7 @@ class Article {
         
         let result;
         try {
-            result = await db.query(query, args);
+            result = await db.getClient().query(query, args);
         } catch (error) {
             throw new BadRequestError('duplicate entry: this article already exists');
         }
@@ -132,7 +135,7 @@ class Article {
      * @returns {Object[article]} - [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
      */
     static async getAll() {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT a.id,
                     a.article_title AS "articleTitle",
                     w.author_first AS "authorFirst",
@@ -158,7 +161,7 @@ class Article {
      * @returns {article} - { articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate }
      */
     static async get(id) {
-        const result = await db.query(
+        const result = await db.getClient().query(
                 `SELECT a.id AS "articleId",
                         a.article_title AS "articleTitle",
                         w.author_first AS "authorFirst",
@@ -189,7 +192,7 @@ class Article {
      * @returns {article} - { articleTitle, authorFirst, authorLast, text, issueTitle }
      */
     static async getByArticleTitle(articleTitle) {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT a.article_title AS "articleTitle",
                     w.author_first AS "authorFirst",
                     w.author_last AS "authorLast",
@@ -218,7 +221,7 @@ class Article {
      * @returns {Object[article]} - [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId, issueTitle, pubDate}, ...]
      */
     static async fetchByAuthor(handle) {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     au.author_first AS "authorFirst",
@@ -245,7 +248,7 @@ class Article {
      * @returns {Object[article]} - [{ id, articleTitle, authorFirst, authorLast, authorId, text, issueTitle, issueId }, ...]
      */
     static async hasComments() {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT a.id,
                     a.article_title AS "articleTitle",
                     w.author_first AS "authorFirst",
@@ -271,7 +274,7 @@ class Article {
      * @returns {Object[article]} - [{articleId, articleTitle, authorFirst, authorLast, authorHandle, text, issueId}, ...]
      */
     static async fetchByKeyword(keyword) {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT a.id AS "articleId",
                     a.article_title AS "articleTitle",
                     au.author_first AS "authorFirst",
@@ -315,7 +318,7 @@ class Article {
             if (term.startsWith('"') || term.startsWith("'")) {
                 term = term.substring(1, term.length-1); //remove quotation marks from phrase/term being searched for
             }
-            result = await db.query(
+            result = await db.getClient().query(
                 `SELECT id FROM articles WHERE text ILIKE $1 OR article_title ILIKE $1`, ['%'+term+'%']
             );
 
@@ -339,7 +342,7 @@ class Article {
      */
     static async update(id, body) {
         //get the article in question
-        let r = await db.query(
+        let r = await db.getClient().query(
             `SELECT * FROM articles WHERE id=$1`, [id]
         );
         
@@ -348,7 +351,7 @@ class Article {
 
         r = r.rows[0];
 
-		const result = await db.query(
+	const result = await db.getClient().query(
             `UPDATE articles a
             SET article_title = $1,
             author_id = $2,
@@ -385,7 +388,7 @@ class Article {
      */
     static async delete(id) {
 
-        const result = await db.query(
+        const result = await db.getClient().query(
             `DELETE
             FROM articles
             WHERE id = $1
@@ -404,3 +407,5 @@ class Article {
 }
 
 module.exports = Article;
+"use strict";
+"use strict";

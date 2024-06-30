@@ -5,6 +5,7 @@
  * @const
  */
 const db = require("../db");
+
 const { NotFoundError } = require("../expressError");
 
 /**
@@ -119,7 +120,7 @@ class Comment {
             args = [userId, text, articleId, postDate];
         }
 
-		const result = await db.query( 
+		const result = await db.getClient().query( 
             query, args
 		);
 
@@ -138,7 +139,7 @@ class Comment {
      * @returns {Object[]} - [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
      */
     static async getByUser(userId) {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT c.id,
                     c.user_id AS "userId",
                     c.text,
@@ -168,7 +169,7 @@ class Comment {
      * @returns {Object[]} - [{ id, userId, text, articleId, articleTitle, postDate, userFirst, userLast, username, icon }, ...]
      */
     static async getByArticle(articleId) {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT c.id,
                     c.user_id AS "userId",
                     c.text,
@@ -198,7 +199,7 @@ class Comment {
      * @returns {Object} - { id, text, postDate, userFirst, userLast, username, icon }
      */
     static async get(id) {
-        const result = await db.query(
+        const result = await db.getClient().query(
                 `SELECT c.id,
                         c.text,
                         c.post_date AS "postDate",
@@ -229,7 +230,7 @@ class Comment {
      */
 	static async edit(id, body) {
 
-        let r = await db.query(
+        let r = await db.getClient().query(
             `SELECT * FROM comments WHERE id=$1`, [id]
         );
 
@@ -237,7 +238,7 @@ class Comment {
 
         r = r.rows[0];
 
-		const result = await db.query(
+		const result = await db.getClient().query(
             `UPDATE comments c
                 SET 
                 user_id = $1,
@@ -272,7 +273,7 @@ class Comment {
      * @returns {Object} - { id, username, text, articleTitle, postDate }
      */
     static async delete(id) {
-        const result = await db.query(
+        const result = await db.getClient().query(
                 `DELETE
                 FROM comments
                 WHERE id = $1

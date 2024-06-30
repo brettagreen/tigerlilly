@@ -20,6 +20,7 @@
  * @const
  */
 const db = require("../db");
+
 const { NotFoundError, BadRequestError } = require("../expressError");
 
 /**
@@ -58,7 +59,7 @@ class Issue {
 
         let result;
         try {
-            result = await db.query(query, args);
+            result = await db.getClient().query(query, args);
         } catch {
             throw new BadRequestError('duplicate entry: this issue already exists');
         }
@@ -73,7 +74,7 @@ class Issue {
      * @returns {Object[issue]} - [{ id, issueTitle, volume, issue, pubDate }, ...]
      */
     static async getAll() {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT id, issue_title AS "issueTitle", volume, issue, pub_date AS "pubDate"
             FROM issues
             ORDER BY pub_date`
@@ -89,7 +90,7 @@ class Issue {
      */
     static async getCurrent() {
 
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT i.issue_title AS "issueTitle",
                     i.volume,
                     i.issue,
@@ -117,13 +118,13 @@ class Issue {
      */
     static async get(id) {
 
-        let r = await db.query(
+        let r = await db.getClient().query(
             `SELECT id FROM issues WHERE id=$1`, [id]
         );
 
 		if (!r.rows[0]) throw new NotFoundError(`No issue found by that id: ${id}`);
 
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT i.issue_title AS "issueTitle",
                     i.volume,
                     i.issue,
@@ -150,13 +151,13 @@ class Issue {
      */
     static async getByTitle(issueTitle) {
 
-        let r = await db.query(
+        let r = await db.getClient().query(
             `SELECT id FROM issues WHERE issue_title=$1`, [issueTitle]
         );
 
 		if (!r.rows[0]) throw new NotFoundError(`No issue found by that title: ${issueTitle}`);
 
-        const result = await db.query(
+        const result = await db.getClient().query(
             `SELECT i.issue_title AS "issueTitle",
                     i.volume,
                     i.issue,
@@ -189,7 +190,7 @@ class Issue {
      */
     static async update(id, body) {
 
-        let r = await db.query(
+        let r = await db.getClient().query(
             `SELECT * FROM issues WHERE id=$1`, [id]
         );
 
@@ -197,7 +198,7 @@ class Issue {
 
         r = r.rows[0];
         
-		const result = await db.query(
+		const result = await db.getClient().query(
             `UPDATE issues
             SET 
             issue_title = $1,
@@ -229,7 +230,7 @@ class Issue {
      * @returns {issue} - { issueTitle, volume, issue, pubDate }
      */
     static async delete(id) {
-        const result = await db.query(
+        const result = await db.getClient().query(
             `DELETE
             FROM issues
             WHERE id = $1

@@ -18,6 +18,7 @@
  */
 const db = require("../db");
 /**
+ *
  * bcrypt module
  * @const
  */
@@ -65,7 +66,7 @@ class User {
      */
 	static async register({ username, password, userFirst, userLast, email, isAdmin=false }, icon) {
 
-		const duplicateCheck = await db.query(
+		const duplicateCheck = await db.getClient().query(
 			`SELECT COUNT(*)
 			FROM users
 			WHERE username = $1 OR email = $2`,
@@ -118,7 +119,7 @@ class User {
 			args = [username, hashedPassword, userFirst, userLast, email, icon, isAdmin];
 		}
 
-		const result = await db.query(
+		const result = await db.getClient().query(
 			query, args
 		);
 
@@ -137,7 +138,7 @@ class User {
      */
 	static async authenticate({ username, password }) {
 		// first, try to find the user
-		const result = await db.query(
+		const result = await db.getClient().query(
 				`SELECT id,
 						user_first AS "userFirst",
 						user_last AS "userLast",
@@ -182,7 +183,7 @@ class User {
      * @returns {Object} - { name, email, feedback }
      */
 	static async feedback({ name, email, feedback }) {
-		const result = await db.query(
+		const result = await db.getClient().query(
 			`INSERT INTO feedback
 				(name,
 				email,
@@ -200,7 +201,7 @@ class User {
 	 * @returns {Object[user]} - [{ id, username, userFirst, userLast, email, isAdmin, icon }, ...]
      */
 	 static async findAll() {
-		const result = await db.query(
+		const result = await db.getClient().query(
 				`SELECT id,
 						username,
 						user_first AS "userFirst",
@@ -224,7 +225,7 @@ class User {
 	 *
 	 **/
 	static async get(username) {
-		const userRes = await db.query(
+		const userRes = await db.getClient().query(
 				`SELECT id,
 						username,
 						user_first AS "userFirst",
@@ -252,7 +253,7 @@ class User {
 	 *
 	 **/
 	static async getUsername(id) {
-		const user = await db.query(
+		const user = await db.getClient().query(
 				`SELECT username
 				FROM users
 				WHERE id = $1`, [id]
@@ -270,7 +271,7 @@ class User {
 	 *
 	 **/
     static async hasComments() {
-        const result = await db.query(
+        const result = await db.getClient().query(
 			`SELECT id,
 				username,
 				user_first AS "userFirst",
@@ -299,7 +300,7 @@ class User {
      */
 	static async update(id, body, icon) {
 
-        let r = await db.query(
+        let r = await db.getClient().query(
             `SELECT * FROM users WHERE id=$1`, [id]
         );
 
@@ -323,7 +324,7 @@ class User {
 			}
 		}
 
-		const result = await db.query(
+		const result = await db.getClient().query(
 			`UPDATE users 
 			SET user_first = $1,
 				user_last = $2,
@@ -367,7 +368,7 @@ class User {
      * @returns {user} - {id, username, userFirst, userLast, email, isAdmin, icon}
      */
 	static async remove(id) {
-		let result = await db.query(
+		let result = await db.getClient().query(
 				`DELETE
 				FROM users
 				WHERE id = $1

@@ -2,14 +2,17 @@ import '../css/admin.css';
 import TigerlillyApi from "../api";
 import { useState, useRef, useEffect, useContext } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { Alert, Box, Button, Checkbox, FormControl, FormControlLabel, FormHelperText,
-            InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider, Tooltip } from '@mui/material';
+import { Alert, Box, Button, Checkbox, FormControl, FormHelperText,
+            InputLabel, MenuItem, Modal, Select, TextField, ThemeProvider } from '@mui/material';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
 import { formTheme, textareaTheme } from '../css/styles';
 import UserContext from '../userContext';
 
 function Admin() {
     const history = useNavigate();
+
+    //db environment
+    const [environment, setEnvironment] = useState('tigerlilly_test');
 
     //filter/search related variables
     const [category, setCategory] = useState('');
@@ -52,7 +55,26 @@ function Admin() {
     const linkArray = ['articleTitle', 'username', 'authorHandle', 'issueTitle'];
 
     const isAdmin = useContext(UserContext).user.isAdmin;
-    console.log("ADMIN user?", useContext(UserContext).user);
+
+    //useEffect() stuff
+    
+    //default to tigerlilly_test db, return to default .env db environment setting on page exit
+    useEffect(() => {
+        console.log('setEnv() useEffect');
+        async function setEnv() {
+            console.log('am i getting here?');
+            let resp = await TigerlillyApi.setEnvironment(environment);
+            console.log("big kahuna", resp);
+        }
+    
+        setEnv();
+
+        return async () => {
+            await TigerlillyApi.setEnvironment(null);
+        }
+        
+    }, [environment]);
+
     //fetch table data up front on page load. reload if/when table has been updated (see submitAndClear function below)
     //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
     //so this is the best version of operational caching that I could come up with.
@@ -85,10 +107,35 @@ function Admin() {
                 loadTables();
             }
         }
-
+        
+	    console.log('environment value', environment);
         allowed();
         
-    }, [history, isAdmin]);
+    }, [environment, history, isAdmin]);
+
+    
+    useEffect(() => {
+        console.log('form() useEffect');
+        if (form) {
+            entryForm.current.hidden = false;
+        }
+    }, [form]);
+
+
+    useEffect(() => {
+        console.log('result() useEffect');
+        if (!result) {
+            setMethod('');
+        }
+    }, [result]);
+
+
+    async function fixEnvironment(event) {
+	console.log("e.t.v.", event.target.value);
+        const resp = await TigerlillyApi.setEnvironment(event.target.value);
+	console.log('RESPect', resp);
+	setEnvironment(event.target.value);
+    }
 
     function fixCategory(event) {
         console.log('fixCategory()');
@@ -122,6 +169,65 @@ function Admin() {
         setMethodBox(true);
     }
 
+    async function fixMethod(event) {
+        console.log('fixMethod()');
+
+        setResult(null);
+
+        if (method) {
+            if (event.target.value === 'add') {
+                setEditDelete(false);
+            }
+            setForm(null);
+        }
+
+        const tempMethod = event.target.value;
+
+        if (['articles', 'comments', 'keywords', 'updateKeywords'].includes(category)) {
+           await assignSelectObjects();
+        }
+        
+        if (tempMethod === 'add') {
+            setForm(addForm());
+        } else {
+            if (category === 'comments') {
+                setCommentFilterBox(true)
+            } else {
+                let cat;
+                if (category === 'articles') {
+                    cat = articles;
+                } else if (category === 'authors') {
+                    cat = authors;
+                } else if (category === 'issues') {
+                    cat = issues;
+                } else if (category === 'keywords' || category === 'updateKeywords') {
+                    if (selectedObject) {
+                        setSelectedObject('');
+                    }
+                    cat = keywords;
+                } else { //users
+                    cat = users;
+                }
+                editDeleteForm(cat, false);
+                setEditDelete(true);
+            }
+        }
+
+        setMethod(tempMethod);
+    }
+
+    async function fixFilter(event) {
+        console.log('fixFilter()');
+
+        setFilterVal(event.target.value);
+
+        //users or articles
+        const resp = await TigerlillyApi.getObjectsWithComments(event.target.value);
+        
+        editDeleteForm(resp[event.target.value], true, event.target.value);
+        setFilterItems(true);
+    }
+
     function addForm() {
         console.log('addForm()');
 
@@ -152,7 +258,7 @@ function Admin() {
 
             console.log('event', event);
             const val = event.target.value;
-            console.log("jasdlkfjal;skdfjalksdfjalk;sdjfkl;asjdflk;asjdf;lkasjfa;lksdjf;alsdjfak;lsjf", val);
+            console.log("selectItem() val", val);
             const targetId = Number(val.id);
             setSelectedObject(val);
 
@@ -173,7 +279,7 @@ function Admin() {
 
             if (newForm.hasOwnProperty('password')) {
                 delete newForm['password'];
-            }
+	    }
 
 
         } else {
@@ -357,7 +463,6 @@ function Admin() {
         }
 
         isFilter ? setFilterValues(editValues) : setEditValues(editValues);
-        
     }
 
     function handleChange(event) {
@@ -431,10 +536,8 @@ function Admin() {
         //wasn't able to get useMemo to work. it's my understanding that it doesn't play well with async code
         //so this is the best version of operational caching that I could come up with.
         const cat = category==='updateKeywords'?'keywords':category;
-        if (category !== 'comments') {
-            const subResponse = await TigerlillyApi.get(cat);
-            setTables[cat](subResponse[cat]);
-        }
+        const subResponse = await TigerlillyApi.get(cat);
+        setTables[cat](subResponse[cat]);
 
         if (!(category === 'users' && method === 'add')) {
             setResult([Array.from(Object.keys(response[category])), Array.from(Object.values(response[category]))]);
@@ -507,65 +610,6 @@ function Admin() {
         }
     }
 
-    async function fixMethod(event) {
-        console.log('fixMethod()');
-
-        setResult(null);
-
-        if (method) {
-            if (event.target.value === 'add') {
-                setEditDelete(false);
-            }
-            setForm(null);
-        }
-
-        const tempMethod = event.target.value;
-
-        if (['articles', 'comments', 'keywords', 'updateKeywords'].includes(category)) {
-           await assignSelectObjects();
-        }
-        
-        if (tempMethod === 'add') {
-            setForm(addForm());
-        } else {
-            if (category === 'comments') {
-                setCommentFilterBox(true)
-            } else {
-                let cat;
-                if (category === 'articles') {
-                    cat = articles;
-                } else if (category === 'authors') {
-                    cat = authors;
-                } else if (category === 'issues') {
-                    cat = issues;
-                } else if (category === 'keywords' || category === 'updateKeywords') {
-                    if (selectedObject) {
-                        setSelectedObject('');
-                    }
-                    cat = keywords;
-                } else { //users
-                    cat = users;
-                }
-                editDeleteForm(cat, false);
-                setEditDelete(true);
-            }
-        }
-
-        setMethod(tempMethod);
-    }
-
-    async function fixFilter(event) {
-        console.log('fixFilter()');
-
-        setFilterVal(event.target.value);
-
-        //users or articles
-        const resp = await TigerlillyApi.getObjectsWithComments(event.target.value);
-        
-        editDeleteForm(resp[event.target.value], true, event.target.value);
-        setFilterItems(true);
-    }
-
     async function selectFilteredComments(event) {
         console.log('selectFilterItem()');
         const val = event.target.value;
@@ -585,21 +629,7 @@ function Admin() {
         hiddenFileInput.current.click();
     };
 
-    useEffect(() => {
-        console.log('form() useEffect');
-        if (form) {
-            entryForm.current.hidden = false;
-        }
-    }, [form]);
-
-    useEffect(() => {
-        console.log('result() useEffect');
-        if (!result) {
-            setMethod('');
-        }
-    }, [result]);
-
-    function returnTable() {
+    function returnChangeTable() {
         const handleClose = () => setModalOpen(false);
 
         //shamelessly 'stolen' css from https://mui.com
@@ -622,7 +652,7 @@ function Admin() {
                         <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell key="whofuckingcares" sx={{textAlign: "center"}}colSpan={!result[1][1]?result[1].length:result[1][1].length+1}>
+                                <TableCell key="whocares" sx={{textAlign: "center"}}colSpan={!result[1][1]?result[1].length:result[1][1].length+1}>
                                     {method==='add'?'ADDED':method==='edit'?'UPDATED':<span id="th">DELETED</span>}</TableCell>
                             </TableRow>
                         </TableHead>
@@ -681,6 +711,14 @@ function Admin() {
             <main id="adminMain">
                 <Box className="AdminBackdrop" component="section">
                     <FormControl margin="normal" className="FormControl">
+                        <InputLabel id="cat">--Select DB to work with. Default is 'test'--</InputLabel>
+                        <Select className="Select" component="select" labelId="cat" onChange={fixEnvironment} value={environment}>
+                            <MenuItem key="production" className="MenuItem" value="tigerlilly">production</MenuItem>
+                            <MenuItem key="test" className="MenuItem" value="tigerlilly_test">test</MenuItem>
+                            <MenuItem key="testing" className="MenuItem" value="tigerlilly_testing">testing</MenuItem>
+                        </Select>
+                    </FormControl>
+                    <FormControl margin="normal" className="FormControl">
                         <InputLabel id="cat">--Select one of the following--</InputLabel>
                         <Select className="Select" component="select" labelId="cat" name="type" onChange={fixCategory} 
                                 value={category==='updateKeywords'?'keywords':category}>
@@ -712,9 +750,9 @@ function Admin() {
                         <Select className="Select" component="select" labelId="objectfilter" 
                                     onChange={selectFilteredComments} value={commentObject}>
                             {filterValues ? filterValues.map((val, idx) => {
-                                return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
+                                return (//<Tooltip disableFocusListener key={idx+1} title={val.display1}>
                                             <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
-                                        </Tooltip>
+                                        //</Tooltip>
                                         );
                             }) : null}
                         </Select>
@@ -727,10 +765,9 @@ function Admin() {
                         </InputLabel>
                         <Select className="Select" component="select" labelId="finalboss" onChange={selectItem} value={selectedObject}>
                             {editValues ? editValues.map((val, idx) => {
-                                console.log('edit value val', val);
-                                return (<Tooltip disableFocusListener key={idx+1} title={val.display1}>
+                                return (//<Tooltip key={idx+1} title={val.display1}>
                                             <MenuItem key={-idx-1} className="MenuItem" value={val}>{val.display2}</MenuItem>
-                                        </Tooltip>
+                                        //</Tooltip>
                                         )
                             }) : null}
                         </Select>
@@ -765,11 +802,10 @@ function Admin() {
                                         {field.type ==='checkbox' ?
                                         <>
                                             <InputLabel id={idx+field.field} shrink={false}>{field.field}</InputLabel>
-                                            <FormControlLabel control={
-                                                <Checkbox checked={form[field.field]} key={-idx-1} type={field.type} name={field.field} value={form[field.field]}
+                                            
+                                            <Checkbox checked={form[field.field]} key={-idx-1} type={field.type} name={field.field} value={form[field.field]}
                                                         disableRipple={true} disabled={disabled} onChange={handleChange} 
-                                                        sx={{position: 'inherit', ml: '1em', mt: '1em'}}/>
-                                                }/>
+                                                        sx={{position: 'inherit', ml: '1em', mt: '1em', width: '202px'}}/>   
                                         </> :
                                         null}
 
@@ -791,7 +827,6 @@ function Admin() {
 
                                         {field.type ==='datetime-local' ?
                                             <>
-                                                <InputLabel id={idx+field.field} shrink={false}>{field.field}</InputLabel>
                                                 <TextField key={-idx-1} type={field.type} name={field.field} variant="standard"
                                                          value={form[field.field]} disabled={disabled} onChange={handleChange} />
                                             </> :
@@ -881,7 +916,7 @@ function Admin() {
                 </Box></>: null}
                 
                 {result && !(category === 'users' && method === 'add') ?
-                    returnTable()
+                    returnChangeTable()
                 : null}
             </main>
         </ThemeProvider>

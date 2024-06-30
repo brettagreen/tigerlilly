@@ -12,4 +12,5 @@ recordings/*
 TL-backend.pem
 /backend/.env
 /frontend/.env
-
+/frontend/certs
+/backend/certs

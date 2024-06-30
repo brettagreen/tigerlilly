@@ -79,12 +79,19 @@ const { upload, setFile } = require("../helpers/icons");
  */
 const router = express.Router();
 
+const db = require("../db");
 
 router.post("/testFileUpload", upload.single('icon'), async function (req, res, next) {
     const filename = !req.file ? null : await setFile(req, 'user', [100, 100]);
     console.log('filename', filename);
 
     return res.status(201).json({file: filename});
+});
+
+router.post('/setEnvironment', async function(req, res, next) {
+    db.dbURI = req.body.env;
+    console.log('new db.dbURI val', db.dbURI);
+    return res.send(`set admin environment to ${req.body.env}`);
 });
 
 

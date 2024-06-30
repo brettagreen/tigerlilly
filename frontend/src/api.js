@@ -4,7 +4,7 @@ import axios from "axios";
  * site url
  * @type {string}
  */
-const BASE_URL = "http://ec2-35-175-195-228.compute-1.amazonaws.com:3001";
+const BASE_URL = "https://api.thetigerlilly.online:442" 
 //console.log('process...', process.env.TIGERLILLY_BASE_URL);
 //console.log('BASE...', BASE_URL);
 /**
@@ -69,6 +69,11 @@ class TigerlillyApi {
         const params = (method === "get") ? data : {};
 
         try {
+	    console.log('url', url)
+	    console.log('method', method);
+	    console.log('data', data);
+	    console.log('params', params);
+	    console.log('headers', headers);
             return (await axios({ url, method, data, params, headers })).data;
         } catch (err) {
             console.error("API Error:", err.response);
@@ -275,14 +280,17 @@ class TigerlillyApi {
         return await this.request(`articles/search/${kwds}`);
     }
 
-    ////////////////////testing stuff
+    ////////////////////testing stuff, admin stuff
 
     static async testUpload(form, username) {
         const formData = this.formData(form);
 
         formData.append('username', username);
         return await this.request('users/testFileUpload', formData, 'post');
+    }
 
+    static async setEnvironment(env) {
+        return await this.request('users/setEnvironment', {env}, 'post');
     }
 
 }

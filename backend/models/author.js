@@ -18,7 +18,6 @@
  * @const
  */
 const db = require("../db");
-const { NotFoundError, BadRequestError } = require("../expressError");
 /**
  * renameFile
  * @const
@@ -53,7 +52,7 @@ class Author {
 		 * @type {Object[]}
 		 * @const
 		 */
-		const duplicateCheck = await db.query(
+		const duplicateCheck = await db.getClient().query(
 			`SELECT author_handle
 			FROM authors
 			WHERE author_handle = $1`,
@@ -129,7 +128,7 @@ class Author {
 				args = [authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon];
 		}
 
-		const result = await db.query(
+		const result = await db.getClient().query(
 			query, args
 		);
 
@@ -142,7 +141,7 @@ class Author {
      * @returns {Object[author]} - [{ id, author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }, ...]
      */
 	static async findAll() {
-		const result = await db.query(
+		const result = await db.getClient().query(
 				`SELECT id,
 						CONCAT(author_first, ' ', author_last) AS "author",
 						author_first AS "authorFirst",
@@ -166,7 +165,7 @@ class Author {
      * @returns {author} - { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
      */
 	static async get(authorHandle) {
-		const userRes = await db.query(
+		const userRes = await db.getClient().query(
 			`SELECT CONCAT(author_first, ' ', author_last) AS "author",
 					author_first AS "authorFirst",
 					author_last AS "authorLast",
@@ -195,7 +194,7 @@ class Author {
      * @returns {string} - authorHandle
      */
 	static async getHandle(id) {
-		const authorRes = await db.query(
+		const authorRes = await db.getClient().query(
 			`SELECT author_handle AS "authorHandle"
 			FROM authors
 			WHERE id = $1`,
@@ -228,7 +227,7 @@ class Author {
      */
 	static async update(id, body, icon) {
 
-		let r = await db.query(
+		let r = await db.getClient().query(
             `SELECT * FROM authors WHERE id=$1`, [id]
         );
 
@@ -242,7 +241,7 @@ class Author {
 			}
 		}
 
-		const result = await db.query(
+		const result = await db.getClient().query(
 			`UPDATE authors 
 			SET author_first = $1,
 			author_last = $2,
@@ -286,7 +285,7 @@ class Author {
      * @returns {author} - { author, authorFirst, authorLast, authorHandle, authorSlogan, authorBio, icon }
      */
 	static async delete(id) {
-		const result = await db.query(
+		const result = await db.getClient().query(
 			`DELETE
 			FROM authors
 			WHERE id = $1

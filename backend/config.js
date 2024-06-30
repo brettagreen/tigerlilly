@@ -32,7 +32,7 @@ function getDatabaseUri() {
 		return "tigerlilly_test"
 	} else if (env === "testing") {
 		return "tigerlilly_testing"
-	} else {
+	} else { //production
 		return "tigerlilly"
 	}
 }
