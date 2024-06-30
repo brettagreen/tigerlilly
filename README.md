@@ -18,7 +18,6 @@ It is imperative that the machine you will be working from has Node.js, npm (nod
 4. Next `cd ../frontend`. Again, run `npm install` to install all the dependencies in the package.json file.
 5. Again, `cd ../backend`. Here, create an .env file. This holds values specific to your development environment. This should _not_ be a .git tracked file, given the sensitivity of the data. 5a spells out the needed variables and what they are used for
 - UPLOAD_PATH --> This is where user and author icon files will be stored. These will need to be stored in the frontend/public folder somewhere. a full - not relative - path should be provided.
-- TIGERLILLY_BASE_URL --> This is the url where frontend http requests are routed to the backend API.
 - PORT --> The port the backend api is listening on.
 - SECRET_KEY --> String value json web tokens are signed with. More on how JSON Web Tokens work and ensure user identity at https://jwt.io
 - DB_HOST --> your db server.
@@ -33,5 +32,7 @@ It is imperative that the machine you will be working from has Node.js, npm (nod
   4. Navitage to `backend\sql`. From here you can run `psql -U user_name < tigerlilly.sql`. This will create your database(s) and table definitions and can even seed your tables with some starter data. To 
      control which databases to create and/or which to seed with data, you can simply comment out the relevant fields in the tigerlilly.sql file.
 8. Starting the app is pretty easy. Navigate to the backend directory and run `node server.js`. This will have the api up and running. Then navigate to the frontend directory and run `npm start`. This will have your frontend up and running and listening on the default React port of 3000. If you want the app to listen on another port, you will want to modify the your backend/package.json accordingly. see [How to specify a port to run CRA](https://stackoverflow.com/questions/40714583/how-to-specify-a-port-to-run-a-create-react-app-based-project).
+### SSL
+The site is designed to run securely. HTTP requests will are automatically upgraded to HTTPS requests. This goes for both client requests and backend/server requests. SSL certificates are stored at the root of the backend and frontend directories. Obviously, there are any number of ways to generate self-signed certs or go through a certificate authority. The easiest way to ensure https functionality for client requests is to create a .env file at the root of the frontend directory with the appropriate values. On the backend, this functionality is handled in the server.js file at the root of the backend directory.
 ### Tests
 There are ample tests addressing backend functionality. Backend tests leverage the popular [Jest testing library](https://jestjs.io). These tests can be peformed running the `npm test` command in the Tigerlilly/backend directory. Difficulties were encountered using the [React testing library](https://testing-library.com/docs/react-testing-library) for frontend testing, so these efforts were aborted for the time being.
