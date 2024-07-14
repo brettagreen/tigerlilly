@@ -4,9 +4,9 @@ import axios from "axios";
  * site url
  * @type {string}
  */
-const BASE_URL = "https://api.thetigerlilly.online:442" 
-//console.log('process...', process.env.TIGERLILLY_BASE_URL);
-//console.log('BASE...', BASE_URL);
+
+const BASE_URL = process.env.REACT_APP_TIGERLILLY_BASE_URL;
+
 /**
  * @module /frontend/src/api
  * @requires module:axios
