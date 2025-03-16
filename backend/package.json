@@ -20,7 +20,6 @@
 	"author": "Brett A. Green",
 	"license": "ISC",
 	"dependencies": {
-		"@mui/toolpad": "^0.1.51",
 		"bcrypt": "^5.0.0",
 		"colors": "^1.4.0",
 		"cors": "^2.8.5",

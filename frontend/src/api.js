@@ -5,8 +5,7 @@ import axios from "axios";
  * @type {string}
  */
 
-const BASE_URL = process.env.REACT_APP_TIGERLILLY_BASE_URL;
-
+const BASE_URL = import.meta.env.VITE_TIGERLILLY_BASE_URL;
 /**
  * @module /frontend/src/api
  * @requires module:axios
