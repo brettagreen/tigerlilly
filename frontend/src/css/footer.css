@@ -1,0 +1,44 @@
+#footer {
+    display: block;
+    margin-top: auto;
+    flex-shrink: 0;
+    width: 95vw;
+    height: 14%;
+    border-radius: 2.5px;
+    align-items: center;
+    border-top: 1px solid var(--border-primary);
+    gap: 2rem;
+    padding: 1em;
+    background-color: rgba(0,0,0,.85);
+    color: #f3f2f2;
+    font-family: 'Roboto', sans-serif;
+    font-size: x-small;
+    background: linear-gradient(90deg, rgba(0,0,0,.85) 40%, rgba(241, 146, 111, .85));
+}
+
+#TLOimage {
+    float: left;
+    margin-right: 4em;
+}
+
+#TLOimage > img {
+    width: 100px;
+}
+
+#copyright {
+    float: left;
+    position: relative;
+    bottom: -10.4em;
+}
+
+#footerlinks {
+    float: left;
+    position: relative; 
+    bottom: -7em;
+}
+
+@media (width <= 900px) {
+    #footer {
+        display: none;
+    }
+}

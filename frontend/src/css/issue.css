@@ -13,6 +13,7 @@
 }
 
 #issueTitle {
+    display: block;
     font-style: italic;
     text-align: center;
     font-size: 3em;
@@ -25,7 +26,38 @@
     box-shadow: 0em 1em 2em rgba(0, 0, 0, 0.87);
     background-color: rgb(241, 146, 111);
     margin-bottom: 1.5em;
+}
 
+#issueTitleTitle {
+    float: left;
+    margin-left: 0.5em;
+}
+
+#issueVolume {
+    float: right;
+    margin-right: 0.5em;
+    margin-top: 1em;
+    font-size: x-large;
+}
+
+@media (width <= 839px) {
+    #issueTitle {
+        display: flex;
+        line-height: 3rem;
+        font-size: 3em;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+    }
+
+    #issueTitleTitle {
+        float: none;
+    }
+
+    #issueVolume {
+        float: none;
+        margin-top: 0.5em;
+    }
 }
 
 .bottomBorder {
@@ -41,7 +73,7 @@
 
 #masthead {
     width: 85vw;
-    height: 65vh;
+    height: 39vw;
     border-radius: 2.5px;
 }
 

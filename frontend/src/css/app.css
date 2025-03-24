@@ -1,3 +1,9 @@
+.App {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
 .SiteBox {
     margin-top: -8vh;
     margin-left: 7vw;
@@ -26,21 +32,4 @@ body {
     font-size: 1rem;
     line-height: 1.5;
     letter-spacing: 0.00938em;
-}
-
-#footer {
-    margin-top: auto;
-    width: 95vw;
-    height: 14%;
-    border-radius: 2.5px;
-    margin-top: 20px;
-    align-items: center;
-    border-top: 1px solid var(--border-primary);
-    gap: 2rem;
-    padding: 1em;
-    background-color: rgba(0,0,0,.85);
-    color: #f3f2f2;
-    font-family: 'Roboto', sans-serif;
-    font-size: x-small;
-    background: linear-gradient(90deg, rgba(0,0,0,.85) 40%, rgba(241, 146, 111, .85));
 }

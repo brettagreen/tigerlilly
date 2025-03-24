@@ -22,8 +22,8 @@ import TigerlillyApi from '../api';
 import { gridTheme } from '../css/styles';
 import Grid from '@mui/material/Grid';
 import { ThemeProvider } from '@emotion/react';
-import '../css/issue.css';
 import romans from 'romans';
+import '../css/issue.css';
 
 /**
  * @component /frontend/src/components/Issue
@@ -180,9 +180,9 @@ function Issue() {
                     <header>
                         <img id="masthead" src="/images/masthead.jpg" alt="masthead"/>
                     </header>
-                    <h1 id="issueTitle" style={{display: 'block'}}>
-                        <span style={{float: 'left', marginLeft: '0.5em'}}>{issue[0].issueTitle}</span>
-                        <span style={{float: 'right', marginRight: '0.5em', marginTop: '1em', fontSize: 'x-large'}}>
+                    <h1 id="issueTitle">
+                        <span id="issueTitleTitle">{issue[0].issueTitle}</span>
+                        <span id="issueVolume">
                             {"Volume "+romans.romanize(issue[0].volume)}{" Issue "+romans.romanize(issue[0].issue)}
                         </span>
                     </h1>

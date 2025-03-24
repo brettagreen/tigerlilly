@@ -95,6 +95,7 @@ import Slide from '@mui/material/Slide';
 import { ThemeProvider } from '@mui/material/styles';
 import { styled, alpha } from '@mui/material/styles';
 import { toolbarMenuTheme, userMenuTheme } from '../css/styles';
+import '../css/navigationbar.css';
 
 /**
  * width in pixels of Drawer components
@@ -610,7 +611,7 @@ function NavigationBar({ search }) {
                                 <HomeIcon />
                             </IconButton>
                         </Typography>
-                        <Search>
+                        <Search id="search">
                             <SearchIconWrapper>
                                 <SearchIcon />
                             </SearchIconWrapper>

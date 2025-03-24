@@ -1,0 +1,5 @@
+@media (width <= 600px) {
+    #search {
+        display: none;
+    }
+}

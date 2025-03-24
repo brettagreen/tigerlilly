@@ -177,7 +177,9 @@ function Login({ updateUserToken }) {
 
             <ThemeProvider theme={formTheme}>
                 <div className="BackdropWrapper" style={{marginBottom:'3vh'}}>
-                    <form id="loginForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear} style={{marginLeft:'33%'}}> 
+                    <form id="loginForm" autoComplete="off" encType="multipart/form-data" onSubmit={submitAndClear} style={{marginLeft:'10%',
+                        marginRight: '10%'
+                    }}> 
                         <FormControl margin="normal">
                             <TextField type="text" label="username" name="username" variant="outlined" onChange={handleChange }
                                     value={form.username} sx={{marginBottom: '.5em'}} />
