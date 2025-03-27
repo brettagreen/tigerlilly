@@ -34,6 +34,7 @@ class db {
             connectionObject.host = process.env.DB_HOST;
             connectionObject.port = process.env.DB_PORT;
             connectionObject.user = process.env.DB_USER;
+            connectionObject.password = process.env.DB_PW;
             connectionObject.ssl = {
                 rejectUnauthorized: false
             }
